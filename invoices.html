@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoices – RemindFlow</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/invoices.css" />
+  </head>
+
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <h2>RemindFlow</h2>
+
+      <a href="/dashboard.html">🏠 Dashboard</a>
+      <a href="/clients.html">👥 Clients</a>
+      <a href="/invoices.html" class="active">
+        🧾 Invoices <span class="badge" id="badge-invoice"></span>
+      </a>
+      <a href="/reminders.html">⏰ Reminders</a>
+      <a href="/settings.html">⚙️ Settings</a>
+      <a href="/index.html">🔒 Logout</a>
+
+      <!-- Hamburger INSIDE sidebar -->
+      <div id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Header -->
+      <div class="header">
+        <div>
+          <h1>Invoices</h1>
+          <p>Total Invoices: <span id="totalInvoices">0</span></p>
+        </div>
+        <a href="/add-invoice.html" class="btn">+ Add Invoice</a>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search invoice or client..."
+        />
+
+        <select id="clientFilter">
+          <option value="">All Clients</option>
+        </select>
+
+        <select id="statusFilter">
+          <option value="">All Status</option>
+          <option value="Paid">Paid</option>
+          <option value="Pending">Pending</option>
+          <option value="Overdue">Overdue</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <table>
+        <thead>
+          <tr>
+            <th>Invoice ID</th>
+            <th>Client</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="invoiceTable"></tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button id="prevBtn">Prev</button>
+        <button id="nextBtn">Next</button>
+      </div>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast"></div>
+
+    <!-- Auth Guard -->
+    <script type="module">
+      import { requireAuth } from "/js/guard.js";
+      requireAuth();
+    </script>
+
+    <!-- Page Logic -->
+    <script type="module" src="/js/invoices.js"></script>
+
+    <!-- Sidebar Hamburger -->
+    <script type="module">
+      const sidebar = document.getElementById('sidebar');
+      const main = document.querySelector('.main');
+      const hamburger = document.getElementById('hamburger');
+
+      hamburger.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        main.classList.toggle('collapsed');
+        hamburger.classList.toggle('active');
+      });
+    </script>
+  </body>
+</html>

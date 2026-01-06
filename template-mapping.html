@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Template Mapping - RemindFlow</title>
+  <link rel="stylesheet" href="/css/template-mapping.css">
+</head>
+<body>
+  <div class="template-container">
+    <h1 class="template-title">Template Mapping</h1>
+    <p class="template-subtitle">Tone → Zoho template mapping (read-only)</p>
+
+    <!-- Template Table -->
+    <table class="template-table">
+      <thead>
+        <tr>
+          <th>Tone Profile</th>
+          <th>Zoho Template</th>
+          <th>Last Updated</th>
+          <th>Preview</th>
+          <th>Open in Zoho</th>
+        </tr>
+      </thead>
+      <tbody id="template-list">
+        <!-- JS will populate rows here dynamically -->
+      </tbody>
+    </table>
+
+    <div id="alerts" class="alerts"></div>
+  </div>
+
+  <!-- JS -->
+  <script src="/js/template-mapping.js"></script>
+</body>
+</html>

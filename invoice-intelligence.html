@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice Intelligence - RemindFlow</title>
+  <link rel="stylesheet" href="/css/invoice-intelligence.css" />
+</head>
+<body>
+  <div class="invoice-container">
+
+    <!-- Top Navigation / Breadcrumb -->
+    <div class="invoice-toolbar">
+      <div class="breadcrumb">
+        <a href="/integration-dashboard">Integrations</a>
+        <span>›</span>
+        <span>Invoices</span>
+      </div>
+
+      <div class="toolbar-actions">
+        <a href="/template-mapping" class="toolbar-link">
+          Template Mapping
+        </a>
+        <a href="/alerts-center" class="toolbar-link">
+          Alerts
+        </a>
+      </div>
+    </div>
+
+    <h1 class="invoice-title">Invoice Intelligence</h1>
+    <p class="invoice-subtitle">
+      See your invoices with intelligent labels — no math required
+    </p>
+
+    <!-- Invoice Table -->
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th>Invoice ID</th>
+          <th>Client</th>
+          <th>Amount / Due</th>
+          <th>Escalation Stage</th>
+          <th>Tone</th>
+          <th>Risk</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody id="invoice-list">
+        <!-- JS populates rows -->
+      </tbody>
+    </table>
+
+    <div id="alerts" class="alerts"></div>
+  </div>
+
+  <!-- Auth Guard -->
+  <script type="module">
+    import { requireAuth } from "/js/guard.js";
+    requireAuth();
+  </script>
+
+  <!-- Page Logic -->
+  <script type="module" src="/js/invoice-intelligence.js"></script>
+</body>
+</html>

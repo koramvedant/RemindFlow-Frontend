@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client Intelligence - RemindFlow</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/client-profile.css" />
+</head>
+<body>
+  <div class="client-container">
+    <h1 class="client-title">Client Intelligence Profile</h1>
+    <p class="client-subtitle">
+      Understand why automation behaves the way it does
+    </p>
+
+    <!-- Client Summary -->
+    <div class="summary-section">
+      <h2>Client Summary</h2>
+      <p><strong>Client Name:</strong> <span id="client-name">--</span></p>
+      <p>
+        <strong>Usually Pays In:</strong>
+        <span id="pay-days">--</span> days
+      </p>
+      <p>
+        <strong>Escalation Usually Needed:</strong>
+        <span id="usual-escalation">--</span>
+      </p>
+      <p>
+        <strong>Network Trust Grade:</strong>
+        <span id="trust-grade">--</span>
+      </p>
+    </div>
+
+    <!-- Manual Overrides -->
+    <div class="manual-controls">
+      <h2>Manual Overrides</h2>
+
+      <label>
+        <input type="checkbox" id="tone-bias" />
+        Set permanent tone bias
+      </label>
+      <br />
+
+      <label>
+        <input type="checkbox" id="pre-due-reminder" />
+        Always require pre-due reminder
+      </label>
+      <br />
+
+      <label>
+        <input type="checkbox" id="exclude-final" />
+        Exclude from final notice
+      </label>
+    </div>
+
+    <div id="alerts" class="alerts"></div>
+  </div>
+
+  <!-- Auth Guard -->
+  <script type="module">
+    import { requireAuth } from "/js/guard.js";
+    requireAuth();
+  </script>
+
+  <!-- Page Logic -->
+  <script type="module" src="/js/client-profile.js"></script>
+</body>
+</html>

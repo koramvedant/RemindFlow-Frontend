@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alerts Center - RemindFlow</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/alerts-center.css" />
+</head>
+<body>
+  <div class="alerts-container">
+    <h1 class="alerts-title">Alerts Center</h1>
+    <p class="alerts-subtitle">
+      Critical, actionable alerts from RemindFlow
+    </p>
+
+    <!-- Filters -->
+    <div class="alerts-filters">
+      <label>
+        Date:
+        <input type="date" id="filter-date" />
+      </label>
+
+      <label>
+        Type:
+        <select id="filter-type">
+          <option value="">All</option>
+          <option value="Integration Failure">Integration Failure</option>
+          <option value="Automation Paused">Automation Paused</option>
+          <option value="High-Risk Invoice">High-Risk Invoice</option>
+          <option value="Final Notice">Final Notice</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Alerts Table -->
+    <table class="alerts-table">
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Type</th>
+          <th>Invoice / Client</th>
+          <th>Message</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="alerts-list">
+        <!-- JS populates rows -->
+      </tbody>
+    </table>
+
+    <div id="alerts-messages" class="alerts"></div>
+  </div>
+
+  <!-- Auth Guard -->
+  <script type="module">
+    import { requireAuth } from "/js/guard.js";
+    requireAuth();
+  </script>
+
+  <!-- Page Logic -->
+  <script type="module" src="/js/alerts-center.js"></script>
+</body>
+</html>

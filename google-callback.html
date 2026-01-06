@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Signing you in…</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+  <script>
+    // Parse query params
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('accessToken');
+    const refreshToken = urlParams.get('refreshToken');
+
+    if (accessToken && refreshToken) {
+      // Store tokens
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      // Redirect (frontend static pages)
+      if (window.location.pathname.includes('plans')) {
+        window.location.href = '/plans.html';
+      } else {
+        window.location.href = '/dashboard.html';
+      }
+    } else {
+      console.error('Tokens not found in URL');
+      window.location.href = '/login.html';
+    }
+  </script>
+</body>
+</html>

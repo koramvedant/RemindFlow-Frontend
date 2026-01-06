@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Automation Control Panel - RemindFlow</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/automation-control.css" />
+</head>
+<body>
+  <div class="control-container">
+    <h1 class="control-title">Automation Control Panel</h1>
+    <p class="control-subtitle">
+      Set global rules for automated reminders and escalations
+    </p>
+
+    <!-- Automation Toggle -->
+    <div class="control-group">
+      <label class="switch-label" for="automation-toggle">
+        Automation
+      </label>
+
+      <label class="switch">
+        <input type="checkbox" id="automation-toggle" />
+        <span class="slider"></span>
+      </label>
+
+      <span id="automation-status" class="toggle-status">OFF</span>
+    </div>
+
+    <!-- Max Escalation Stage -->
+    <div class="control-group">
+      <label for="max-escalation">Max Escalation Stage:</label>
+      <select id="max-escalation">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+    </div>
+
+    <!-- Cooldown Sensitivity -->
+    <div class="control-group">
+      <label>Cooldown Sensitivity:</label>
+      <div class="radio-group">
+        <label>
+          <input type="radio" name="cooldown" value="Low" checked />
+          Low
+        </label>
+        <label>
+          <input type="radio" name="cooldown" value="Medium" />
+          Medium
+        </label>
+        <label>
+          <input type="radio" name="cooldown" value="High" />
+          High
+        </label>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="control-actions">
+      <button id="save-settings" class="btn-primary">
+        Save Changes
+      </button>
+    </div>
+
+    <div id="alerts" class="alerts"></div>
+  </div>
+
+  <!-- Auth Guard -->
+  <script type="module">
+    import { requireAuth } from "/js/guard.js";
+    requireAuth();
+  </script>
+
+  <!-- Page Logic -->
+  <script type="module" src="/js/automation-control.js"></script>
+</body>
+</html>

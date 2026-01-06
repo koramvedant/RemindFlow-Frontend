@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings | RemindFlow</title>
+  <link rel="stylesheet" href="/css/settings.css" />
+</head>
+<body>
+  <div class="settings-container">
+    <h1>Settings</h1>
+
+    <!-- ACCOUNT SETTINGS -->
+    <section class="settings-section">
+      <div class="section-header" data-toggle="account">
+        Account Settings
+        <span class="arrow">▶</span>
+      </div>
+
+      <div class="section-body" id="account">
+        <label>Name</label>
+        <input type="text" id="name" />
+
+        <label>Email (Login)</label>
+        <input type="email" id="email" required />
+
+        <label>Company Name</label>
+        <input type="text" id="company_name" />
+
+        <label>Timezone</label>
+        <select id="timezone">
+          <option value="Asia/Kolkata">Asia/Kolkata</option>
+          <option value="UTC">UTC</option>
+          <option value="Europe/London">Europe/London</option>
+          <option value="America/New_York">America/New_York</option>
+        </select>
+
+        <label>Company Logo</label>
+        <input type="file" id="logo" accept="image/*" />
+
+        <label>Business Address</label>
+        <textarea id="address"></textarea>
+
+        <label>Tax ID (GST / VAT)</label>
+        <input type="text" id="tax_id" />
+
+        <label>Default Payment Terms</label>
+        <textarea
+          id="default_terms"
+          placeholder="e.g. Payment due within 15 days"
+        ></textarea>
+
+        <button class="primary-btn" id="saveAccount">
+          Save Account Settings
+        </button>
+      </div>
+    </section>
+
+    <!-- COMMUNICATION SETTINGS -->
+    <section class="settings-section">
+      <div class="section-header" data-toggle="communication">
+        Communication Settings
+        <span class="arrow">▶</span>
+      </div>
+
+      <div class="section-body" id="communication">
+        <div class="checkbox-row">
+          <input type="checkbox" id="disable_whatsapp" />
+          <label for="disable_whatsapp">Disable WhatsApp reminders</label>
+        </div>
+        <p class="hint">
+          When disabled, all reminders will be sent only via email.
+        </p>
+
+        <button class="primary-btn" id="saveCommunication">
+          Save Communication Settings
+        </button>
+      </div>
+    </section>
+
+    <!-- BILLING -->
+    <section class="settings-section">
+      <div class="section-header" data-toggle="billing">
+        Billing
+        <span class="arrow">▶</span>
+      </div>
+
+      <div class="section-body" id="billing">
+        <p><strong>Current Plan:</strong> Free</p>
+        <p><strong>Billing Cycle:</strong> Monthly</p>
+
+        <button class="secondary-btn" disabled>Upgrade / Downgrade</button>
+        <button class="secondary-btn" disabled>Change Billing Cycle</button>
+        <button class="danger-btn" disabled>Cancel Plan</button>
+
+        <p class="hint">
+          Billing actions will be enabled after payment gateway integration.
+        </p>
+      </div>
+    </section>
+
+    <!-- PAYMENT SETTINGS -->
+    <section class="settings-section disabled">
+      <div class="section-header">Payment Settings</div>
+
+      <div class="section-body">
+        <p>
+          Payment settings will be available once payment gateway integration is enabled.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- JS -->
+  <script src="/js/settings.js"></script>
+</body>
+</html>

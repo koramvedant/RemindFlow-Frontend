@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global Settings – RemindFlow</title>
+
+  <link rel="stylesheet" href="/css/global-settings.css" />
+</head>
+
+<body>
+  <div class="settings-container">
+    <h1 class="settings-title">Global Settings & Safety</h1>
+    <p class="settings-subtitle">
+      Transparency and trust for your automation
+    </p>
+
+    <!-- Data Usage Section -->
+    <section class="settings-section">
+      <h2>Data Usage</h2>
+      <p>
+        RemindFlow uses invoice and client data only to calculate automation
+        decisions, send reminders, and improve reliability. We never share your
+        data with third parties without consent.
+      </p>
+    </section>
+
+    <!-- Trust Grade Disclaimer -->
+    <section class="settings-section">
+      <h2>Trust Grades</h2>
+      <p>
+        Client trust grades (A–D) are internal evaluations based on historical
+        payment behavior. They help guide automation and are not guarantees of
+        payment.
+      </p>
+    </section>
+
+    <!-- Escalation Ethics Notice -->
+    <section class="settings-section">
+      <h2>Escalation Ethics</h2>
+      <p>
+        Escalation stages and tones are designed to be professional and ethical.
+        RemindFlow will never send aggressive or misleading messages. You can
+        always pause or modify automation globally.
+      </p>
+    </section>
+
+    <!-- Actions -->
+    <div class="settings-actions">
+      <button id="acknowledge-btn" class="btn-primary">
+        Acknowledge & Save
+      </button>
+    </div>
+
+    <div id="alerts" class="alerts"></div>
+  </div>
+
+  <!-- Auth Guard -->
+  <script type="module">
+    import { requireAuth } from "/js/guard.js";
+    requireAuth();
+  </script>
+
+  <!-- Page Logic -->
+  <script type="module" src="/js/global-settings.js"></script>
+</body>
+</html>

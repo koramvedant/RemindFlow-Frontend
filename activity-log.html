@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity Log - RemindFlow</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/activity-log.css" />
+</head>
+<body>
+  <div class="log-container">
+    <h1 class="log-title">Decision & Action Log</h1>
+    <p class="log-subtitle">See exactly what RemindFlow did and when</p>
+
+    <!-- Filters -->
+    <div class="log-filters">
+      <label>
+        Date:
+        <input type="date" id="filter-date" />
+      </label>
+
+      <label>
+        Client:
+        <input type="text" id="filter-client" placeholder="Client Name" />
+      </label>
+
+      <label>
+        Stage:
+        <select id="filter-stage">
+          <option value="">All</option>
+          <option value="1">Stage 1</option>
+          <option value="2">Stage 2</option>
+          <option value="3">Stage 3</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Log Table -->
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Invoice</th>
+          <th>Client</th>
+          <th>Action</th>
+          <th>Stage</th>
+          <th>Outcome</th>
+        </tr>
+      </thead>
+      <tbody id="log-list">
+        <!-- JS populates rows -->
+      </tbody>
+    </table>
+
+    <div id="alerts" class="alerts"></div>
+  </div>
+
+  <!-- Auth Guard -->
+  <script type="module">
+    import { requireAuth } from "/js/guard.js";
+    requireAuth();
+  </script>
+
+  <!-- Page Logic -->
+  <script type="module" src="/js/activity-log.js"></script>
+</body>
+</html>

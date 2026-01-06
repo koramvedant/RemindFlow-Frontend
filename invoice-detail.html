@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Detail - RemindFlow</title>
+  <link rel="stylesheet" href="/css/invoice-detail.css">
+</head>
+<body>
+  <div class="detail-container">
+    <h1 class="detail-title">Invoice Detail</h1>
+    <p class="detail-subtitle">Transparent intelligence without micromanagement</p>
+
+    <!-- Invoice Summary -->
+    <div class="summary-section">
+      <h2>Invoice Summary</h2>
+      <p><strong>Invoice ID:</strong> <span id="inv-id">--</span></p>
+      <p><strong>Client:</strong> <span id="inv-client">--</span></p>
+      <p><strong>Amount:</strong> ₹<span id="inv-amount">--</span></p>
+      <p><strong>Due Date:</strong> <span id="inv-due">--</span></p>
+    </div>
+
+    <!-- Escalation Timeline -->
+    <div class="timeline-section">
+      <h2>Escalation Timeline</h2>
+      <ul id="timeline">
+        <!-- JS will populate -->
+      </ul>
+    </div>
+
+    <!-- Current Decision -->
+    <div class="decision-section">
+      <h2>Current Decision</h2>
+      <p><strong>Stage:</strong> <span id="current-stage">--</span></p>
+      <p><strong>Tone:</strong> <span id="current-tone">--</span></p>
+      <p><strong>Reason:</strong> <span id="current-reason">--</span></p>
+    </div>
+
+    <!-- Manual Controls -->
+    <div class="manual-controls">
+      <h2>Manual Controls</h2>
+      <button id="pause-btn" class="btn-control">Pause Automation</button>
+      <label for="max-stage">Change Max Stage:</label>
+      <select id="max-stage">
+        <option value="1">Stage 1</option>
+        <option value="2">Stage 2</option>
+        <option value="3">Stage 3</option>
+      </select>
+      <button id="softer-tone-btn" class="btn-control">Force Softer Tone</button>
+    </div>
+
+    <div id="alerts" class="alerts"></div>
+  </div>
+
+  <!-- Auth Guard -->
+  <script type="module">
+    import { requireAuth } from "/js/guard.js";
+    requireAuth();
+  </script>
+
+  <!-- Page Logic -->
+  <script type="module" src="/js/invoice-detail.js"></script>
+</body>
+</html>

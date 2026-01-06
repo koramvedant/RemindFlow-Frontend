@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Your Profile – RemindFlow</title>
+
+  <link rel="stylesheet" href="/css/info.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">RemindFlow</div>
+  </nav>
+
+  <main class="container">
+    <h1>Complete Your Profile</h1>
+    <p>Please provide the necessary information to get started with RemindFlow.</p>
+
+    <form id="infoForm" class="info-form">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" disabled />
+      </div>
+
+      <div class="form-group">
+        <label for="company">Company / Business Name</label>
+        <input type="text" id="company" name="company" required />
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" required />
+      </div>
+
+      <button type="submit" class="primary-btn">Continue</button>
+    </form>
+  </main>
+
+  <!-- Auth Guard -->
+  <script type="module">
+    import { requireAuth } from "/js/guard.js";
+    requireAuth();
+  </script>
+
+  <!-- Page Logic -->
+  <script type="module" src="/js/info.js"></script>
+</body>
+</html>

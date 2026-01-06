@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RemindFlow - Landing Page</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  </head>
+
+  <body>
+    <!-- Navigation -->
+    <header class="header">
+      <div class="container nav-container">
+        <div class="logo">
+          <a href="#hero">
+            <img src="/logo.png" alt="RemindFlow" class="logo-img" />
+          </a>
+        </div>
+        <nav class="nav">
+          <a href="#hero">Home</a>
+          <a href="#services">Services</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#get-started">Get Started</a>
+          <a href="#contact">Contact</a>
+          <a href="#" class="btn" id="loginBtn">Login</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+      <div class="container hero-content">
+        <h1>Get paid effortlessly</h1>
+        <p>
+          RemindFlow automates payment management and escalates overdue invoices
+          intelligently — so you can focus on what you do best.
+        </p>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+      <div class="container">
+        <h2>Our Services</h2>
+        <div class="service-grid">
+          <div class="service-item">
+            <div class="service-icon">🤖</div>
+            <h3>Intelligent Payment Management</h3>
+            <p>
+              Automatically escalates overdue payments based on client
+              behaviour.
+            </p>
+          </div>
+          <div class="service-item">
+            <div class="service-icon">💰</div>
+            <h3>Invoice Creation & Management</h3>
+            <p>Create, send, and track invoices in one system.</p>
+          </div>
+          <div class="service-item">
+            <div class="service-icon">📈</div>
+            <h3>Client Payment Insights</h3>
+            <p>Understand overdue trends and payment behaviour.</p>
+          </div>
+          <div class="service-item">
+            <div class="service-icon">📧</div>
+            <h3>Professional Communication Templates</h3>
+            <p>Behaviour-aware email templates.</p>
+          </div>
+          <div class="service-item">
+            <div class="service-icon">🔒</div>
+            <h3>Secure Data Storage</h3>
+            <p>Encrypted and securely stored data.</p>
+          </div>
+          <div class="service-item">
+            <div class="service-icon">⚡</div>
+            <h3>
+              Workflow Automations
+              <span style="font-weight: normal">(Coming Soon)</span>
+            </h3>
+            <p>Future integrations with accounting tools.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+      <div class="container">
+        <h2>Choose Your Plan</h2>
+        <p class="pricing-sub">🎉 All plans include a 7-day free trial</p>
+
+        <div class="pricing-group">
+          <p class="pricing-group-label">For Full RemindFlow Users</p>
+
+          <div class="pricing-grid">
+            <div class="pricing-item">
+              <h3>Starter</h3>
+              <p class="price">₹499 <span>/ month</span></p>
+              <ul>
+                <li>Up to 15 active clients</li>
+                <li>Email + WhatsApp reminders</li>
+              </ul>
+              <button class="btn-primary planBtn" data-plan="starter">
+                Choose Plan
+              </button>
+            </div>
+
+            <div class="pricing-item featured">
+              <span class="badge">Most Popular</span>
+              <h3>Growth</h3>
+              <p class="price">₹999 <span>/ month</span></p>
+              <ul>
+                <li>Up to 50 active clients</li>
+                <li>Dashboard with insights</li>
+              </ul>
+              <button class="btn-primary planBtn" data-plan="growth">
+                Choose Plan
+              </button>
+            </div>
+
+            <div class="pricing-item">
+              <h3>Pro / Business</h3>
+              <p class="price">₹1,999 <span>/ month</span></p>
+              <ul>
+                <li>Up to 150 active clients</li>
+                <li>Advanced dashboard</li>
+              </ul>
+              <button class="btn-primary planBtn" data-plan="pro">
+                Choose Plan
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pricing-divider"><span>OR</span></div>
+
+        <div class="pricing-group">
+          <p class="pricing-group-label">For Integrated Users</p>
+
+          <div class="pricing-grid pricing-grid-single">
+            <div class="pricing-item">
+              <h3>Connector Plan</h3>
+              <p class="price">₹399 <span>/ month</span></p>
+              <ul>
+                <li>Works with Zoho, QuickBooks, Tally</li>
+                <li>Uses your existing email setup</li>
+              </ul>
+              <button class="btn-secondary planBtn" data-plan="connector">
+                Connect My System
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Get Started -->
+    <section id="get-started" class="get-started">
+      <div class="container">
+        <h2>Try RemindFlow Free for 7 Days</h2>
+        <button class="btn-primary" id="getStartedBtn">
+          Get Started
+        </button>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="contact">
+      <div class="container contact-content">
+        <p>support@remindflow.in</p>
+        <p class="legal-links">
+          <a href="/legal/privacy.html">Privacy Policy</a> |
+          <a href="/legal/terms.html">Terms of Use</a> |
+          <a href="/legal/refund.html">Refund</a> |
+          <a href="/legal/disclaimer.html">Disclaimer</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- FRONTEND LOGIN / PLAN REDIRECT LOGIC -->
+    <script>
+      const redirectToLogin = () => {
+        window.location.href = "/login.html";
+      };
+
+      const redirectToPlans = () => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+          window.location.href = "/plans.html";
+        } else {
+          redirectToLogin();
+        }
+      };
+
+      // Login button
+      document.getElementById("loginBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        redirectToLogin();
+      });
+
+      // Get Started button
+      document.getElementById("getStartedBtn").addEventListener("click", redirectToPlans);
+
+      // Pricing buttons
+      document.querySelectorAll(".planBtn").forEach((btn) => {
+        btn.addEventListener("click", redirectToPlans);
+      });
+    </script>
+  </body>
+</html>

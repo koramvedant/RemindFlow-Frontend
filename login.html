@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login – RemindFlow</title>
+    <link rel="stylesheet" href="/css/login.css" />
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="logo">RemindFlow</div>
+    </nav>
+
+    <div class="login-container">
+      <h1>Welcome Back</h1>
+      <p class="subtitle">
+        Log in to continue managing your reminders & invoices.
+      </p>
+
+      <div class="login-box">
+        <button id="googleLoginBtn" class="google-btn">
+          <img src="https://img.icons8.com/color/48/000000/google-logo.png" />
+          Continue with Google
+        </button>
+
+        <p class="signup-text">
+          New user? You’ll be asked to choose a plan after login.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Backend base URL
+      window.BACKEND_URL = 'https://remindflow-backend.onrender.com';
+    </script>
+
+    <!-- JS as module for proper import/export -->
+    <script type="module" src="/js/login.js"></script>
+  </body>
+</html>

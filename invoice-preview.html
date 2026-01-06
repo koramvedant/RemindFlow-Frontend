@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Invoice Preview | RemindFlow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/invoice-preview.css" />
+  </head>
+  <body>
+    <div class="container">
+      <button class="back-btn" onclick="history.back()">← Back</button>
+
+      <h2>Invoice Preview</h2>
+
+      <div class="layout-select">
+        <label>Layout</label>
+        <select id="layout">
+          <option>Default</option>
+          <option>Minimal</option>
+          <option>Modern</option>
+        </select>
+      </div>
+
+      <!-- Invoice Render -->
+      <div class="invoice-box" id="invoiceBox">
+        <!-- Filled via JS -->
+      </div>
+
+      <div class="actions">
+        <button class="secondary" id="saveDraft">Save as Draft</button>
+        <button class="primary" id="finalSave">Save & Generate PDF</button>
+      </div>
+    </div>
+
+    <!-- Auth Guard -->
+    <script type="module">
+      import { requireAuth } from "/js/guard.js";
+      requireAuth();
+    </script>
+
+    <!-- Page Logic -->
+    <script type="module" src="/js/invoice-preview.js"></script>
+  </body>
+</html>

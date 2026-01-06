@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – RemindFlow</title>
+  <link rel="stylesheet" href="/css/dashboard.css" />
+
+  <!-- Auth Guard (MUST LOAD FIRST) -->
+  <script src="/js/guard.js"></script>
+</head>
+
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <h2>RemindFlow</h2>
+    </div>
+
+    <nav>
+      <a href="/dashboard.html" class="active">🏠 Dashboard</a>
+      <a href="/clients.html">👥 Clients</a>
+      <a href="/invoices.html">🧾 Invoices</a>
+      <a href="/reminders.html">⏰ Reminders</a>
+      <a href="/settings.html">⚙️ Settings</a>
+      <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <section class="user-info card">
+      <div class="profile">
+        <img src="https://via.placeholder.com/80" />
+        <div class="meta">
+          <h3 id="userName">User</h3>
+          <p id="userEmail"></p>
+        </div>
+      </div>
+
+      <div class="plan-section">
+        Plan: <strong id="planType">—</strong>
+        <a href="/plans.html" class="btn">View Plans</a>
+      </div>
+    </section>
+
+    <section class="stats-section">
+      <div class="stats-cards">
+        <div class="card"><h4>Total Clients</h4><div id="totalClients">—</div></div>
+        <div class="card"><h4>Pending Invoices</h4><div id="pendingInvoices">—</div></div>
+        <div class="card"><h4>Total Invoices</h4><div id="totalInvoices">—</div></div>
+        <div class="card"><h4>Reminders Sent</h4><div id="remindersSent">—</div></div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/js/dashboard.js"></script>
+
+  <script>
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      window.location.href = '/login.html';
+    });
+  </script>
+</body>
+</html>

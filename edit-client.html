@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Edit Client – RemindFlow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="/css/edit-client.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Edit Client</h1>
+      <div class="subtitle">
+        Update client details. Changes apply to future communication and
+        invoices.
+      </div>
+
+      <form id="editClientForm" data-loading="true">
+        <!-- Basic Details -->
+        <div class="field">
+          <label>Client Name <span>*</span></label>
+          <input type="text" id="clientName" required />
+        </div>
+
+        <div class="field">
+          <label>Email <span>*</span></label>
+          <input type="email" id="email" required />
+          <div class="helper">Primary communication channel</div>
+          <div class="error" id="emailError">
+            Email is required for client communication.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Phone</label>
+          <input type="text" id="phone" />
+        </div>
+
+        <!-- Toggle -->
+        <div class="toggle" id="toggleAdvanced">
+          + Show Advanced Details
+        </div>
+
+        <!-- Advanced Details -->
+        <div class="advanced" id="advancedSection">
+          <div class="field">
+            <label>Company Name</label>
+            <input type="text" id="companyName" />
+          </div>
+
+          <div class="field">
+            <label>Address</label>
+            <textarea id="address"></textarea>
+          </div>
+
+          <div class="field">
+            <label>Tax ID (GST / VAT / etc.)</label>
+            <input type="text" id="taxId" />
+          </div>
+
+          <div class="field">
+            <label>Notes</label>
+            <textarea id="notes"></textarea>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button type="button" class="btn-secondary" id="cancelBtn">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary" id="saveBtn" disabled>
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Auth Guard -->
+    <script type="module">
+      import { requireAuth } from "/js/guard.js";
+      requireAuth();
+    </script>
+
+    <!-- Page Logic -->
+    <script type="module" src="/js/edit-client.js"></script>
+
+    <!-- Cancel -->
+    <script>
+      document
+        .getElementById("cancelBtn")
+        .addEventListener("click", () => {
+          window.location.href = "/clients.html";
+        });
+    </script>
+  </body>
+</html>

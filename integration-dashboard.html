@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Integration Dashboard – RemindFlow</title>
+  <link rel="stylesheet" href="/css/integration-dashboard.css" />
+</head>
+
+<body>
+  <div class="dashboard-container">
+    <h1>Integration Dashboard</h1>
+    <p class="dashboard-subtitle">
+      Manage your connected invoicing platforms
+    </p>
+
+    <!-- Connector plan notice -->
+    <div id="subscription-warning" class="alert alert-warning" style="display:none;">
+      Your Connector plan has expired. Reconnect is disabled.
+      <a href="/plans.html">Renew now</a>
+    </div>
+
+    <div class="platform-card">
+      <!-- Platform Info -->
+      <div class="platform-info">
+        <img src="/assets/zoho-logo.png" alt="Zoho" />
+        <div>
+          <h2>Zoho</h2>
+          <p>Last synced: <span id="last-sync">—</span></p>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="connection-status">
+        <span id="status-indicator" class="status-dot"></span>
+        <span id="status-text">Checking…</span>
+      </div>
+
+      <!-- Actions -->
+      <div class="platform-actions">
+        <button id="connect-btn" class="btn-primary">
+          Connect / Reconnect
+        </button>
+
+        <button id="permissions-btn" class="btn-secondary">
+          View Permissions
+        </button>
+      </div>
+
+      <div class="platform-actions">
+        <a href="/invoices.html" class="btn-secondary">View Invoices</a>
+        <a href="/automation-control.html" class="btn-secondary">Go to Automation</a>
+      </div>
+    </div>
+
+    <div id="alerts"></div>
+  </div>
+
+  <!-- Permissions Modal -->
+  <div id="permissions-modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal" class="modal-close">&times;</span>
+      <h2>Permissions Granted</h2>
+      <ul id="permissions-list"></ul>
+    </div>
+  </div>
+
+  <!-- Auth Guard -->
+  <script type="module">
+    import { requireAuth } from "/js/guard.js";
+    requireAuth();
+  </script>
+
+  <!-- Page Logic -->
+  <script type="module" src="/js/integration-dashboard.js"></script>
+</body>
+</html>

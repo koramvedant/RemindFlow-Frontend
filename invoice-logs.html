@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Invoice Logs | RemindFlow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/invoice-logs.css" />
+  </head>
+
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <h2>RemindFlow</h2>
+
+      <a href="/dashboard">🏠 Dashboard</a>
+      <a href="/clients">👥 Clients</a>
+      <a href="/invoices" class="nav-link">
+        🧾 Invoices
+        <span class="badge" id="badge-invoice"></span>
+      </a>
+      <a href="/reminders">⏰ Reminders</a>
+      <a href="/settings">⚙️ Settings</a>
+      <a href="/logout">🔒 Logout</a>
+
+      <!-- Hamburger INSIDE sidebar -->
+      <div id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Client Snapshot -->
+      <section class="client-info">
+        <div>
+          <h4>Name</h4>
+          <p id="clientName">—</p>
+        </div>
+        <div>
+          <h4>Email</h4>
+          <p id="clientEmail">—</p>
+        </div>
+        <div>
+          <h4>Phone</h4>
+          <p id="clientPhone">—</p>
+        </div>
+        <div>
+          <h4>Trust Grade</h4>
+          <p id="clientTrust">—</p>
+        </div>
+      </section>
+
+      <!-- Filters -->
+      <section class="filters">
+        <input id="searchInput" type="text" placeholder="Search invoice ID…" />
+
+        <select id="statusFilter">
+          <option value="">All Status</option>
+          <option value="Paid">Paid</option>
+          <option value="Pending">Pending</option>
+          <option value="Overdue">Overdue</option>
+        </select>
+
+        <button id="filterBtn">Apply</button>
+      </section>
+
+      <!-- Invoice Logs Table -->
+      <section class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Invoice ID</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invoiceTable"></tbody>
+        </table>
+      </section>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button id="prevBtn">Prev</button>
+        <button id="nextBtn">Next</button>
+      </div>
+    </main>
+
+    <!-- Auth Guard -->
+    <script type="module">
+      import { requireAuth } from "/js/guard.js";
+      requireAuth();
+    </script>
+
+    <!-- Page Logic -->
+    <script type="module" src="/js/invoice-logs.js"></script>
+  </body>
+</html>

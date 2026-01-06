@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Mobile – RemindFlow</title>
+
+  <link rel="stylesheet" href="/css/verify.css" />
+
+  <!-- 🔐 Auth Guard (MUST LOAD FIRST) -->
+  <script src="/js/guard.js"></script>
+
+  <!-- 🔥 Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+  <!-- 🔥 Firebase Config -->
+  <script src="/js/firebase-config.js"></script>
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="logo">RemindFlow</div>
+  </nav>
+
+  <div class="verify-container">
+    <h1>Verify Your Mobile Number</h1>
+    <p class="subtitle">For security & preventing duplicate accounts</p>
+
+    <div class="verify-box">
+      <!-- 📱 Phone Input -->
+      <label for="phone">Mobile Number</label>
+      <input
+        type="text"
+        id="phone"
+        placeholder="Enter phone number"
+        maxlength="10"
+      />
+
+      <!-- 🔐 Recaptcha (required by Firebase) -->
+      <div id="recaptcha-container"></div>
+
+      <button class="send-btn" id="sendOTPBtn">Send OTP</button>
+
+      <!-- 🔢 OTP Section -->
+      <div id="otpSection" style="display: none;">
+        <label for="otp">Enter OTP</label>
+        <input
+          type="text"
+          id="otp"
+          placeholder="123456"
+          maxlength="6"
+        />
+        <button class="verify-btn" id="verifyOTPBtn">Verify</button>
+      </div>
+
+      <p id="verifyMessage" class="verify-message"></p>
+    </div>
+  </div>
+
+  <!-- 📜 Page Logic -->
+  <script src="/js/verify.js"></script>
+</body>
+</html>

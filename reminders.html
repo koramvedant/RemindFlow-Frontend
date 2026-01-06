@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reminders – RemindFlow</title>
+  <link rel="stylesheet" href="/css/reminders.css" />
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <h2>RemindFlow</h2>
+
+    <a href="/dashboard">🏠 Dashboard</a>
+    <a href="/clients">👥 Clients</a>
+    <a href="/invoices">🧾 Invoices</a>
+    <a href="/reminders" class="active">⏰ Reminders</a>
+    <a href="/settings">⚙️ Settings</a>
+    <a href="/logout">🔒 Logout</a>
+
+    <!-- Hamburger -->
+    <div id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="header">
+      <div>
+        <h1>Reminders</h1>
+        <p>Sent and upcoming reminders</p>
+      </div>
+    </header>
+
+    <!-- Filters -->
+    <section class="filters">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search by client or invoice..."
+      />
+      <select id="statusFilter">
+        <option value="">All Status</option>
+        <option value="sent">Sent</option>
+        <option value="queued">Upcoming</option>
+        <option value="failed">Failed</option>
+      </select>
+    </section>
+
+    <!-- Table -->
+    <section class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Invoice</th>
+            <th>Client</th>
+            <th>Stage</th>
+            <th>Channel</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="reminderTable"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- JS -->
+  <script src="/js/reminders.js"></script>
+  <script>
+    // Sidebar collapse functionality
+    const sidebar = document.getElementById('sidebar');
+    const main = document.querySelector('.main');
+    const hamburger = document.getElementById('hamburger');
+
+    hamburger.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      main.classList.toggle('collapsed');
+      hamburger.classList.toggle('active');
+    });
+  </script>
+</body>
+</html>

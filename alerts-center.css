@@ -1,0 +1,137 @@
+/* Reset & Base */
+body {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #242424;
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h2, p, label, th, td {
+    margin: 0;
+}
+
+.alerts-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.alerts-title {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+.alerts-subtitle {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* Filters */
+.alerts-filters {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.alerts-filters label {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.alerts-filters input, .alerts-filters select {
+    margin-left: 5px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+}
+
+/* Table Styles */
+.alerts-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.alerts-table th, .alerts-table td {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+}
+
+.alerts-table th {
+    background-color: #f0f0f0;
+    color: #333;
+    font-weight: 600;
+}
+
+.alerts-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.alerts-table tbody tr:hover {
+    background-color: #fff5f5;
+}
+
+/* Action Buttons */
+.btn-action {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s ease;
+}
+
+.btn-resolve {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+.btn-resolve:hover {
+    background-color: #45a049;
+}
+
+.btn-view {
+    background-color: #e0e0e0;
+    color: #242424;
+}
+
+.btn-view:hover {
+    background-color: #d5d5d5;
+}
+
+/* Alerts Messages */
+.alerts {
+    margin-top: 20px;
+}
+
+.alert {
+    opacity: 0;
+    transform: translateY(-10px);
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    animation: slideIn 0.3s forwards;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}

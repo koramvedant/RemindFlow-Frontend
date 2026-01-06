@@ -1,0 +1,122 @@
+/* -------------------- Reset & Base -------------------- */
+body {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #242424;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  h1, h2, p, label, th, td {
+    margin: 0;
+  }
+  
+  /* -------------------- Container -------------------- */
+  .template-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  
+  .template-title {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .template-subtitle {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+  }
+  
+  /* -------------------- Table -------------------- */
+  .template-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .template-table th,
+  .template-table td {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+  
+  .template-table th {
+    background-color: #f0f0f0;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .template-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  
+  .template-table tbody tr:hover {
+    background-color: #f5fff5;
+  }
+  
+  /* -------------------- Buttons / Links -------------------- */
+  .btn-preview,
+  .btn-zoho {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  
+  .btn-preview {
+    background-color: #4caf50;
+    color: #fff;
+  }
+  
+  .btn-preview:hover {
+    background-color: #45a049;
+    transform: scale(0.98);
+  }
+  
+  .btn-zoho {
+    background-color: #e0e0e0;
+    color: #242424;
+  }
+  
+  .btn-zoho:hover {
+    background-color: #d5d5d5;
+    transform: scale(0.98);
+  }
+  
+  /* -------------------- Alerts -------------------- */
+  .alerts {
+    margin-top: 20px;
+  }
+  
+  .alert {
+    opacity: 0;
+    transform: translateY(-10px);
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    animation: slideIn 0.3s forwards;
+  }
+  
+  @keyframes slideIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .alert.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  

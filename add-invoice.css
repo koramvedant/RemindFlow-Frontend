@@ -1,0 +1,107 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f5f7fa;
+  }
+  
+  .container {
+    max-width: 720px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  h2 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  label {
+    display: block;
+    font-weight: 500;
+    margin: 14px 0 6px;
+  }
+  
+  input,
+  textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  .row {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .row > div {
+    flex: 1;
+  }
+  
+  .client-select {
+    display: flex;
+    gap: 10px;
+    position: relative;
+  }
+  
+  .add-client-btn {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #eee;
+    cursor: pointer;
+  }
+  
+  .dropdown {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    background: #fff;
+    width: calc(100% - 140px);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-height: 160px;
+    overflow-y: auto;
+    display: none;
+    z-index: 10;
+  }
+  
+  .dropdown li {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .dropdown li:hover {
+    background: #f0f0f0;
+  }
+  
+  .primary-btn {
+    margin-top: 25px;
+    width: 100%;
+    padding: 14px;
+    background: #4a63e7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .back-btn {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  

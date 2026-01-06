@@ -1,0 +1,188 @@
+body {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #242424;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  h1, h2, p {
+    margin: 0;
+  }
+  
+  .dashboard-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .dashboard-title {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .dashboard-subtitle {
+    color: #666;
+    margin-bottom: 24px;
+  }
+  
+  /* ---------------- Platform Card ---------------- */
+  .platform-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  }
+  
+  .platform-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .platform-logo {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+  }
+  
+  .platform-name {
+    font-size: 1.25rem;
+  }
+  
+  .last-sync {
+    color: #888;
+    font-size: 0.9rem;
+  }
+  
+  /* ---------------- Status ---------------- */
+  .connection-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  
+  .status-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: gray;
+  }
+  
+  .status-text {
+    font-weight: 500;
+  }
+  
+  /* ---------------- Actions ---------------- */
+  .platform-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  /* ---------------- Buttons ---------------- */
+  .btn-primary,
+  .btn-secondary {
+    padding: 12px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  
+  .btn-primary {
+    background-color: #4caf50;
+    color: #fff;
+  }
+  
+  .btn-primary:hover {
+    background-color: #45a049;
+  }
+  
+  .btn-secondary {
+    background-color: #e0e0e0;
+    color: #242424;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #d5d5d5;
+  }
+  
+  /* ---------------- Disabled ---------------- */
+  button:disabled,
+  .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  /* ---------------- Alerts ---------------- */
+  .alerts {
+    margin-top: 24px;
+  }
+  
+  .alert {
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  
+  .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  /* ---------------- Modal ---------------- */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .modal.show {
+    display: block;
+    opacity: 1;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+  }
+  
+  .modal.show .modal-content {
+    transform: translateY(0);
+  }
+  
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  #permissions-list {
+    margin-top: 15px;
+    list-style: disc;
+    padding-left: 20px;
+  }
+  

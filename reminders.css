@@ -1,0 +1,44 @@
+@import url('clients.css');
+
+/* -------------------- Status Badges -------------------- */
+.badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+  margin-right: 4px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Sent */
+.badge.sent {
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* Queued */
+.badge.queued {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+/* Failed */
+.badge.failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Hover effect (optional, improves interactivity) */
+.badge:hover {
+  opacity: 0.85;
+}
+
+/* -------------------- Stage Labels -------------------- */
+.stage {
+  font-weight: 600;
+  text-transform: capitalize;
+  margin-right: 6px;
+  color: #111827;
+}

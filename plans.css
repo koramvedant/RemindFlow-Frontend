@@ -1,0 +1,199 @@
+/* -------------------- Reset & Base -------------------- */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #0d1b2a;
+    color: #ffffff;
+  }
+  
+  /* -------------------- Navbar -------------------- */
+  .navbar {
+    width: 100%;
+    padding: 18px 40px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: transparent;
+  }
+  
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  
+  /* -------------------- Container -------------------- */
+  .plans-container {
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 0 20px;
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+  
+  .subtitle {
+    margin-bottom: 48px;
+    opacity: 0.8;
+    font-size: 16px;
+    color: #d1d5db;
+  }
+  
+  /* =========================
+     Section Layout & Spacing
+  ========================= */
+  .plans-section {
+    margin-bottom: 64px;
+  }
+  
+  .section-header {
+    margin-bottom: 28px;
+  }
+  
+  .section-label {
+    display: inline-block;
+    font-size: 14px;
+    letter-spacing: 0.4px;
+    opacity: 0.75;
+    text-transform: uppercase;
+    color: #9ca3af;
+  }
+  
+  /* Gap between Integrated & Full sections */
+  .section-gap {
+    height: 72px;
+  }
+  
+  /* =========================
+     Grid & Cards
+  ========================= */
+  .plans-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  /* Single-card grid (Integrated) */
+  .plans-grid.single {
+    margin-top: 12px;
+  }
+  
+  /* Plan Card */
+  .plan-card {
+    background: #1b263b;
+    padding: 30px;
+    border-radius: 12px;
+    width: 280px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .plan-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Featured plan */
+  .plan-card.featured {
+    border: 1px solid rgba(59, 130, 246, 0.6);
+    transform: translateY(-6px);
+  }
+  
+  /* Badge */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #3b82f6;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  
+  /* Headings & Price */
+  .plan-card h2 {
+    margin-top: 0;
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  
+  .price {
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: #f9fafb;
+  }
+  
+  .price span {
+    font-size: 13px;
+    opacity: 0.7;
+  }
+  
+  /* Description */
+  .plan-desc {
+    font-size: 14px;
+    opacity: 0.85;
+    margin-bottom: 16px;
+    line-height: 1.5;
+    color: #d1d5db;
+  }
+  
+  /* Feature list */
+  .plan-card ul {
+    text-align: left;
+    padding-left: 0;
+    margin: 0 auto 20px auto;
+    list-style: none;
+    max-width: 220px;
+    opacity: 0.9;
+    color: #e5e7eb;
+  }
+  
+  .plan-card ul li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    position: relative;
+    padding-left: 18px;
+  }
+  
+  .plan-card ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    opacity: 0.6;
+  }
+  
+  /* Buttons */
+  .choose-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #3b82f6;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  
+  .choose-btn:hover {
+    background: #2563eb;
+    transform: scale(0.98);
+  }
+  
+  .choose-btn:active {
+    transform: scale(0.95);
+  }
+  
+  .choose-btn.secondary {
+    background: transparent;
+    border: 1px solid #3b82f6;
+  }
+  
+  .choose-btn.secondary:hover {
+    background: rgba(59, 130, 246, 0.15);
+  }
+  

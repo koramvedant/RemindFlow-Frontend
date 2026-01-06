@@ -1,0 +1,129 @@
+/* -------------------- Base -------------------- */
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .settings-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  h1 {
+    margin-bottom: 30px;
+    font-size: 28px;
+  }
+  
+  /* -------------------- Sections -------------------- */
+  .settings-section {
+    margin-bottom: 20px;
+  }
+  
+  .section-header {
+    background: #2563eb;
+    color: #fff;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .section-body {
+    display: none;
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 6px;
+  }
+  
+  /* Form elements */
+  .section-body label {
+    display: block;
+    margin-top: 14px;
+    font-weight: 600;
+  }
+  
+  .section-body input,
+  .section-body textarea,
+  .section-body select {
+    width: 100%;
+    margin-top: 6px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 15px;
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 70px;
+  }
+  
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  /* -------------------- Buttons -------------------- */
+  .primary-btn {
+    margin-top: 20px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .primary-btn:hover {
+    background: #1e40af;
+  }
+  
+  .secondary-btn {
+    margin-top: 10px;
+    margin-right: 10px;
+    background: #e5e7eb;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: not-allowed;
+  }
+  
+  .danger-btn {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+  
+  /* -------------------- Hints & States -------------------- */
+  .hint {
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 10px;
+  }
+  
+  .arrow {
+    transition: transform 0.2s;
+  }
+  
+  .arrow.open {
+    transform: rotate(90deg);
+  }
+  
+  .disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  

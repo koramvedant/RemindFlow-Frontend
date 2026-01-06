@@ -1,0 +1,261 @@
+/* ---------------- Reset & Base ---------------- */
+body {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #242424;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
+  
+  /* ---------------- Sidebar ---------------- */
+  .sidebar {
+    width: 180px;
+    min-width: 180px;
+    height: 100vh;
+    position: fixed;
+    background: var(--sidebar, #111827);
+    color: white;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: width 0.3s ease, padding 0.3s ease;
+  }
+  
+  .sidebar h2 {
+    margin: 0 0 10px;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+  }
+  
+  .sidebar a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+  }
+  
+  .sidebar a.active,
+  .sidebar a:hover {
+    color: var(--accent, #4f46e5);
+  }
+  
+  /* Hamburger inside sidebar */
+  #hamburger {
+    margin-top: auto;
+    width: 26px;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  
+  #hamburger span {
+    height: 3px;
+    width: 100%;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+  
+  #hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  
+  #hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+  
+  #hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+  
+  /* Collapsed Sidebar */
+  .sidebar.collapsed {
+    width: 56px;
+    min-width: 56px;
+    padding: 20px 12px;
+    align-items: center;
+  }
+  
+  .sidebar.collapsed h2,
+  .sidebar.collapsed a {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  /* ---------------- Main Content ---------------- */
+  .main {
+    margin-left: 180px;
+    padding: 24px 36px;
+    width: calc(100% - 180px);
+    transition: margin-left 0.3s ease, width 0.3s ease;
+  }
+  
+  .main.collapsed {
+    margin-left: 56px;
+    width: calc(100% - 56px);
+  }
+  
+  /* ---------------- Client Info ---------------- */
+  .client-info {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .client-info h4 {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
+  
+  .client-info p {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  
+  /* ---------------- Filters ---------------- */
+  .filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  
+  .filters input,
+  .filters select {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+  }
+  
+  .filters input:focus,
+  .filters select:focus {
+    outline: none;
+    border-color: var(--accent, #4f46e5);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+  }
+  
+  .filters button {
+    background: var(--accent, #4f46e5);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .filters button:hover {
+    background: #4338ca;
+  }
+  
+  /* ---------------- Table ---------------- */
+  .table-wrapper {
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    border-collapse: collapse;
+  }
+  
+  th,
+  td {
+    padding: 14px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+  }
+  
+  th {
+    background: #f9fafb;
+    text-align: left;
+  }
+  
+  tbody tr:hover {
+    background: #f3f4f6;
+  }
+  
+  /* ---------------- Action Buttons ---------------- */
+  .actions a {
+    margin-right: 6px;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #fff;
+    transition: opacity 0.2s ease;
+  }
+  
+  .actions a:hover {
+    opacity: 0.9;
+  }
+  
+  .actions .view {
+    background: #16a34a;
+  }
+  
+  .actions .download {
+    background: #2563eb;
+  }
+  
+  .actions .reminder {
+    background: var(--accent, #4f46e5);
+  }
+  
+  /* ---------------- Pagination ---------------- */
+  .pagination {
+    margin-top: 14px;
+    text-align: center;
+  }
+  
+  .pagination button {
+    background: var(--accent, #4f46e5);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    margin: 0 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .pagination button:hover {
+    background: #4338ca;
+  }
+  
+  .pagination button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* ---------------- Responsive ---------------- */
+  @media (max-width: 768px) {
+    .main {
+      margin-left: 0;
+      width: 100%;
+      padding: 16px;
+    }
+  
+    .sidebar {
+      position: fixed;
+      left: -200px;
+      transition: left 0.3s ease;
+    }
+  
+    .sidebar.visible {
+      left: 0;
+    }
+  }
+  

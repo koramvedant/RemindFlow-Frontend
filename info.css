@@ -1,0 +1,73 @@
+/* public/info.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.navbar {
+    background-color: #242424;
+    color: #fff;
+    padding: 1rem 2rem;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 500px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+h1 {
+    margin-bottom: 0.5rem;
+}
+
+p {
+    margin-bottom: 1.5rem;
+    color: #666;
+}
+
+.info-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.info-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.info-form input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.info-form input:disabled {
+    background-color: #eee;
+}
+
+.primary-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #242424;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s;
+}
+
+.primary-btn:hover {
+    background-color: #444;
+}

@@ -1,0 +1,257 @@
+:root {
+    --bg: #f5f7fa;
+    --card: #fff;
+    --muted: #6b7280;
+    --text: #0f172a;
+    --accent: #4f46e5;
+    --sidebar: #0f1724;
+  }
+  
+  [data-theme='dark'] {
+    --bg: #0b1220;
+    --card: #071024;
+    --muted: #9aa6bf;
+    --text: #e6eefb;
+    --accent: #7c83ff;
+    --sidebar: #041021;
+  }
+  
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  /* ---------------- Sidebar ---------------- */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 18px 14px;
+    background: var(--sidebar);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.2s ease;
+    z-index: 1000;
+  }
+  
+  .sidebar.collapsed {
+    width: 72px;
+  }
+  
+  .sidebar .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .sidebar .logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), #2dd4bf);
+  }
+  
+  .sidebar nav a,
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    padding: 8px 6px;
+    border-radius: 8px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .sidebar nav a:hover,
+  .logout-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .sidebar nav a.active {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--accent);
+  }
+  
+  /* ---------------- Topbar ---------------- */
+  .topbar {
+    display: none;
+  }
+  
+  /* ---------------- Main ---------------- */
+  .main {
+    margin-left: 220px;
+    padding: 22px;
+    width: calc(100% - 220px);
+    transition: margin-left 0.2s ease, width 0.2s ease;
+  }
+  
+  .main.collapsed {
+    margin-left: 72px;
+    width: calc(100% - 72px);
+  }
+  
+  /* ---------------- User Info ---------------- */
+  .user-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px;
+    border-radius: 12px;
+    background: var(--card);
+    margin-bottom: 20px;
+  }
+  
+  .profile {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  .profile img {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+  }
+  
+  .profile .meta h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .profile .meta p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  
+  .plan-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* ---------------- Stats ---------------- */
+  .stats-section {
+    margin-bottom: 24px;
+  }
+  
+  .stats-section h2 {
+    margin-bottom: 12px;
+    font-size: 20px;
+  }
+  
+  .stats-cards {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  
+  .stat {
+    flex: 1 1 220px;
+    background: var(--card);
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .stat h4 {
+    margin: 0 0 6px;
+    color: var(--muted);
+  }
+  
+  .stat .big {
+    font-size: 22px;
+    font-weight: 700;
+  }
+  
+  /* ---------------- Analytics ---------------- */
+  .analytics {
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--card);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  .actions button {
+    margin-left: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  
+  .btn {
+    background: var(--accent);
+    color: #fff;
+  }
+  
+  .ghost {
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    color: var(--text);
+  }
+  
+  /* ---------------- Disabled State (IMPORTANT) ---------------- */
+  .disabled,
+  button:disabled,
+  a.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  /* ---------------- Mobile ---------------- */
+  @media (max-width: 900px) {
+    .sidebar {
+      display: none;
+      top: 56px;
+    }
+  
+    .sidebar.visible {
+      display: flex;
+      z-index: 40;
+    }
+  
+    .topbar {
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      height: 56px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 30;
+      background: var(--bg);
+    }
+  
+    .main {
+      margin-left: 0;
+      padding-top: 74px;
+      width: 100%;
+    }
+  
+    .main.collapsed {
+      margin-left: 0;
+      width: 100%;
+    }
+  }
+  

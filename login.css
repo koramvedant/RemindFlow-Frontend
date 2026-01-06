@@ -1,0 +1,146 @@
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #0d1b2a;
+    color: white;
+  }
+  
+  /* -------------------- Navbar -------------------- */
+  .navbar {
+    width: 100%;
+    padding: 18px 40px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: transparent;
+  }
+  
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  
+  /* -------------------- Login Container -------------------- */
+  .login-container {
+    max-width: 400px;
+    margin: 80px auto;
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+  
+  .subtitle {
+    margin-bottom: 30px;
+    opacity: 0.8;
+  }
+  
+  /* -------------------- Login Box -------------------- */
+  .login-box {
+    background: #1b263b;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* -------------------- Google Button -------------------- */
+  .google-btn {
+    width: 100%;
+    background: #ffffff;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    padding: 12px;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  
+  .google-btn img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .google-btn:hover {
+    background: #f1f1f1;
+    transform: scale(0.98);
+  }
+  
+  /* -------------------- Divider -------------------- */
+  .divider {
+    margin: 20px 0;
+    text-align: center;
+    position: relative;
+  }
+  
+  .divider span {
+    background: #1b263b;
+    padding: 0 10px;
+    font-size: 14px;
+    opacity: 0.7;
+  }
+  
+  .divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  /* -------------------- Form Inputs -------------------- */
+  form input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+  }
+  
+  /* -------------------- Login Button -------------------- */
+  .login-btn {
+    width: 100%;
+    background: #3b82f6;
+    border: none;
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  
+  .login-btn:hover {
+    background: #2563eb;
+    transform: scale(0.98);
+  }
+  
+  /* -------------------- Signup Text -------------------- */
+  .signup-text {
+    margin-top: 15px;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  
+  .signup-text a {
+    color: #4cc9f0;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .signup-text a:hover {
+    color: #38bdf8;
+  }
+  

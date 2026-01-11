@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Choose Plan – RemindFlow</title>
+
   <link rel="stylesheet" href="/css/plans.css" />
+
+  <!-- Razorpay SDK (used later in checkout, safe to keep) -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <!-- Auth Guard (MUST LOAD FIRST) -->
@@ -20,15 +23,18 @@
     <h1>Choose Your Plan</h1>
     <p class="subtitle">🎉 All plans include a 7-day free trial</p>
 
+    <!-- Integrated Plan -->
     <section class="plans-section">
       <span class="section-label">
         For users using Zoho, Tally, or other invoicing tools
       </span>
+
       <div class="plans-grid single">
         <div class="plan-card">
           <span class="badge">Integrated</span>
           <h2>Connector</h2>
           <div class="price">₹399 <span>/ month</span></div>
+
           <ul>
             <li>Connect existing invoice system (Zoho, Tally, etc.)</li>
             <li>Behaviour-aware reminder logic</li>
@@ -36,6 +42,7 @@
             <li>Uses your own Email / WhatsApp setup</li>
             <li>No invoice creation inside RemindFlow</li>
           </ul>
+
           <button class="choose-btn secondary" data-plan="connector">
             Choose Plan
           </button>
@@ -43,12 +50,15 @@
       </div>
     </section>
 
+    <!-- Full Plans -->
     <section class="plans-section">
       <span class="section-label">For full RemindFlow users</span>
+
       <div class="plans-grid">
         <div class="plan-card">
           <h2>Starter</h2>
           <div class="price">₹499 <span>/ month</span></div>
+
           <ul>
             <li>Up to 15 active clients</li>
             <li>Structured 4-stage recovery flow</li>
@@ -57,13 +67,17 @@
             <li>Invoice creation & Razorpay tracking</li>
             <li>Basic dashboard</li>
           </ul>
-          <button class="choose-btn" data-plan="starter">Choose Plan</button>
+
+          <button class="choose-btn" data-plan="starter">
+            Choose Plan
+          </button>
         </div>
 
         <div class="plan-card featured">
           <span class="badge">Most Popular</span>
           <h2>Growth</h2>
           <div class="price">₹999 <span>/ month</span></div>
+
           <ul>
             <li>Up to 50 active clients</li>
             <li>Structured 4-stage recovery flow</li>
@@ -72,12 +86,16 @@
             <li>Invoice creation & Razorpay tracking</li>
             <li>Dashboard with insights</li>
           </ul>
-          <button class="choose-btn" data-plan="growth">Choose Plan</button>
+
+          <button class="choose-btn" data-plan="growth">
+            Choose Plan
+          </button>
         </div>
 
         <div class="plan-card">
           <h2>Pro / Business</h2>
           <div class="price">₹1,999 <span>/ month</span></div>
+
           <ul>
             <li>Up to 150 active clients</li>
             <li>Structured 4-stage recovery flow</li>
@@ -87,12 +105,16 @@
             <li>Advanced dashboard</li>
             <li>Team access (coming soon)</li>
           </ul>
-          <button class="choose-btn" data-plan="pro">Choose Plan</button>
+
+          <button class="choose-btn" data-plan="pro">
+            Choose Plan
+          </button>
         </div>
       </div>
     </section>
   </main>
 
+  <!-- Plan Selection Logic -->
   <script src="/js/plans.js"></script>
 </body>
 </html>

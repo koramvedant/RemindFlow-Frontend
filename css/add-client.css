@@ -1,0 +1,114 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f5f7fa;
+  }
+  
+  /* ---------------- Container ---------------- */
+  .container {
+    max-width: 720px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* ---------------- Page Title ---------------- */
+  h1 {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  /* ---------------- Sections ---------------- */
+  .section {
+    margin-bottom: 28px;
+  }
+  
+  .section h2 {
+    margin-bottom: 16px;
+    font-size: 18px;
+  }
+  
+  /* ---------------- Labels & Inputs ---------------- */
+  label {
+    display: block;
+    font-weight: 500;
+    margin: 14px 0 6px;
+  }
+  
+  .required {
+    color: #e11d48;
+  }
+  
+  input,
+  textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+    font-family: inherit;
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  /* ---------------- Advanced Section ---------------- */
+  .advanced {
+    margin-top: 10px;
+  }
+  
+  .toggle-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4a63e7;
+    cursor: pointer;
+  }
+  
+  .toggle-btn:hover {
+    text-decoration: underline;
+  }
+  
+  /* Hidden by default */
+  .advanced-fields {
+    display: none;
+    margin-top: 10px;
+  }
+  
+  /* Optional helper if JS adds .open */
+  .advanced-fields.open {
+    display: block;
+  }
+  
+  /* ---------------- Primary Button ---------------- */
+  .primary-btn {
+    margin-top: 25px;
+    width: 100%;
+    padding: 14px;
+    background: #4a63e7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .primary-btn:hover {
+    opacity: 0.95;
+  }
+  
+  /* ---------------- Mobile ---------------- */
+  @media (max-width: 600px) {
+    .container {
+      margin: 20px;
+      padding: 22px;
+    }
+  }
+  

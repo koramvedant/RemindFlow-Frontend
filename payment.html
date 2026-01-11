@@ -4,8 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Payment – RemindFlow</title>
+
   <link rel="stylesheet" href="/css/payment.css" />
+
+  <!-- Auth Guard -->
+  <script src="/js/guard.js"></script>
 </head>
+
 <body>
   <main class="container">
     <h1>Upgrade Your Plan</h1>
@@ -18,30 +23,22 @@
     <button id="payBtn" class="primary-btn">Pay Now</button>
   </main>
 
-  <!-- Razorpay Checkout -->
+  <!-- Razorpay Checkout SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-  <!-- Backend-injected variables -->
+  <!-- 🔑 Razorpay Public Key (STATIC FRONTEND) -->
   <script>
-    // User info
-    window.USER_TYPE = "<%= user.plan_type %>";       // 'full' or 'integrated'
-    window.USER_EMAIL = "<%= user.email %>";
-    window.USER_PHONE = "<%= user.phone %>";
-    window.RAZORPAY_KEY_ID = "<%= razorpay_key_id %>"; // Public key
-    window.PLAN_CODE = "<%= user.plan_code || 'starter' %>"; // starter/growth/pro/connector
-
-    // Set JWT cookie for frontend access
-    (function() {
-      const token = "<%= auth_token %>";
-      if (token) {
-        const expires = new Date(Date.now() + 7*24*60*60*1000).toUTCString();
-        document.cookie = `accessToken=${token}; path=/; expires=${expires}; secure; samesite=strict`;
-        window.TOKEN = token; // backward compatibility
-      }
-    })();
+    /**
+     * ⚠️ IMPORTANT
+     * This must be your *PUBLIC* Razorpay key only.
+     * Example:
+     * rzp_test_xxxxxxxxxx  (test)
+     * rzp_live_xxxxxxxxxx  (live)
+     */
+    window.RAZORPAY_KEY_ID = "rzp_live_RzLV2UDgZ3vKjA";
   </script>
 
-  <!-- JS module -->
-  <script type="module" src="/js/payment.js"></script>
+  <!-- Payment Logic -->
+  <script src="/js/payment.js"></script>
 </body>
 </html>

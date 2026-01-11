@@ -1,4 +1,4 @@
-// public/js/payment.js
+// /public/js/payment.js
 
 /* -------------------------
    DOM Elements
@@ -8,7 +8,7 @@ const amountDisplay = document.getElementById('amountDisplay');
 const planDisplay = document.getElementById('planDisplay');
 
 /* -------------------------
-   Plan Configuration (MUST match backend)
+   Plan Configuration (UI only)
 ------------------------- */
 const PLAN_CONFIG = {
   starter:   { name: 'Starter',   amount: 499,  type: 'full' },
@@ -18,24 +18,32 @@ const PLAN_CONFIG = {
 };
 
 /* -------------------------
-   JWT Helper
+   JWT Helper (ROBUST)
 ------------------------- */
 function getToken() {
+  // 1️⃣ Primary — localStorage
+  const lsToken = localStorage.getItem('accessToken');
+  if (lsToken) return lsToken;
+
+  // 2️⃣ Fallback — cookie (legacy safety)
   const match = document.cookie.match(/(^|;)\s*accessToken=([^;]+)/);
-  return match ? match[2] : null;
+  if (match) return match[2];
+
+  return null;
 }
 
 /* -------------------------
-   Resolve Current Plan
+   Resolve Selected Plan
 ------------------------- */
-const injectedPlanCode = window.PLAN_CODE;        // Preferred
-const userType = window.USER_TYPE || 'full';      // Fallback
+const planCode = localStorage.getItem('selectedPlan');
 
-let planCode =
-  injectedPlanCode ||
-  (userType === 'integrated' ? 'connector' : 'starter');
+if (!planCode || !PLAN_CONFIG[planCode]) {
+  alert('Please select a plan first.');
+  window.location.replace('/plans.html');
+  throw new Error('Invalid or missing plan selection');
+}
 
-const plan = PLAN_CONFIG[planCode] || PLAN_CONFIG.starter;
+const plan = PLAN_CONFIG[planCode];
 
 /* -------------------------
    Render Plan Info
@@ -65,10 +73,16 @@ function showToast(message, duration = 2200) {
 payBtn?.addEventListener('click', async () => {
   try {
     const token = getToken();
+
+    // 🔴 HARD FAIL — no token
     if (!token) {
       showToast('Session expired. Please login again.');
-      return window.location.href = '/login';
+      localStorage.clear();
+      window.location.replace('/login.html');
+      return;
     }
+
+    console.log('🟢 Using access token:', token.slice(0, 20) + '…');
 
     /* -------------------------
        Create Razorpay Order
@@ -83,7 +97,10 @@ payBtn?.addEventListener('click', async () => {
     });
 
     const order = await res.json();
-    if (!res.ok) throw new Error(order.message || 'Order creation failed');
+
+    if (!res.ok) {
+      throw new Error(order.message || 'Order creation failed');
+    }
 
     /* -------------------------
        Razorpay Checkout
@@ -95,20 +112,20 @@ payBtn?.addEventListener('click', async () => {
       name: 'RemindFlow',
       description: `${plan.name} Subscription`,
       order_id: order.order_id || order.id,
+
       handler: () => {
         showToast('Payment successful! Redirecting...');
+        localStorage.removeItem('selectedPlan');
+
         setTimeout(() => {
-          if (plan.type === 'integrated') {
-            window.location.href = '/integration-dashboard';
-          } else {
-            window.location.href = '/dashboard';
-          }
+          window.location.replace(
+            plan.type === 'integrated'
+              ? '/integration-dashboard.html'
+              : '/dashboard.html'
+          );
         }, 1200);
       },
-      prefill: {
-        email: window.USER_EMAIL || '',
-        contact: window.USER_PHONE || '',
-      },
+
       theme: { color: '#4a63e7' },
     };
 
@@ -116,7 +133,7 @@ payBtn?.addEventListener('click', async () => {
     rzp.open();
 
   } catch (err) {
-    console.error('Payment error:', err);
+    console.error('❌ Payment error:', err);
     showToast(err.message || 'Payment failed. Please try again.');
   }
 });

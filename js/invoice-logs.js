@@ -1,24 +1,68 @@
+// invoice-logs.js
+
 /* ------------------ Read client_id from URL ------------------ */
 const params = new URLSearchParams(window.location.search);
 const clientId = params.get('client_id');
 
 if (!clientId) {
   alert('Client not specified');
-  window.location.href = '/clients';
+  window.location.href = '/clients.html';
   throw new Error('client_id missing');
 }
 
-/* ------------------ Client & Invoices ------------------ */
-let client = null;
+/* ------------------ Auth Helper ------------------ */
+function getAuthHeaders() {
+  const token = localStorage.getItem('accessToken');
+  if (!token) return null;
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+/* ------------------ Client Info Header ------------------ */
+async function loadClientInfo(clientId) {
+  const headers = getAuthHeaders();
+  if (!headers) {
+    window.location.replace('/login.html');
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/clients/${clientId}`, { headers });
+    const data = await res.json();
+
+    if (!res.ok || !data.client) {
+      throw new Error('Failed to load client');
+    }
+
+    const client = data.client;
+
+    // Client Name
+    const nameEl = document.getElementById('clientName');
+    if (nameEl) nameEl.textContent = client.name;
+
+    // User-based trust (optimistic default)
+    const userTrust =
+      client.status_flags?.user_trust_grade || 'A';
+
+    const userTrustEl = document.getElementById('userTrust');
+    if (userTrustEl) userTrustEl.textContent = userTrust;
+
+    // Global trust (informational only)
+    const globalTrust =
+      client.global_trust_grade || '—';
+
+    const globalTrustEl = document.getElementById('globalTrust');
+    if (globalTrustEl) globalTrustEl.textContent = globalTrust;
+
+  } catch (err) {
+    console.error('Client info load failed:', err);
+  }
+}
+
+/* ------------------ Invoices State ------------------ */
 let invoices = [];
-
-/* ------------------ Helper: Safe text ------------------ */
-const setText = (id, value) => {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value || '—';
-};
-
-/* ------------------ Pagination & Filtering ------------------ */
 let filtered = [];
 let page = 1;
 const perPage = 5;
@@ -34,27 +78,27 @@ function render() {
   const rows = filtered.slice(start, start + perPage);
 
   if (rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No invoices found</td></tr>`;
+    tbody.innerHTML =
+      `<tr><td colspan="5" style="text-align:center;">No invoices found</td></tr>`;
     return;
   }
 
-  rows.forEach(inv => {
+  rows.forEach((inv) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>#${inv.id || '—'}</td>
-      <td>₹${inv.amount?.toLocaleString() || '—'}</td>
-      <td>${inv.status || '—'}</td>
-      <td>${inv.date || '—'}</td>
+      <td>#${inv.id}</td>
+      <td>₹${Number(inv.amount).toLocaleString()}</td>
+      <td>${inv.status}</td>
+      <td>${inv.date}</td>
       <td class="actions">
-        <a href="invoice-detail.html?id=${encodeURIComponent(inv.id)}">View</a>
-        <a href="invoice-preview.html?id=${encodeURIComponent(inv.id)}">PDF</a>
-        <a href="reminders.html?invoice_id=${encodeURIComponent(inv.id)}">Reminder</a>
+        <a href="/invoice-detail.html?id=${encodeURIComponent(inv.id)}">View</a>
+        <a href="/invoice-preview.html?id=${encodeURIComponent(inv.id)}">PDF</a>
+        <a href="/reminders.html?invoice_id=${encodeURIComponent(inv.id)}">Reminder</a>
       </td>
     `;
     tbody.appendChild(tr);
   });
 
-  // Pagination buttons
   const nextBtn = document.getElementById('nextBtn');
   const prevBtn = document.getElementById('prevBtn');
 
@@ -62,15 +106,14 @@ function render() {
   if (prevBtn) prevBtn.disabled = page === 1;
 }
 
-/* ------------------ Filter Function ------------------ */
+/* ------------------ Filters ------------------ */
 const filterBtn = document.getElementById('filterBtn');
 if (filterBtn) {
   filterBtn.addEventListener('click', () => {
     const search = document.getElementById('searchInput')?.value.trim() || '';
     const status = document.getElementById('statusFilter')?.value || '';
 
-    filtered = invoices.filter(i => {
-      if (i.client_id !== clientId) return false;
+    filtered = invoices.filter((i) => {
       if (search && !i.id.toString().includes(search)) return false;
       if (status && i.status !== status) return false;
       return true;
@@ -81,7 +124,7 @@ if (filterBtn) {
   });
 }
 
-/* ------------------ Pagination Buttons ------------------ */
+/* ------------------ Pagination ------------------ */
 const nextBtn = document.getElementById('nextBtn');
 const prevBtn = document.getElementById('prevBtn');
 
@@ -122,30 +165,43 @@ if (hamburger && sidebar) {
   applySidebarState(localStorage.getItem(sidebarKey) === '1');
 }
 
-/* ------------------ Fetch Client & Invoices ------------------ */
-async function loadClientData() {
+/* ------------------ Fetch Invoices ------------------ */
+async function loadInvoices() {
+  const headers = getAuthHeaders();
+  if (!headers) {
+    window.location.replace('/login.html');
+    return;
+  }
+
   try {
-    const resClient = await fetch(`/api/clients/${clientId}`, { credentials: 'include' });
-    if (!resClient.ok) throw new Error('Failed to fetch client');
-    client = await resClient.json();
+    const res = await fetch(
+      `/api/invoices/client/${encodeURIComponent(clientId)}`,
+      { headers }
+    );
 
-    setText('clientName', client.name);
-    setText('clientEmail', client.email);
-    setText('clientPhone', client.phone);
-    setText('clientTrust', client.trust);
+    const data = await res.json();
 
-    const resInvoices = await fetch(`/api/invoices?client_id=${clientId}`, { credentials: 'include' });
-    if (!resInvoices.ok) throw new Error('Failed to fetch invoices');
-    invoices = await resInvoices.json();
+    if (!res.ok) {
+      throw new Error(data.message || 'Failed to fetch invoices');
+    }
+
+    // ✅ IMPORTANT: backend returns { success, invoices }
+    invoices = (data.invoices || []).map((i) => ({
+      id: i.id, // invoices.id (PK)
+      amount: i.grand_total || 0,
+      status: i.invoice_status,
+      date: i.invoice_date || i.created_at?.split('T')[0] || '—',
+    }));
 
     filtered = [...invoices];
     render();
   } catch (err) {
     console.error(err);
-    alert('Failed to load client or invoices');
-    window.location.href = '/clients';
+    alert('Failed to load invoices');
+    window.location.href = '/clients.html';
   }
 }
 
 /* ------------------ Init ------------------ */
-loadClientData();
+loadClientInfo(clientId);
+loadInvoices();

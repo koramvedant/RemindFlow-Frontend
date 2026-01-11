@@ -1,12 +1,9 @@
 // public/js/login.js
 // --------------------------------------------------
-// Google Login (Firebase → Backend)
+// Google Login (Firebase compat → Backend)
 // --------------------------------------------------
 
 console.log('🔥 login.js loaded');
-
-import { auth, provider } from './firebase-config.js';
-import { signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js';
 
 // Backend URL injected from HTML
 const BACKEND_URL = window.BACKEND_URL;
@@ -25,11 +22,17 @@ if (!googleBtn) {
     console.log('🟢 Google login button clicked');
 
     try {
-      // Firebase popup login
-      const result = await signInWithPopup(auth, provider);
+      // Firebase popup login (COMPAT)
+      const result = await firebase
+        .auth()
+        .signInWithPopup(window.googleProvider);
+
       console.log('✅ Firebase popup success');
 
-      const idToken = await result.user.getIdToken(true);
+      const firebaseUser = result.user;
+      if (!firebaseUser) throw new Error('No Firebase user');
+
+      const idToken = await firebaseUser.getIdToken(true);
       if (!idToken) throw new Error('No Firebase ID token received');
 
       // Send ID token to backend
@@ -48,7 +51,7 @@ if (!googleBtn) {
 
       console.log('✅ Backend login success');
 
-      // Store tokens (frontend only)
+      // Store tokens
       if (data.accessToken) {
         localStorage.setItem('accessToken', data.accessToken);
       }
@@ -56,10 +59,26 @@ if (!googleBtn) {
         localStorage.setItem('refreshToken', data.refreshToken);
       }
 
-      // Frontend-only redirects
-      window.location.href = data.user?.isNew
-        ? '/verify.html'
-        : '/plans.html';
+      /* --------------------------------
+         🔒 SINGLE ROUTING TRUTH
+         (Matches guard + backend)
+      -------------------------------- */
+      const user = data.user;
+
+      if (!user) {
+        throw new Error('User object missing from login response');
+      }
+
+      if (!user.onboarding_completed) {
+        window.location.href = '/onboarding.html';
+      } else if (!user.subscription_active) {
+        window.location.href = '/plans.html';
+      } else {
+        window.location.href =
+          user.plan_type === 'integrated'
+            ? '/integration-dashboard.html'
+            : '/dashboard.html';
+      }
 
     } catch (err) {
       console.error('❌ Google login failed:', err);

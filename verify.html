@@ -5,24 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Verify Mobile – RemindFlow</title>
 
+  <!-- Styles -->
   <link rel="stylesheet" href="/css/verify.css" />
 
   <!-- 🔐 Auth Guard (MUST LOAD FIRST) -->
   <script src="/js/guard.js"></script>
-
-  <!-- 🔥 Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
-  <!-- 🔥 Firebase Config -->
-  <script src="/js/firebase-config.js"></script>
 </head>
 
 <body>
+  <!-- Navbar -->
   <nav class="navbar">
     <div class="logo">RemindFlow</div>
   </nav>
 
+  <!-- Verification Container -->
   <div class="verify-container">
     <h1>Verify Your Mobile Number</h1>
     <p class="subtitle">For security & preventing duplicate accounts</p>
@@ -37,9 +33,7 @@
         maxlength="10"
       />
 
-      <!-- 🔐 Recaptcha (required by Firebase) -->
-      <div id="recaptcha-container"></div>
-
+      <!-- 📤 Send OTP -->
       <button class="send-btn" id="sendOTPBtn">Send OTP</button>
 
       <!-- 🔢 OTP Section -->
@@ -54,6 +48,7 @@
         <button class="verify-btn" id="verifyOTPBtn">Verify</button>
       </div>
 
+      <!-- Status Message -->
       <p id="verifyMessage" class="verify-message"></p>
     </div>
   </div>

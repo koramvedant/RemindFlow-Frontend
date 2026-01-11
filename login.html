@@ -30,12 +30,28 @@
       </div>
     </div>
 
+    <!-- ========================= -->
+    <!-- Global Config -->
+    <!-- ========================= -->
     <script>
-      // Backend base URL
       window.BACKEND_URL = 'https://remindflow-backend.onrender.com';
     </script>
 
-    <!-- JS as module for proper import/export -->
-    <script type="module" src="/js/login.js"></script>
+    <!-- ========================= -->
+    <!-- Firebase (COMPAT SDKs) -->
+    <!-- MUST LOAD BEFORE login.js -->
+    <!-- ========================= -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <!-- ========================= -->
+    <!-- Firebase App Init -->
+    <!-- ========================= -->
+    <script src="/js/firebase-config.js"></script>
+
+    <!-- ========================= -->
+    <!-- Login Logic (NO MODULE) -->
+    <!-- ========================= -->
+    <script src="/js/login.js"></script>
   </body>
 </html>

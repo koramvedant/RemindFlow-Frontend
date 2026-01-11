@@ -1,257 +1,203 @@
 :root {
-    --bg: #f5f7fa;
-    --card: #fff;
-    --muted: #6b7280;
-    --text: #0f172a;
-    --accent: #4f46e5;
-    --sidebar: #0f1724;
-  }
-  
-  [data-theme='dark'] {
-    --bg: #0b1220;
-    --card: #071024;
-    --muted: #9aa6bf;
-    --text: #e6eefb;
-    --accent: #7c83ff;
-    --sidebar: #041021;
-  }
-  
-  body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    display: flex;
-    min-height: 100vh;
-  }
-  
-  /* ---------------- Sidebar ---------------- */
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 220px;
-    height: 100vh;
-    box-sizing: border-box;
-    padding: 18px 14px;
-    background: var(--sidebar);
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    transition: width 0.2s ease;
-    z-index: 1000;
-  }
-  
-  .sidebar.collapsed {
-    width: 72px;
-  }
-  
-  .sidebar .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .sidebar .logo {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, var(--accent), #2dd4bf);
-  }
-  
-  .sidebar nav a,
-  .logout-btn {
-    display: flex;
-    align-items: center;
-    padding: 8px 6px;
-    border-radius: 8px;
-    color: #fff;
-    text-decoration: none;
-    font-weight: 600;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .sidebar nav a:hover,
-  .logout-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-  
-  .sidebar nav a.active {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--accent);
-  }
-  
-  /* ---------------- Topbar ---------------- */
-  .topbar {
-    display: none;
-  }
-  
-  /* ---------------- Main ---------------- */
+  --bg: #f5f7fa;
+  --card: #fff;
+  --muted: #6b7280;
+  --text: #0f172a;
+  --accent: #4f46e5;
+  --sidebar: #0f1724;
+  --border-soft: #e5e9f2;
+  --btn-bg: #f1f3f9;
+}
+
+[data-theme='dark'] {
+  --bg: #0b1220;
+  --card: #071024;
+  --muted: #9aa6bf;
+  --text: #e6eefb;
+  --accent: #7c83ff;
+  --sidebar: #041021;
+  --border-soft: #1e293b;
+  --btn-bg: #0f172a;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------------- Sidebar ---------------- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 100vh;
+  padding: 18px 14px;
+  background: var(--sidebar);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar nav a,
+.logout-btn {
+  display: flex;
+  align-items: center;
+  padding: 8px 6px;
+  border-radius: 8px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sidebar nav a.active {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--accent);
+}
+
+/* ---------------- Main ---------------- */
+.main {
+  margin-left: 220px;
+  padding: 22px;
+  width: calc(100% - 220px);
+}
+
+/* ===================================================
+   USER INFO / DASHBOARD HEADER
+=================================================== */
+.user-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: var(--card);
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+/* Profile */
+.profile {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.profile img {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+}
+
+.profile .meta h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.profile .meta p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ===================================================
+   PLAN INFO — FIXED SPACING
+=================================================== */
+.plan-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* ✅ more breathing room */
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.plan-info strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* ===================================================
+   DASHBOARD ACTIONS — MODERN & QUIET
+=================================================== */
+.dashboard-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-soft);
+  transition: all 0.15s ease;
+}
+
+.action-btn:hover {
+  background: #e9ecf6;
+  border-color: #d5daf0;
+}
+
+.action-btn.subtle {
+  background: transparent;
+  border: 1px dashed var(--border-soft);
+  color: var(--muted);
+}
+
+.action-btn.subtle:hover {
+  background: var(--btn-bg);
+  color: var(--text);
+}
+
+/* ---------------- Stats ---------------- */
+.stats-cards {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.card {
+  flex: 1 1 220px;
+  background: var(--card);
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.card h4 {
+  margin: 0 0 6px;
+  color: var(--muted);
+}
+
+.card div {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ---------------- Mobile ---------------- */
+@media (max-width: 900px) {
   .main {
-    margin-left: 220px;
-    padding: 22px;
-    width: calc(100% - 220px);
-    transition: margin-left 0.2s ease, width 0.2s ease;
+    margin-left: 0;
+    width: 100%;
   }
-  
-  .main.collapsed {
-    margin-left: 72px;
-    width: calc(100% - 72px);
-  }
-  
-  /* ---------------- User Info ---------------- */
+
   .user-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px;
-    border-radius: 12px;
-    background: var(--card);
-    margin-bottom: 20px;
-  }
-  
-  .profile {
-    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 12px;
-    align-items: center;
   }
-  
-  .profile img {
-    width: 52px;
-    height: 52px;
-    border-radius: 999px;
-  }
-  
-  .profile .meta h3 {
-    margin: 0;
-    font-size: 18px;
-  }
-  
-  .profile .meta p {
-    margin: 2px 0 0;
-    color: var(--muted);
-    font-size: 13px;
-  }
-  
-  .plan-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  /* ---------------- Stats ---------------- */
-  .stats-section {
-    margin-bottom: 24px;
-  }
-  
-  .stats-section h2 {
-    margin-bottom: 12px;
-    font-size: 20px;
-  }
-  
-  .stats-cards {
-    display: flex;
-    gap: 14px;
+
+  .dashboard-actions {
     flex-wrap: wrap;
   }
-  
-  .stat {
-    flex: 1 1 220px;
-    background: var(--card);
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-  
-  .stat h4 {
-    margin: 0 0 6px;
-    color: var(--muted);
-  }
-  
-  .stat .big {
-    font-size: 22px;
-    font-weight: 700;
-  }
-  
-  /* ---------------- Analytics ---------------- */
-  .analytics {
-    padding: 16px;
-    border-radius: 12px;
-    background: var(--card);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-  
-  .analytics-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-  
-  .actions button {
-    margin-left: 8px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  
-  .btn {
-    background: var(--accent);
-    color: #fff;
-  }
-  
-  .ghost {
-    background: transparent;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    color: var(--text);
-  }
-  
-  /* ---------------- Disabled State (IMPORTANT) ---------------- */
-  .disabled,
-  button:disabled,
-  a.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-  
-  /* ---------------- Mobile ---------------- */
-  @media (max-width: 900px) {
-    .sidebar {
-      display: none;
-      top: 56px;
-    }
-  
-    .sidebar.visible {
-      display: flex;
-      z-index: 40;
-    }
-  
-    .topbar {
-      display: flex;
-      align-items: center;
-      padding: 0 14px;
-      height: 56px;
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 30;
-      background: var(--bg);
-    }
-  
-    .main {
-      margin-left: 0;
-      padding-top: 74px;
-      width: 100%;
-    }
-  
-    .main.collapsed {
-      margin-left: 0;
-      width: 100%;
-    }
-  }
-  
+}

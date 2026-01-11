@@ -15,17 +15,17 @@
     <aside class="sidebar" id="sidebar">
       <h2>RemindFlow</h2>
 
-      <a href="/dashboard">🏠 Dashboard</a>
-      <a href="/clients">👥 Clients</a>
-      <a href="/invoices" class="nav-link">
+      <a href="/dashboard.html">🏠 Dashboard</a>
+      <a href="/clients.html">👥 Clients</a>
+      <a href="/invoices.html" class="nav-link">
         🧾 Invoices
         <span class="badge" id="badge-invoice"></span>
       </a>
-      <a href="/reminders">⏰ Reminders</a>
-      <a href="/settings">⚙️ Settings</a>
+      <a href="/reminders.html">⏰ Reminders</a>
+      <a href="/settings.html">⚙️ Settings</a>
       <a href="/logout">🔒 Logout</a>
 
-      <!-- Hamburger INSIDE sidebar -->
+      <!-- Hamburger -->
       <div id="hamburger">
         <span></span>
         <span></span>
@@ -35,29 +35,30 @@
 
     <!-- Main -->
     <main class="main">
-      <!-- Client Snapshot -->
+      <!-- Client Info Header -->
       <section class="client-info">
-        <div>
-          <h4>Name</h4>
-          <p id="clientName">—</p>
-        </div>
-        <div>
-          <h4>Email</h4>
-          <p id="clientEmail">—</p>
-        </div>
-        <div>
-          <h4>Phone</h4>
-          <p id="clientPhone">—</p>
-        </div>
-        <div>
-          <h4>Trust Grade</h4>
-          <p id="clientTrust">—</p>
+        <h2 id="clientName">Client</h2>
+
+        <div class="client-meta">
+          <div class="relationship">
+            Relationship:
+            <strong id="userTrust">—</strong>
+          </div>
+
+          <div class="network">
+            Network Signal:
+            <strong id="globalTrust">—</strong>
+          </div>
         </div>
       </section>
 
       <!-- Filters -->
       <section class="filters">
-        <input id="searchInput" type="text" placeholder="Search invoice ID…" />
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search invoice ID…"
+        />
 
         <select id="statusFilter">
           <option value="">All Status</option>

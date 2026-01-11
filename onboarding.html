@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Your Profile – RemindFlow</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/onboarding.css" />
+
+  <!-- Auth guard (JWT only) -->
+  <script src="/js/guard.js"></script>
+</head>
+
+<body>
+  <main class="onboarding-container">
+    <h1>Complete your profile</h1>
+    <p class="subtitle">
+      This is required only once. It helps us personalise your dashboard and invoices.
+    </p>
+
+    <form id="onboardingForm" autocomplete="off">
+      <!-- ================= USER INFO ================= -->
+      <h3>About You</h3>
+
+      <label for="name">Full Name *</label>
+      <input
+        type="text"
+        id="name"
+        placeholder="Your full name"
+        required
+      />
+
+      <label for="phone">Phone Number *</label>
+      <div class="phone-row">
+        <input
+          type="text"
+          id="phone"
+          maxlength="10"
+          placeholder="10-digit mobile number"
+        />
+        <button type="button" id="sendOtpBtn">
+          Send OTP
+        </button>
+      </div>
+
+      <!-- OTP -->
+      <div id="otpSection" style="display: none;">
+        <label for="otp">Enter OTP</label>
+        <input
+          type="text"
+          id="otp"
+          maxlength="6"
+          placeholder="123456"
+        />
+        <button type="button" id="verifyOtpBtn">
+          Verify OTP
+        </button>
+      </div>
+
+      <p id="otpStatus" class="status"></p>
+
+      <!-- ================= BUSINESS INFO ================= -->
+      <h3>Business Details</h3>
+
+      <label for="businessName">Business / Freelancer Name *</label>
+      <input
+        type="text"
+        id="businessName"
+        placeholder="e.g. Rahul Design Studio"
+        required
+      />
+
+      <label for="businessAddress">Business Address (optional)</label>
+      <textarea
+        id="businessAddress"
+        placeholder="Used on invoices (optional)"
+      ></textarea>
+
+      <label for="logoUrl">Business Logo URL (optional)</label>
+      <input
+        type="text"
+        id="logoUrl"
+        placeholder="https://example.com/logo.png"
+      />
+
+      <label for="contactEmail">Contact Email (optional)</label>
+      <input
+        type="email"
+        id="contactEmail"
+        placeholder="billing@yourbusiness.com"
+      />
+
+      <label for="contactPhone">Contact Phone (optional)</label>
+      <input
+        type="text"
+        id="contactPhone"
+        maxlength="15"
+        placeholder="+91 9XXXXXXXXX"
+      />
+
+      <!-- ================= SUBMIT ================= -->
+      <button type="submit" id="submitBtn" disabled>
+        Continue
+      </button>
+    </form>
+  </main>
+
+  <!-- Page Logic -->
+  <script src="/js/onboarding.js"></script>
+</body>
+</html>

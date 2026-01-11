@@ -1,14 +1,29 @@
 /* ------------------ Utils ------------------ */
 const $ = (id) => document.getElementById(id);
 
-const safeText = (el, text) => {
-  if (el && text !== undefined && text !== null) {
-    el.textContent = text;
-  }
+const safeText = (el, text, fallback = '—') => {
+  if (!el) return;
+  el.textContent =
+    text !== undefined && text !== null && text !== ''
+      ? text
+      : fallback;
 };
 
-// If using frontend-only, backendBase can be empty
+const capitalize = (str) =>
+  str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
+
+// Backend base (optional override)
 const backendBase = window.REMINDFLOW_API_BASE || '';
+
+/* ------------------ Auth Helper ------------------ */
+function getAuthHeaders() {
+  const token = localStorage.getItem('accessToken');
+  if (!token) return null;
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
 
 /* ------------------ Theme & Sidebar ------------------ */
 const themeKey = 'remindflow_theme';
@@ -74,41 +89,67 @@ if (mobileHamburger && sidebarEl) {
   applyTheme(savedTheme);
   applySidebar(localStorage.getItem(sidebarKey) === '1');
 
-  // Disable links marked as disabled (safety)
   document.querySelectorAll('.disabled').forEach((el) => {
     el.addEventListener('click', (e) => e.preventDefault());
   });
 })();
 
-/* ------------------ Fetch Helper (COOKIE AUTH) ------------------ */
+/* ------------------ Fetch Helper (JWT AUTH) ------------------ */
 async function fetchJSON(path) {
-  if (!backendBase) return null; // Frontend-only mode
+  const headers = getAuthHeaders();
+
+  if (!headers) {
+    localStorage.clear();
+    window.location.replace('/login.html');
+    return null;
+  }
 
   try {
-    const res = await fetch(backendBase + path, {
-      credentials: 'include',
-    });
+    const res = await fetch(backendBase + path, { headers });
 
-    if (!res.ok) return null;
+    if (res.status === 401) {
+      localStorage.clear();
+      window.location.replace('/login.html');
+      return null;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Request failed: ${res.status}`);
+    }
+
     return await res.json();
   } catch (err) {
-    console.warn('Fetch error:', err);
+    console.error('Dashboard fetch failed:', err);
     return null;
   }
 }
 
-/* ------------------ Load Dashboard Stats ONLY ------------------ */
+/* ------------------ Load Dashboard ------------------ */
 async function loadDashboard() {
   const data = await fetchJSON('/api/dashboard');
 
-  if (!data || !data.stats) return;
+  if (!data || !data.user || !data.stats) {
+    console.error('Invalid dashboard payload:', data);
+    return;
+  }
 
-  const { stats } = data;
+  const { user, stats } = data;
 
-  safeText($('totalClients'), stats.totalClients);
-  safeText($('totalInvoices'), stats.totalInvoices);
-  safeText($('pendingInvoices'), stats.pendingInvoices);
-  safeText($('remindersSent'), stats.remindersSent);
+  // ------------------ User / Business Name ------------------
+  safeText(
+    $('userName'),
+    user.business_name || user.name || user.email
+  );
+
+  // ------------------ Plan Info ------------------
+  safeText($('planType'), capitalize(user.plan_type));
+  safeText($('userPlan'), capitalize(user.plan_code));
+
+  // ------------------ Stats ------------------
+  safeText($('totalClients'), stats.totalClients, '0');
+  safeText($('totalInvoices'), stats.totalInvoices, '0');
+  safeText($('pendingInvoices'), stats.pendingInvoices, '0');
+  safeText($('remindersSent'), stats.remindersSent, '0');
 }
 
 /* ------------------ Boot ------------------ */

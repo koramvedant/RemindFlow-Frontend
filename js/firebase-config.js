@@ -1,7 +1,4 @@
-// firebase-config.js
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+// /js/firebase-config.js
 
 console.log('🔥 firebase-config.js loaded');
 
@@ -9,7 +6,7 @@ console.log('🔥 firebase-config.js loaded');
 const firebaseConfig = {
   apiKey: "AIzaSyBCd4f4pN9S4aL6kayiBindXsknTq5--6Y",
 
-  // ✅ MUST be Firebase default auth domain (NOT your custom domain)
+  // ✅ MUST be Firebase default auth domain
   authDomain: "remindflow-137b8.firebaseapp.com",
 
   projectId: "remindflow-137b8",
@@ -19,8 +16,12 @@ const firebaseConfig = {
 };
 
 /* ------------------ Initialize Firebase ------------------ */
-const app = initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
-/* ------------------ Export Auth & Provider ------------------ */
-export const auth = getAuth(app);
-export const provider = new GoogleAuthProvider();
+/* ------------------ Auth Configuration ------------------ */
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+/* ------------------ Google Provider (for Google login flow) ------------------ */
+window.googleProvider = new firebase.auth.GoogleAuthProvider();

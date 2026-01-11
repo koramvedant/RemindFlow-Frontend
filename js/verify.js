@@ -1,5 +1,3 @@
-// /js/verify.js
-
 /* ----------------------
    DOM Elements
 ---------------------- */
@@ -13,58 +11,51 @@ const verifyMessage = document.getElementById('verifyMessage');
 /* ----------------------
    Helpers
 ---------------------- */
-function showMessage(msg, timeout = 3000) {
+function showMessage(msg, timeout = null) {
   verifyMessage.textContent = msg;
   if (timeout) {
-    setTimeout(() => (verifyMessage.textContent = ''), timeout);
+    setTimeout(() => {
+      verifyMessage.textContent = '';
+    }, timeout);
   }
 }
 
-/* ----------------------
-   Firebase reCAPTCHA
-   (Initialize once)
----------------------- */
-window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-  'recaptcha-container',
-  {
-    size: 'invisible',
-    callback: () => {
-      console.log('reCAPTCHA solved');
-    },
-  }
-);
+function setLoading(btn, loading = true) {
+  btn.disabled = loading;
+  btn.textContent = loading ? 'Please wait...' : btn.dataset.label;
+}
 
 /* ----------------------
-   Send OTP (Firebase)
+   Send OTP (Backend)
 ---------------------- */
 async function sendOTP(phone) {
-  const confirmationResult = await firebase
-    .auth()
-    .signInWithPhoneNumber(`+91${phone}`, window.recaptchaVerifier);
+  const res = await fetch('/api/auth/phone/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone }),
+  });
 
-  window.confirmationResult = confirmationResult;
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || 'Failed to send OTP');
+  }
 }
 
 /* ----------------------
-   Verify OTP (Firebase)
+   Verify OTP (Backend)
 ---------------------- */
-async function verifyOTP(otp) {
-  const result = await window.confirmationResult.confirm(otp);
-  const user = result.user;
-
-  const idToken = await user.getIdToken();
-
-  // Exchange Firebase token with backend
-  const res = await fetch('/api/auth/phone-login', {
+async function verifyOTP(phone, otp) {
+  const res = await fetch('/api/auth/phone/verify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ idToken }),
+    body: JSON.stringify({ phone, otp }),
   });
 
   const data = await res.json();
 
   if (!res.ok || !data.accessToken) {
-    throw new Error(data.message || 'Login failed');
+    throw new Error(data.message || 'OTP verification failed');
   }
 
   localStorage.setItem('accessToken', data.accessToken);
@@ -73,7 +64,9 @@ async function verifyOTP(otp) {
 /* ----------------------
    Send OTP Button
 ---------------------- */
-sendBtn?.addEventListener('click', async () => {
+sendBtn.dataset.label = sendBtn.textContent;
+
+sendBtn.addEventListener('click', async () => {
   const phone = phoneInput.value.trim();
 
   if (!phone || phone.length !== 10) {
@@ -82,19 +75,27 @@ sendBtn?.addEventListener('click', async () => {
   }
 
   try {
+    setLoading(sendBtn, true);
     await sendOTP(phone);
+
     otpSection.style.display = 'block';
-    showMessage('OTP sent to your number');
+    phoneInput.disabled = true;
+    showMessage('OTP sent. Use the latest code received.');
+
   } catch (err) {
-    console.error('❌ Firebase send OTP error:', err);
+    console.error('❌ Send OTP error:', err);
     showMessage(err.message || 'Failed to send OTP');
+    setLoading(sendBtn, false);
   }
 });
 
 /* ----------------------
    Verify OTP Button
 ---------------------- */
-verifyBtn?.addEventListener('click', async () => {
+verifyBtn.dataset.label = verifyBtn.textContent;
+
+verifyBtn.addEventListener('click', async () => {
+  const phone = phoneInput.value.trim();
   const otp = otpInput.value.trim();
 
   if (!otp || otp.length !== 6) {
@@ -103,14 +104,18 @@ verifyBtn?.addEventListener('click', async () => {
   }
 
   try {
-    await verifyOTP(otp);
+    setLoading(verifyBtn, true);
+    await verifyOTP(phone, otp);
+
     showMessage('Mobile verified successfully!', 1200);
 
     setTimeout(() => {
       window.location.href = '/plans.html';
     }, 1200);
+
   } catch (err) {
-    console.error('❌ Firebase verify OTP error:', err);
-    showMessage(err.message || 'OTP verification failed');
+    console.error('❌ Verify OTP error:', err);
+    showMessage(err.message || 'OTP invalid or expired. Please resend.');
+    setLoading(verifyBtn, false);
   }
 });

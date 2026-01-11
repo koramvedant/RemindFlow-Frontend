@@ -26,10 +26,8 @@ function showToast(message, duration = 2000) {
   toast.textContent = message;
   document.body.appendChild(toast);
 
-  // Show and auto-remove
-  setTimeout(() => {
-    toast.classList.add('show');
-  }, 10);
+  setTimeout(() => toast.classList.add('show'), 10);
+
   setTimeout(() => {
     toast.classList.remove('show');
     setTimeout(() => document.body.removeChild(toast), 300);
@@ -43,49 +41,55 @@ if (form) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Collect form data
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      window.location.replace('/login.html');
+      return;
+    }
+
+    // Collect form data (MATCH BACKEND CONTRACT)
     const payload = {
       name: document.getElementById('clientName')?.value.trim(),
-      email: document.getElementById('clientEmail')?.value.trim() || null,
+      email: document.getElementById('clientEmail')?.value.trim(),
       phone: document.getElementById('clientPhone')?.value.trim() || null,
       company: document.getElementById('clientCompany')?.value.trim() || null,
-      client_address: document.getElementById('clientAddress')?.value.trim() || null,
-      client_tax_id: document.getElementById('clientTaxId')?.value.trim() || null,
+      address: document.getElementById('clientAddress')?.value.trim() || null,
+      tax_id: document.getElementById('clientTaxId')?.value.trim() || null,
       notes: document.getElementById('clientNotes')?.value.trim() || null,
     };
 
-    // Basic Validation
-    if (!payload.name) {
-      showToast('Client name is required');
+    // Basic validation
+    if (!payload.name || !payload.email) {
+      showToast('Client name and email are required');
       return;
     }
 
     try {
-      // Send data to backend
-      const res = await fetch('/api/clients/add', {
+      // 🔴 CORRECT ROUTE + AUTH HEADER
+      const res = await fetch('/api/clients', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // keep if using cookies for auth
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
 
       const result = await res.json();
 
-      if (res.ok) {
-        // Success toast
-        showToast('Client added successfully!');
-        // Redirect after short delay
-        setTimeout(() => {
-          window.location.href = '/clients';
-        }, 1200);
-      } else {
-        // Backend error
-        showToast('Error adding client: ' + (result.message || 'Unknown error'));
+      if (!res.ok) {
+        throw new Error(result.message || 'Failed to add client');
       }
+
+      // ✅ Success
+      showToast('Client added successfully!');
+      setTimeout(() => {
+        window.location.href = '/clients.html';
+      }, 1200);
+
     } catch (err) {
-      // Network / server error
-      console.error('Error submitting client:', err);
-      showToast('Failed to add client. Please try again.');
+      console.error('Error adding client:', err);
+      showToast(err.message || 'Failed to add client');
     }
   });
 }

@@ -24,6 +24,16 @@
           autocomplete="off"
           required
         />
+
+        <button
+          id="changeClientBtn"
+          type="button"
+          class="change-client-btn"
+          style="display: none"
+        >
+          Change
+        </button>
+
         <button
           class="add-client-btn"
           type="button"
@@ -32,6 +42,7 @@
           + Add Client
         </button>
       </div>
+
       <ul id="clientDropdown" class="dropdown"></ul>
 
       <!-- Invoice Meta -->
@@ -60,10 +71,7 @@
         <tbody id="itemsBody">
           <tr class="item-row">
             <td>
-              <input
-                class="item-desc"
-                placeholder="Service or product description"
-              />
+              <input class="item-desc" placeholder="Service or product" />
             </td>
             <td>
               <input class="item-qty" type="number" min="1" value="1" />
@@ -79,22 +87,18 @@
         + Add Item
       </button>
 
-      <!-- Tax (Optional) -->
+      <!-- Tax -->
       <h3>Tax (optional)</h3>
       <div class="row">
-        <div>
-          <input id="taxName" placeholder="Tax name (e.g. GST)" />
-        </div>
-        <div>
-          <input id="taxRate" type="number" placeholder="Rate (%)" />
-        </div>
+        <input id="taxName" placeholder="Tax name (e.g. GST)" />
+        <input id="taxRate" type="number" placeholder="Rate (%)" />
       </div>
 
       <!-- Discount -->
       <label>Discount (optional)</label>
       <input type="number" id="discount" step="0.01" placeholder="₹ 0.00" />
 
-      <!-- Layout Selection -->
+      <!-- Template -->
       <label>Invoice Template *</label>
       <select id="layoutSelect" required>
         <option value="">Select template</option>
@@ -105,7 +109,7 @@
 
       <!-- Notes -->
       <label>Notes (optional)</label>
-      <textarea id="notes" placeholder="Any internal note…"></textarea>
+      <textarea id="notes"></textarea>
 
       <button class="primary-btn" id="continueBtn">
         Continue → Preview
@@ -121,7 +125,6 @@
     <!-- Page Logic -->
     <script type="module" src="/js/add-invoice.js"></script>
 
-    <!-- Inline helper (safe) -->
     <script>
       document.getElementById("addItemBtn").onclick = () => {
         const row = document.createElement("tr");

@@ -5,32 +5,40 @@
     <title>Invoice Preview | RemindFlow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- CSS -->
+    <!-- Styles -->
     <link rel="stylesheet" href="/css/invoice-preview.css" />
   </head>
   <body>
     <div class="container">
+      <!-- Back -->
       <button class="back-btn" onclick="history.back()">← Back</button>
 
       <h2>Invoice Preview</h2>
 
-      <div class="layout-select">
-        <label>Layout</label>
-        <select id="layout">
-          <option>Default</option>
-          <option>Minimal</option>
-          <option>Modern</option>
+      <!-- Layout Selector -->
+      <div class="layout-switch">
+        <label for="layoutSelect">Template</label>
+        <select id="layoutSelect">
+          <option value="minimal">Minimal</option>
+          <option value="professional">Professional</option>
+          <option value="modern">Modern</option>
         </select>
       </div>
 
-      <!-- Invoice Render -->
-      <div class="invoice-box" id="invoiceBox">
-        <!-- Filled via JS -->
+      <!-- Invoice Preview -->
+      <div id="invoiceBox" class="preview-box">
+        <!-- Rendered via JS -->
       </div>
 
+      <!-- Payment CTA Placeholder -->
+      <div id="paymentSection">
+        <!-- Rendered conditionally via JS -->
+      </div>
+
+      <!-- Actions -->
       <div class="actions">
-        <button class="secondary" id="saveDraft">Save as Draft</button>
-        <button class="primary" id="finalSave">Save & Generate PDF</button>
+        <button id="saveDraft" class="secondary">Save Draft</button>
+        <button id="finalSave" class="primary">Finalize Invoice</button>
       </div>
     </div>
 
@@ -41,6 +49,6 @@
     </script>
 
     <!-- Page Logic -->
-    <script type="module" src="/js/invoice-preview.js"></script>
+    <script src="/js/invoice-preview.js"></script>
   </body>
 </html>

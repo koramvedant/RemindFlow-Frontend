@@ -1,3 +1,7 @@
+/* ===================================================
+   INVOICES LIST — USER VIEW (DRAFT AWARE)
+=================================================== */
+
 /* ------------------ Elements ------------------ */
 const table = document.getElementById('invoiceTable');
 const totalInvoices = document.getElementById('totalInvoices');
@@ -6,37 +10,54 @@ const clientFilter = document.getElementById('clientFilter');
 const statusFilter = document.getElementById('statusFilter');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
-const alertsDiv = document.getElementById('alerts');
+const toast = document.getElementById('toast');
 
 /* ------------------ State ------------------ */
-let clients = [];
 let invoices = [];
 let filtered = [];
 let page = 1;
 const perPage = 5;
 
 /* ------------------ Helpers ------------------ */
-function showAlert(message, type = 'success') {
-  const alert = document.createElement('div');
-  alert.className = `alert alert-${type}`;
-  alert.textContent = message;
-  alertsDiv?.appendChild(alert);
-  setTimeout(() => {
-    alert.classList.add('fade-out');
-    setTimeout(() => alert.remove(), 300);
-  }, 3000);
+function showToast(msg, type = 'success') {
+  toast.textContent = msg;
+  toast.className = `toast ${type}`;
+  setTimeout(() => (toast.textContent = ''), 3000);
 }
 
-function getClientName(id) {
-  return clients.find((c) => c.id === id)?.name || '-';
+function statusBadge(status) {
+  switch (status) {
+    case 'draft':
+      return `<span class="status draft">Draft</span>`;
+    case 'sent':
+      return `<span class="status sent">Sent</span>`;
+    case 'paid':
+      return `<span class="status paid">Paid</span>`;
+    case 'overdue':
+      return `<span class="status overdue">Overdue</span>`;
+    default:
+      return `<span class="status">${status}</span>`;
+  }
 }
 
-function getStatusClass(status) {
-  switch ((status || '').toLowerCase()) {
-    case 'paid': return 'status-paid';
-    case 'pending': return 'status-pending';
-    case 'overdue': return 'status-overdue';
-    default: return '';
+function clientName(inv) {
+  return inv.data_snapshot?.client?.name || '—';
+}
+
+/* ------------------ PDF Download ------------------ */
+async function downloadPdf(invoiceId) {
+  try {
+    const res = await fetch(`/api/invoices/${invoiceId}/pdf`, {
+      credentials: 'include',
+    });
+
+    if (!res.ok) throw new Error('PDF not available');
+
+    const { pdf_signed_url } = await res.json();
+    window.open(pdf_signed_url, '_blank');
+  } catch (err) {
+    console.error(err);
+    showToast('Failed to download PDF', 'error');
   }
 }
 
@@ -47,36 +68,44 @@ function render() {
   const start = (page - 1) * perPage;
   const rows = filtered.slice(start, start + perPage);
 
-  if (rows.length === 0) {
-    table.innerHTML = `<tr><td colspan="6" style="text-align:center;">No invoices found</td></tr>`;
+  if (!rows.length) {
+    table.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center;">No invoices found</td>
+      </tr>
+    `;
     totalInvoices.textContent = 0;
     return;
   }
 
   rows.forEach((inv) => {
-    const row = document.createElement('tr');
-    const statusClass = getStatusClass(inv.status);
+    const isDraft = inv.invoice_status === 'draft';
 
-    row.innerHTML = `
-      <td>${inv.id}</td>
-      <td>
-        <span 
-          class="client-link" 
-          data-client-id="${inv.clientId}"
-          style="color: var(--accent); cursor:pointer; font-weight:500;"
-        >
-          ${getClientName(inv.clientId)}
-        </span>
-      </td>
-      <td>₹${inv.amount.toLocaleString()}</td>
-      <td class="${statusClass}">${inv.status || '—'}</td>
-      <td>${inv.date || '—'}</td>
-      <td>
-        <span class="action edit">Edit</span>
-        <span class="action delete" data-id="${inv.id}">Delete</span>
-      </td>
+    table.innerHTML += `
+      <tr class="${isDraft ? 'draft-row' : ''}">
+        <td>${inv.invoice_id || '—'}</td>
+        <td>${clientName(inv)}</td>
+        <td>₹${(inv.grand_total || 0).toLocaleString()}</td>
+        <td>${statusBadge(inv.invoice_status)}</td>
+        <td>${new Date(inv.created_at).toLocaleDateString()}</td>
+        <td>
+          ${
+            isDraft
+              ? `
+                <a href="/invoice-preview.html?id=${inv.id}" class="action">Edit</a>
+                <button class="action finalize" data-id="${inv.id}">Finalize</button>
+              `
+              : `
+                <a href="/invoice-preview.html?id=${inv.id}" class="action">View</a>
+                <button class="action download" data-id="${inv.id}">
+                  Download PDF
+                </button>
+              `
+          }
+          <button class="action delete" data-id="${inv.id}">Delete</button>
+        </td>
+      </tr>
     `;
-    table.appendChild(row);
   });
 
   totalInvoices.textContent = filtered.length;
@@ -86,17 +115,14 @@ function render() {
 
 /* ------------------ Filters ------------------ */
 function applyFilters() {
-  const search = (searchInput.value || '').toLowerCase();
-  const client = clientFilter.value;
+  const q = (searchInput.value || '').toLowerCase();
   const status = statusFilter.value;
 
   filtered = invoices.filter((inv) => {
-    const idStr = String(inv.id || '');
     return (
-      (idStr.toLowerCase().includes(search) ||
-        getClientName(inv.clientId).toLowerCase().includes(search)) &&
-      (!client || inv.clientId === client) &&
-      (!status || inv.status === status)
+      ((inv.invoice_id || '').toLowerCase().includes(q) ||
+        clientName(inv).toLowerCase().includes(q)) &&
+      (!status || inv.invoice_status === status)
     );
   });
 
@@ -104,59 +130,66 @@ function applyFilters() {
   render();
 }
 
-/* ------------------ Table Click ------------------ */
-table.addEventListener('click', (e) => {
-  if (e.target.classList.contains('client-link')) {
-    const clientId = e.target.dataset.clientId;
-    window.location.href = `invoice-logs.html?client_id=${clientId}`;
-  }
+/* ------------------ Actions ------------------ */
+table.addEventListener('click', async (e) => {
+  const id = e.target.dataset.id;
 
   if (e.target.classList.contains('delete')) {
     if (!confirm('Delete this invoice?')) return;
-    const idx = invoices.findIndex((i) => i.id == e.target.dataset.id);
-    if (idx > -1) {
-      invoices.splice(idx, 1);
-      applyFilters();
-      showAlert('Invoice deleted', 'success');
+
+    await fetch(`/api/invoices/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+
+    invoices = invoices.filter((i) => i.id !== Number(id));
+    applyFilters();
+    showToast('Invoice deleted');
+  }
+
+  if (e.target.classList.contains('finalize')) {
+    if (!confirm('Finalize this invoice?')) return;
+
+    const res = await fetch(`/api/invoices/${id}/finalize`, {
+      method: 'PUT',
+      credentials: 'include',
+    });
+
+    if (!res.ok) {
+      showToast('Failed to finalize invoice', 'error');
+      return;
     }
+
+    showToast('Invoice finalized');
+    loadInvoices();
+  }
+
+  if (e.target.classList.contains('download')) {
+    downloadPdf(id);
   }
 });
 
-/* ------------------ Pagination ------------------ */
+/* ------------------ Load ------------------ */
+async function loadInvoices() {
+  try {
+    const res = await fetch('/api/invoices', { credentials: 'include' });
+    const data = await res.json();
+
+    invoices = data.invoices || [];
+    filtered = [...invoices];
+
+    render();
+  } catch (err) {
+    console.error(err);
+    showToast('Failed to load invoices', 'error');
+  }
+}
+
+/* ------------------ Events ------------------ */
+searchInput.addEventListener('input', applyFilters);
+statusFilter.addEventListener('change', applyFilters);
 prevBtn.onclick = () => page > 1 && (page--, render());
 nextBtn.onclick = () => page * perPage < filtered.length && (page++, render());
 
 /* ------------------ Init ------------------ */
-async function initInvoices() {
-  try {
-    // Fetch clients
-    const clientsRes = await fetch('/api/clients', { credentials: 'include' });
-    clients = (await clientsRes.json()) || [];
-
-    // Populate client filter
-    clientFilter.innerHTML = `<option value="">All Clients</option>`;
-    clients.forEach((c) => {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = c.name;
-      clientFilter.appendChild(opt);
-    });
-
-    // Fetch invoices
-    const invoicesRes = await fetch('/api/invoices', { credentials: 'include' });
-    invoices = (await invoicesRes.json()) || [];
-
-    filtered = [...invoices];
-    render();
-  } catch (err) {
-    console.error(err);
-    showAlert('Failed to load invoices', 'error');
-  }
-}
-
-/* ------------------ Event Listeners ------------------ */
-searchInput.addEventListener('input', applyFilters);
-clientFilter.addEventListener('change', applyFilters);
-statusFilter.addEventListener('change', applyFilters);
-
-initInvoices();
+loadInvoices();

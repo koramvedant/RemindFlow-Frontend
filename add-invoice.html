@@ -14,6 +14,14 @@
 
       <h2>Create Invoice</h2>
 
+      <!-- Invoice ID (Optional) -->
+      <label>Invoice ID (optional)</label>
+      <input
+        type="text"
+        id="invoiceIdInput"
+        placeholder="INV-XXXX"
+      />
+
       <!-- Client Selection -->
       <label>Client *</label>
       <div class="client-select">
@@ -98,13 +106,20 @@
       <label>Discount (optional)</label>
       <input type="number" id="discount" step="0.01" placeholder="₹ 0.00" />
 
+      <!-- Payment Options -->
+      <h3>Payment Options</h3>
+      <label class="checkbox-row">
+        <input type="checkbox" id="enableRazorpay" />
+        Enable online payment via Razorpay
+      </label>
+
       <!-- Template -->
       <label>Invoice Template *</label>
       <select id="layoutSelect" required>
         <option value="">Select template</option>
-        <option value="1">Minimal</option>
-        <option value="2">Professional</option>
-        <option value="3">Modern</option>
+        <option value="minimal">Minimal</option>
+        <option value="professional">Professional</option>
+        <option value="modern">Modern</option>
       </select>
 
       <!-- Notes -->

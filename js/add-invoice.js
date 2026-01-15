@@ -1,5 +1,3 @@
-// add-invoice.js
-
 /* ================= AUTH ================= */
 function getAuthHeaders() {
   const token = localStorage.getItem('accessToken');
@@ -15,9 +13,13 @@ const continueBtn = document.getElementById('continueBtn');
 
 const invoiceDate = document.getElementById('invoiceDate');
 const dueDate = document.getElementById('dueDate');
-const discount = document.getElementById('discount');
-const notes = document.getElementById('notes');
+const discountInput = document.getElementById('discount');
+const notesInput = document.getElementById('notes');
 const layoutSelect = document.getElementById('layoutSelect');
+const enableRazorpay = document.getElementById('enableRazorpay');
+
+/* 🔑 NEW */
+const invoiceIdInput = document.getElementById('invoiceIdInput');
 
 /* ================= STATE ================= */
 let clients = [];
@@ -31,7 +33,6 @@ async function loadClients() {
 
   const res = await fetch('/api/clients', { headers });
   const data = await res.json();
-
   clients = data.clients || [];
 }
 
@@ -81,28 +82,25 @@ searchInput.addEventListener('focus', () => {
 
 searchInput.addEventListener('input', () => {
   const val = searchInput.value.toLowerCase();
-  const filtered = clients.filter(c =>
-    c.name.toLowerCase().includes(val)
+  renderDropdown(
+    clients.filter((c) => c.name.toLowerCase().includes(val))
   );
-  renderDropdown(filtered);
 });
 
 searchInput.addEventListener('keydown', (e) => {
   const items = dropdown.querySelectorAll('li');
   if (!items.length) return;
 
-  if (e.key === 'ArrowDown') {
-    activeIndex = (activeIndex + 1) % items.length;
-  } else if (e.key === 'ArrowUp') {
-    activeIndex = (activeIndex - 1 + items.length) % items.length;
-  } else if (e.key === 'Enter') {
+  if (e.key === 'ArrowDown') activeIndex = (activeIndex + 1) % items.length;
+  if (e.key === 'ArrowUp') activeIndex = (activeIndex - 1 + items.length) % items.length;
+
+  if (e.key === 'Enter') {
     e.preventDefault();
     items[activeIndex]?.click();
     return;
-  } else if (e.key === 'Escape') {
-    dropdown.style.display = 'none';
-    return;
   }
+
+  if (e.key === 'Escape') dropdown.style.display = 'none';
 
   items.forEach((li, i) =>
     li.classList.toggle('active', i === activeIndex)
@@ -134,6 +132,16 @@ function getTaxes() {
   return [{ label: taxName, rate: taxRate }];
 }
 
+/* ================= TOTALS ================= */
+function calculateSubtotal(items) {
+  return items.reduce((sum, i) => sum + i.quantity * i.rate, 0);
+}
+
+function calculateTaxAmount(subtotal, taxes) {
+  if (!taxes.length) return 0;
+  return subtotal * (taxes[0].rate / 100);
+}
+
 /* ================= CONTINUE ================= */
 continueBtn.onclick = () => {
   if (!selectedClient) {
@@ -147,15 +155,45 @@ continueBtn.onclick = () => {
     return;
   }
 
+  const subtotal = calculateSubtotal(items);
+  const taxes = getTaxes();
+  const taxAmount = calculateTaxAmount(subtotal, taxes);
+  const discount = Number(discountInput.value) || 0;
+  const total = subtotal + taxAmount - discount;
+
+  /* 🔑 CRITICAL */
+  const manualInvoiceId = invoiceIdInput?.value.trim();
+
   const payload = {
-    client_id: selectedClient.client_id,
+    invoice_id: manualInvoiceId || null, // ✅ FINAL RULE
     invoice_date: invoiceDate.value,
     due_date: dueDate.value,
+
+    seller: {
+      name: 'RemindFlow',
+      email: 'billing@remindflow.in',
+    },
+
+    client: {
+      id: selectedClient.client_id, // 🔒 REQUIRED
+      name: selectedClient.name,
+      email: selectedClient.email || '',
+    },
+
     items,
-    taxes: getTaxes(),
-    discount: Number(discount.value) || 0,
-    notes: notes.value || '',
-    layout_id: Number(layoutSelect.value),
+    subtotal,
+    taxes,
+    discount,
+    total,
+
+    notes: notesInput.value || '',
+    status: 'draft',
+
+    payment: {
+      razorpay_enabled: enableRazorpay?.checked || false,
+    },
+
+    layout_id: layoutSelect?.value || 'minimal',
   };
 
   sessionStorage.setItem('invoiceDraft', JSON.stringify(payload));

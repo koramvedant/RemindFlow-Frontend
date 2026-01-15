@@ -20,6 +20,18 @@ toggles.forEach((header) => {
 });
 
 /* -------------------------
+   Seller Cache (IMPORTANT)
+------------------------- */
+function cacheSellerInfo(data) {
+  const seller = {
+    name: data.company_name || data.name || '—',
+    email: data.email || '',
+  };
+
+  localStorage.setItem('sellerInfo', JSON.stringify(seller));
+}
+
+/* -------------------------
    Load Settings
 ------------------------- */
 async function loadSettings() {
@@ -37,6 +49,9 @@ async function loadSettings() {
     // WhatsApp toggle (UI = disable, backend = enable)
     document.getElementById('disable_whatsapp').checked =
       data.whatsapp_enabled === false;
+
+    // 🔐 Cache seller info for invoices
+    cacheSellerInfo(data);
   } catch (err) {
     console.warn('⚠️ Failed to load settings:', err);
   }
@@ -48,6 +63,7 @@ async function loadSettings() {
 document.getElementById('saveAccount')?.addEventListener('click', async () => {
   const payload = {
     name: document.getElementById('name').value.trim(),
+    email: document.getElementById('email').value.trim(),
     company_name: document.getElementById('company_name').value.trim(),
     timezone: document.getElementById('timezone').value,
   };
@@ -61,7 +77,11 @@ document.getElementById('saveAccount')?.addEventListener('click', async () => {
     });
 
     if (!res.ok) throw new Error('Failed to save account settings');
+
     alert('✅ Account settings saved');
+
+    // 🔐 Update seller cache
+    cacheSellerInfo(payload);
   } catch (err) {
     console.error('❌ Account save error:', err);
     alert('❌ Failed to save account settings');
@@ -71,28 +91,33 @@ document.getElementById('saveAccount')?.addEventListener('click', async () => {
 /* -------------------------
    Save Communication Settings
 ------------------------- */
-document.getElementById('saveCommunication')?.addEventListener('click', async () => {
-  const disableWhatsapp = document.getElementById('disable_whatsapp').checked;
+document
+  .getElementById('saveCommunication')
+  ?.addEventListener('click', async () => {
+    const disableWhatsapp =
+      document.getElementById('disable_whatsapp').checked;
 
-  const payload = {
-    whatsapp_enabled: !disableWhatsapp,
-  };
+    const payload = {
+      whatsapp_enabled: !disableWhatsapp,
+    };
 
-  try {
-    const res = await fetch('/api/settings', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
 
-    if (!res.ok) throw new Error('Failed to save communication settings');
-    alert('✅ Communication settings saved');
-  } catch (err) {
-    console.error('❌ Communication save error:', err);
-    alert('❌ Failed to save communication settings');
-  }
-});
+      if (!res.ok)
+        throw new Error('Failed to save communication settings');
+
+      alert('✅ Communication settings saved');
+    } catch (err) {
+      console.error('❌ Communication save error:', err);
+      alert('❌ Failed to save communication settings');
+    }
+  });
 
 /* -------------------------
    Init

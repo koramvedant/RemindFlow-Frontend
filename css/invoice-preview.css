@@ -1,92 +1,181 @@
 /* ---------------- Base ---------------- */
 body {
-    background: #f5f7fa;
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #242424;
-  }
-  
-  /* ---------------- Container ---------------- */
-  .container {
-    max-width: 820px;
-    margin: 40px auto;
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
-  }
-  
-  /* ---------------- Invoice Box ---------------- */
-  .invoice-box {
-    border: 1px solid #ddd;
-    padding: 25px;
-    margin: 20px 0;
-    border-radius: 8px;
-    background: #fafafa;
-    transition: box-shadow 0.2s ease;
-  }
-  
-  .invoice-box:hover {
-    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-  }
-  
-  /* ---------------- Actions ---------------- */
+  background: #f5f7fa;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #242424;
+}
+
+/* ---------------- Container ---------------- */
+.container {
+  max-width: 820px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* ---------------- Preview Box ---------------- */
+.preview-box {
+  border: 1px solid #ddd;
+  padding: 25px;
+  margin: 20px 0;
+  border-radius: 8px;
+  background: #fafafa;
+  transition: box-shadow 0.2s ease;
+}
+
+.preview-box:hover {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------------- Invoice Base ---------------- */
+.invoice {
+  background: #fff;
+  border-radius: 6px;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+.invoice h3 {
+  margin-top: 0;
+}
+
+/* ---------------- Layouts ---------------- */
+
+/* Minimal */
+.invoice.minimal {
+  border-left: 4px solid #4a63e7;
+}
+
+/* Professional */
+.invoice.professional {
+  border: 1px solid #bbb;
+  background: #ffffff;
+}
+
+/* Modern */
+.invoice.modern {
+  background: linear-gradient(180deg, #ffffff, #f0f3ff);
+  border-left: 5px solid #4a63e7;
+}
+
+/* Read-only (existing invoice) */
+.invoice.readonly {
+  opacity: 0.9;
+}
+
+/* ---------------- Payment Section ---------------- */
+#paymentSection {
+  margin-top: 25px;
+}
+
+.payment-section {
+  background: #f0f3ff;
+  border: 1px dashed #4a63e7;
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+}
+
+.pay-now-btn {
+  background: #4a63e7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: not-allowed; /* disabled for preview */
+  opacity: 0.85;
+}
+
+.pay-now-btn:hover {
+  background: #4a63e7;
+}
+
+.payment-note {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+/* ---------------- Invoice Footer Branding ---------------- */
+.invoice-footer {
+  margin-top: 32px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb; /* clear divider from main content */
+  text-align: right;            /* right-aligned, non-intrusive */
+  font-size: 12px;
+  color: #777;
+}
+
+.invoice-footer strong {
+  color: #4a63e7;
+  font-weight: 600;
+}
+
+/* ---------------- Actions ---------------- */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.primary,
+.secondary {
+  flex: 1;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.primary {
+  background: #4a63e7;
+  color: #fff;
+}
+
+.primary:hover {
+  background: #3b4fd1;
+}
+
+.primary:active {
+  transform: scale(0.97);
+}
+
+.secondary {
+  background: #eee;
+  color: #333;
+}
+
+.secondary:hover {
+  background: #ddd;
+}
+
+.secondary:active {
+  transform: scale(0.97);
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 600px) {
   .actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    flex-wrap: wrap;
-    margin-top: 20px;
+    flex-direction: column;
   }
-  
+
   .primary,
   .secondary {
-    flex: 1;
-    padding: 14px;
-    border-radius: 8px;
-    border: none;
-    font-size: 15px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.2s ease, transform 0.1s ease;
+    width: 100%;
   }
-  
-  .primary {
-    background: #4a63e7;
-    color: #fff;
+
+  .invoice-footer {
+    text-align: center; /* better balance on small screens */
   }
-  
-  .primary:hover {
-    background: #3b4fd1;
-  }
-  
-  .primary:active {
-    transform: scale(0.97);
-  }
-  
-  .secondary {
-    background: #eee;
-    color: #333;
-  }
-  
-  .secondary:hover {
-    background: #ddd;
-  }
-  
-  .secondary:active {
-    transform: scale(0.97);
-  }
-  
-  /* ---------------- Responsive ---------------- */
-  @media (max-width: 600px) {
-    .actions {
-      flex-direction: column;
-    }
-  
-    .primary,
-    .secondary {
-      width: 100%;
-    }
-  }
-  
+}

@@ -18,6 +18,20 @@ let filtered = [];
 let page = 1;
 const perPage = 5;
 
+/* ------------------ Auth Fetch Helper ------------------ */
+function authFetch(url, options = {}) {
+  const token = localStorage.getItem('accessToken');
+
+  return fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+}
+
 /* ------------------ Helpers ------------------ */
 function showToast(msg, type = 'success') {
   toast.textContent = msg;
@@ -47,10 +61,7 @@ function clientName(inv) {
 /* ------------------ PDF Download ------------------ */
 async function downloadPdf(invoiceId) {
   try {
-    const res = await fetch(`/api/invoices/${invoiceId}/pdf`, {
-      credentials: 'include',
-    });
-
+    const res = await authFetch(`/api/invoices/${invoiceId}/pdf`);
     if (!res.ok) throw new Error('PDF not available');
 
     const { pdf_signed_url } = await res.json();
@@ -137,11 +148,7 @@ table.addEventListener('click', async (e) => {
   if (e.target.classList.contains('delete')) {
     if (!confirm('Delete this invoice?')) return;
 
-    await fetch(`/api/invoices/${id}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-
+    await authFetch(`/api/invoices/${id}`, { method: 'DELETE' });
     invoices = invoices.filter((i) => i.id !== Number(id));
     applyFilters();
     showToast('Invoice deleted');
@@ -150,9 +157,8 @@ table.addEventListener('click', async (e) => {
   if (e.target.classList.contains('finalize')) {
     if (!confirm('Finalize this invoice?')) return;
 
-    const res = await fetch(`/api/invoices/${id}/finalize`, {
+    const res = await authFetch(`/api/invoices/${id}/finalize`, {
       method: 'PUT',
-      credentials: 'include',
     });
 
     if (!res.ok) {
@@ -172,12 +178,12 @@ table.addEventListener('click', async (e) => {
 /* ------------------ Load ------------------ */
 async function loadInvoices() {
   try {
-    const res = await fetch('/api/invoices', { credentials: 'include' });
-    const data = await res.json();
+    const res = await authFetch('/api/invoices');
+    if (!res.ok) throw new Error('Unauthorized');
 
+    const data = await res.json();
     invoices = data.invoices || [];
     filtered = [...invoices];
-
     render();
   } catch (err) {
     console.error(err);

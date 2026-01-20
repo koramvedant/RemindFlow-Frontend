@@ -100,13 +100,38 @@ function renderDraftPreview(invoice, rawLayout) {
   const layout = normalizeLayout(rawLayout);
   const total = calculateTotal(invoice);
 
-  /* 🔧 DISPLAY FIX */
-  const fromName = invoice.seller?.company_name || '—';
-  const fromEmail = invoice.seller?.email || '';
+  /* FROM */
+  const fromName =
+    invoice.seller?.company_name ||
+    invoice.business?.name ||
+    '—';
 
+  const fromEmail =
+    invoice.seller?.email || '';
+
+  /* BILLED TO */
   const billedToName =
-    invoice.client?.company_name || invoice.client?.name || '—';
-  const billedToEmail = invoice.client?.email || '';
+    invoice.client?.company_name ||
+    invoice.client?.name ||
+    '—';
+
+  const billedToEmail =
+    invoice.client?.email || '';
+
+  /* PAYMENT PREVIEW (VISUAL ONLY) */
+  const paymentPreview =
+    invoice.payment?.razorpay_enabled
+      ? `
+        <div class="payment-preview">
+          <button class="pay-btn disabled" disabled>
+            Pay Now
+          </button>
+          <p class="payment-note">
+            (Payment button will be active after invoice is finalized)
+          </p>
+        </div>
+      `
+      : '';
 
   box.innerHTML = `
     <div class="invoice ${layout}">
@@ -159,6 +184,8 @@ function renderDraftPreview(invoice, rawLayout) {
       <hr />
       <p><strong>Total:</strong> ₹${total.toLocaleString()}</p>
 
+      ${paymentPreview}
+
       ${
         invoice.notes
           ? `<p><strong>Notes:</strong><br/>${invoice.notes}</p>`
@@ -190,6 +217,35 @@ async function loadExistingInvoice(id) {
     alert('Failed to load invoice');
     window.location.href = '/dashboard.html';
   }
+}
+
+/* ===================================================
+   SAVE DRAFT (CREATE FLOW ONLY)
+=================================================== */
+if (!invoiceId && draft) {
+  document.getElementById('saveDraft')?.addEventListener('click', async () => {
+    try {
+      const headers = getAuthHeaders();
+      if (!headers) return (window.location.href = '/login.html');
+
+      const payload = buildInvoicePayload(draft);
+
+      const res = await fetch('/api/invoices', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error('Save failed');
+
+      sessionStorage.removeItem('invoiceDraft');
+      showAlert('Draft saved');
+      window.location.href = '/invoices.html';
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  });
 }
 
 /* ===================================================

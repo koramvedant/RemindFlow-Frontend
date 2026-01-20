@@ -103,7 +103,7 @@ function render() {
           ${
             isDraft
               ? `
-                <a href="/invoice-preview.html?id=${inv.id}" class="action">Edit</a>
+                <a href="/invoice-edit.html?id=${inv.id}" class="action">Edit</a>
                 <button class="action finalize" data-id="${inv.id}">Finalize</button>
               `
               : `

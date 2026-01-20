@@ -61,23 +61,21 @@ function buildInvoicePayload(draft) {
   }
 
   return {
-    invoice_id: draft.invoice_id || null, // ✅ PASSTHROUGH
+    invoice_id: draft.invoice_id || null,
     client_id: draft.client.id,
     invoice_date: draft.invoice_date,
     due_date: draft.due_date,
-
     items: draft.items,
     taxes: draft.taxes || [],
     discount: draft.discount || 0,
     notes: draft.notes || '',
-
     layout_id: normalizeLayout(draft.layout_id),
     payment: draft.payment || {},
   };
 }
 
 /* ===================================================
-   TOTAL CALCULATOR (SAFE)
+   TOTAL CALCULATOR
 =================================================== */
 function calculateTotal(invoice) {
   const subtotal =
@@ -90,12 +88,11 @@ function calculateTotal(invoice) {
       0
     );
 
-  const discount = Number(invoice.discount || 0);
-  return subtotal + tax - discount;
+  return subtotal + tax - Number(invoice.discount || 0);
 }
 
 /* ===================================================
-   RENDER: DRAFT PREVIEW
+   RENDER PREVIEW (DISPLAY FIX ONLY)
 =================================================== */
 function renderDraftPreview(invoice, rawLayout) {
   if (!box || !invoice || !Array.isArray(invoice.items)) return;
@@ -103,25 +100,30 @@ function renderDraftPreview(invoice, rawLayout) {
   const layout = normalizeLayout(rawLayout);
   const total = calculateTotal(invoice);
 
+  /* 🔧 DISPLAY FIX */
+  const fromName = invoice.seller?.company_name || '—';
+  const fromEmail = invoice.seller?.email || '';
+
+  const billedToName =
+    invoice.client?.company_name || invoice.client?.name || '—';
+  const billedToEmail = invoice.client?.email || '';
+
   box.innerHTML = `
     <div class="invoice ${layout}">
       <h3>Invoice</h3>
 
-      <p>
-        <strong>Invoice #:</strong>
-        ${invoice.invoice_id || 'INV-XXXX'}
-      </p>
+      <p><strong>Invoice #:</strong> ${invoice.invoice_id || 'INV-XXXX'}</p>
 
       <hr />
 
       <p><strong>From:</strong><br/>
-        ${invoice.seller?.name || '—'}<br/>
-        ${invoice.seller?.email || ''}
+        ${fromName}<br/>
+        ${fromEmail}
       </p>
 
       <p><strong>Billed To:</strong><br/>
-        ${invoice.client?.name || '—'}<br/>
-        ${invoice.client?.email || ''}
+        ${billedToName}<br/>
+        ${billedToEmail}
       </p>
 
       <p><strong>Invoice Date:</strong> ${invoice.invoice_date || '—'}</p>
@@ -142,20 +144,19 @@ function renderDraftPreview(invoice, rawLayout) {
           ${invoice.items
             .map(
               (i) => `
-                <tr>
-                  <td>${i.description}</td>
-                  <td align="right">${i.quantity}</td>
-                  <td align="right">₹${i.rate}</td>
-                  <td align="right">₹${(i.quantity * i.rate).toLocaleString()}</td>
-                </tr>
-              `
+              <tr>
+                <td>${i.description}</td>
+                <td align="right">${i.quantity}</td>
+                <td align="right">₹${i.rate}</td>
+                <td align="right">₹${(i.quantity * i.rate).toLocaleString()}</td>
+              </tr>
+            `
             )
             .join('')}
         </tbody>
       </table>
 
       <hr />
-
       <p><strong>Total:</strong> ₹${total.toLocaleString()}</p>
 
       ${
@@ -165,14 +166,14 @@ function renderDraftPreview(invoice, rawLayout) {
       }
 
       <div class="invoice-footer">
-        Powered by <strong>RemindFlow</strong> — Smart payment reminders
+        Powered by <strong>RemindFlow</strong>
       </div>
     </div>
   `;
 }
 
 /* ===================================================
-   LOAD EXISTING INVOICE
+   LOAD EXISTING INVOICE (DB)
 =================================================== */
 async function loadExistingInvoice(id) {
   try {
@@ -192,9 +193,11 @@ async function loadExistingInvoice(id) {
 }
 
 /* ===================================================
-   INIT RENDER
+   INIT (SOURCE OF TRUTH FIXED)
 =================================================== */
-if (draft) {
+if (invoiceId) {
+  loadExistingInvoice(invoiceId);
+} else if (draft) {
   renderDraftPreview(draft, draft.layout_id);
 
   layoutSelect?.addEventListener('change', () => {
@@ -202,81 +205,6 @@ if (draft) {
     sessionStorage.setItem('invoiceDraft', JSON.stringify(draft));
     renderDraftPreview(draft, draft.layout_id);
   });
+} else {
+  window.location.href = '/dashboard.html';
 }
-
-/* ===================================================
-   SAVE DRAFT
-=================================================== */
-document.getElementById('saveDraft')?.addEventListener('click', async () => {
-  try {
-    const headers = getAuthHeaders();
-    if (!headers) return (window.location.href = '/login.html');
-
-    const payload = buildInvoicePayload(draft);
-
-    const res = await fetch('/api/invoices', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.message || 'Save failed');
-    }
-
-    sessionStorage.removeItem('invoiceDraft');
-    showAlert('Draft saved');
-    window.location.href = '/invoices.html';
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-});
-
-/* ===================================================
-   FINALIZE
-=================================================== */
-document.getElementById('finalSave')?.addEventListener('click', async () => {
-  try {
-    const headers = getAuthHeaders();
-    if (!headers) return (window.location.href = '/login.html');
-
-    let dbId = invoiceId;
-
-    if (!dbId) {
-      const payload = buildInvoicePayload(draft);
-
-      const saveRes = await fetch('/api/invoices', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload),
-      });
-
-      if (!saveRes.ok) throw new Error('Draft save failed');
-
-      const data = await saveRes.json();
-      dbId = data.db_id;
-    }
-
-    const res = await fetch(`/api/invoices/${dbId}/finalize`, {
-      method: 'PUT',
-      headers,
-    });
-
-    if (!res.ok) throw new Error('Finalize failed');
-
-    sessionStorage.removeItem('invoiceDraft');
-    showAlert('Invoice finalized');
-    window.location.href = '/invoices.html';
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-});
-
-/* ===================================================
-   INIT
-=================================================== */
-if (!draft && invoiceId) loadExistingInvoice(invoiceId);
-if (!draft && !invoiceId) window.location.href = '/dashboard.html';

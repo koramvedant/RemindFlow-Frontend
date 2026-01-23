@@ -6,14 +6,10 @@
 const box = document.getElementById('invoiceBox');
 const layoutSelect = document.getElementById('layoutSelect');
 
-/* ------------------ Auth Helper ------------------ */
+/* ------------------ Auth Helper (COOKIE BASED) ------------------ */
 function getAuthHeaders() {
-  const token = localStorage.getItem('accessToken');
-  if (!token) return null;
-
   return {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
   };
 }
 
@@ -70,7 +66,9 @@ function buildInvoicePayload(draft) {
     discount: draft.discount || 0,
     notes: draft.notes || '',
     layout_id: normalizeLayout(draft.layout_id),
-    payment: draft.payment || {},
+    payment: {
+      razorpay_enabled: !!draft.payment?.razorpay_enabled,
+    },
   };
 }
 
@@ -92,7 +90,7 @@ function calculateTotal(invoice) {
 }
 
 /* ===================================================
-   RENDER PREVIEW (DISPLAY FIX ONLY)
+   RENDER PREVIEW (DISPLAY FIX + PAYMENT PREVIEW)
 =================================================== */
 function renderDraftPreview(invoice, rawLayout) {
   if (!box || !invoice || !Array.isArray(invoice.items)) return;
@@ -107,7 +105,9 @@ function renderDraftPreview(invoice, rawLayout) {
     '—';
 
   const fromEmail =
-    invoice.seller?.email || '';
+    invoice.seller?.email ||
+    invoice.business?.contact_email ||
+    '';
 
   /* BILLED TO */
   const billedToName =
@@ -119,19 +119,22 @@ function renderDraftPreview(invoice, rawLayout) {
     invoice.client?.email || '';
 
   /* PAYMENT PREVIEW (VISUAL ONLY) */
-  const paymentPreview =
-    invoice.payment?.razorpay_enabled
-      ? `
-        <div class="payment-preview">
-          <button class="pay-btn disabled" disabled>
-            Pay Now
-          </button>
-          <p class="payment-note">
-            (Payment button will be active after invoice is finalized)
-          </p>
+  const razorpayEnabled =
+    invoice.payment?.razorpay_enabled ||
+    draft?.payment?.razorpay_enabled;
+
+  const paymentPreview = razorpayEnabled
+    ? `
+      <div class="payment-section">
+        <button class="pay-now-btn" disabled>
+          Pay Now
+        </button>
+        <div class="payment-note">
+          Payment button will be active after invoice is finalized
         </div>
-      `
-      : '';
+      </div>
+    `
+    : '';
 
   box.innerHTML = `
     <div class="invoice ${layout}">
@@ -200,14 +203,15 @@ function renderDraftPreview(invoice, rawLayout) {
 }
 
 /* ===================================================
-   LOAD EXISTING INVOICE (DB)
+   LOAD EXISTING INVOICE (DB — COOKIE AUTH)
 =================================================== */
 async function loadExistingInvoice(id) {
   try {
-    const headers = getAuthHeaders();
-    if (!headers) return (window.location.href = '/login.html');
+    const res = await fetch(`/api/invoices/id/${id}`, {
+      headers: getAuthHeaders(),
+      credentials: 'include',
+    });
 
-    const res = await fetch(`/api/invoices/id/${id}`, { headers });
     if (!res.ok) throw new Error('Fetch failed');
 
     const { invoice } = await res.json();
@@ -225,14 +229,12 @@ async function loadExistingInvoice(id) {
 if (!invoiceId && draft) {
   document.getElementById('saveDraft')?.addEventListener('click', async () => {
     try {
-      const headers = getAuthHeaders();
-      if (!headers) return (window.location.href = '/login.html');
-
       const payload = buildInvoicePayload(draft);
 
       const res = await fetch('/api/invoices', {
         method: 'POST',
-        headers,
+        headers: getAuthHeaders(),
+        credentials: 'include',
         body: JSON.stringify(payload),
       });
 
@@ -249,7 +251,7 @@ if (!invoiceId && draft) {
 }
 
 /* ===================================================
-   INIT (SOURCE OF TRUTH FIXED)
+   INIT
 =================================================== */
 if (invoiceId) {
   loadExistingInvoice(invoiceId);

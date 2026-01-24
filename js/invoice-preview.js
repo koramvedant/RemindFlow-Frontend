@@ -45,6 +45,36 @@ function normalizeLayout(value) {
 }
 
 /* ===================================================
+   🔧 NORMALIZE INVOICE FOR PREVIEW (ADDED)
+=================================================== */
+function normalizeInvoiceForPreview(invoice) {
+  return {
+    ...invoice,
+
+    seller: {
+      company_name:
+        invoice.business?.name ||
+        invoice.sender?.business_name ||
+        invoice.sender?.name ||
+        '—',
+      email:
+        invoice.sender?.email ||
+        invoice.business?.contact_email ||
+        '',
+    },
+
+    client: {
+      company_name:
+        invoice.client?.company_name ||
+        invoice.client?.company ||
+        null,
+      name: invoice.client?.name || '—',
+      email: invoice.client?.email || '',
+    },
+  };
+}
+
+/* ===================================================
    BUILD API PAYLOAD (AUTHORITATIVE)
 =================================================== */
 function buildInvoicePayload(draft) {
@@ -215,7 +245,10 @@ async function loadExistingInvoice(id) {
     if (!res.ok) throw new Error('Fetch failed');
 
     const { invoice } = await res.json();
-    renderDraftPreview(invoice, invoice.layout_id);
+
+    /* 🔁 SINGLE LINE CHANGE */
+    const normalized = normalizeInvoiceForPreview(invoice);
+    renderDraftPreview(normalized, normalized.layout_id);
   } catch (err) {
     console.error(err);
     alert('Failed to load invoice');

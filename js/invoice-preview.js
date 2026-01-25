@@ -6,9 +6,12 @@
 const box = document.getElementById('invoiceBox');
 const layoutSelect = document.getElementById('layoutSelect');
 
-/* ------------------ Auth Helper (COOKIE BASED) ------------------ */
+/* ------------------ Auth Helper (BEARER TOKEN) ------------------ */
 function getAuthHeaders() {
+  const token = localStorage.getItem('accessToken');
+  if (!token) return {};
   return {
+    Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
   };
 }
@@ -45,7 +48,7 @@ function normalizeLayout(value) {
 }
 
 /* ===================================================
-   🔧 NORMALIZE INVOICE FOR PREVIEW (ADDED)
+   🔧 NORMALIZE INVOICE FOR PREVIEW
 =================================================== */
 function normalizeInvoiceForPreview(invoice) {
   return {
@@ -120,7 +123,7 @@ function calculateTotal(invoice) {
 }
 
 /* ===================================================
-   RENDER PREVIEW (DISPLAY FIX + PAYMENT PREVIEW)
+   RENDER PREVIEW
 =================================================== */
 function renderDraftPreview(invoice, rawLayout) {
   if (!box || !invoice || !Array.isArray(invoice.items)) return;
@@ -233,20 +236,18 @@ function renderDraftPreview(invoice, rawLayout) {
 }
 
 /* ===================================================
-   LOAD EXISTING INVOICE (DB — COOKIE AUTH)
+   LOAD EXISTING INVOICE (DB — TOKEN AUTH)
 =================================================== */
 async function loadExistingInvoice(id) {
   try {
     const res = await fetch(`/api/invoices/id/${id}`, {
       headers: getAuthHeaders(),
-      credentials: 'include',
     });
 
     if (!res.ok) throw new Error('Fetch failed');
 
     const { invoice } = await res.json();
 
-    /* 🔁 SINGLE LINE CHANGE */
     const normalized = normalizeInvoiceForPreview(invoice);
     renderDraftPreview(normalized, normalized.layout_id);
   } catch (err) {
@@ -267,7 +268,6 @@ if (!invoiceId && draft) {
       const res = await fetch('/api/invoices', {
         method: 'POST',
         headers: getAuthHeaders(),
-        credentials: 'include',
         body: JSON.stringify(payload),
       });
 

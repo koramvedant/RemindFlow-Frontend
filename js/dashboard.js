@@ -1,3 +1,5 @@
+// /js/dashboard.js
+
 /* ------------------ Utils ------------------ */
 const $ = (id) => document.getElementById(id);
 
@@ -22,6 +24,7 @@ function getAuthHeaders() {
 
   return {
     Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
   };
 }
 
@@ -107,7 +110,7 @@ async function fetchJSON(path) {
   try {
     const res = await fetch(backendBase + path, { headers });
 
-    if (res.status === 401) {
+    if (res.status === 401 || res.status === 403) {
       localStorage.clear();
       window.location.replace('/login.html');
       return null;

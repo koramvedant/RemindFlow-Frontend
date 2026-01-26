@@ -1,88 +1,80 @@
 // js/guard.js
 
 /**
- * Auth guard
- * Enforces:
- * - token presence
- * - onboarding completion
- * - active subscription
+ * Auth guard (FINAL — cookie + bearer compatible)
  *
- * DB is the source of truth via /api/user/me
+ * Responsibility:
+ * - Verify authenticated session exists
+ * - Identify logged-in principal
+ *
+ * NOT responsible for:
+ * - onboarding enforcement
+ * - plan enforcement
+ * - business rules
  */
 export function requireAuth() {
   const token = localStorage.getItem('accessToken');
   const path = window.location.pathname;
 
   // -----------------------------
-  // 1️⃣ No token → login
+  // 1️⃣ Allow public pages
   // -----------------------------
-  if (!token) {
-    window.location.replace('/login.html');
+  const publicPages = ['/login.html'];
+  if (publicPages.includes(path)) {
     return;
   }
 
   // -----------------------------
-  // 2️⃣ Public allowed pages
-  // -----------------------------
-  const allowedWithoutChecks = [
-    '/onboarding.html',
-    '/plans.html',
-  ];
-
-  if (allowedWithoutChecks.includes(path)) {
-    return;
-  }
-
-  // -----------------------------
-  // 3️⃣ Fetch user state (DB SOURCE OF TRUTH)
+  // 2️⃣ Fetch identity (SOURCE OF TRUTH)
   // -----------------------------
   fetch('/api/user/me', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
+      : undefined,
+    credentials: 'include', // cookie + bearer coexistence
   })
     .then((res) => {
-      if (!res.ok) {
-        throw new Error('Unauthorized');
+      if (res.status === 401 || res.status === 403) {
+        throw new Error('AUTH_INVALID');
       }
+
+      if (!res.ok) {
+        throw new Error('API_ERROR');
+      }
+
       return res.json();
     })
     .then((data) => {
-      const user = data?.user;
+      // Accept BOTH response shapes
+      const principal = data?.seller || data?.user;
 
-      if (!user) {
-        throw new Error('Invalid user');
-      }
-
-      // -----------------------------
-      // 4️⃣ Enforce onboarding
-      // -----------------------------
-      if (!user.onboarding_completed) {
-        window.location.replace('/onboarding.html');
+      if (!principal) {
+        console.warn(
+          'Auth guard: identity missing in /api/user/me response',
+          data
+        );
         return;
       }
 
-      // -----------------------------
-      // 5️⃣ Enforce plan selection
-      // -----------------------------
-      if (!user.subscription_active) {
-        window.location.replace('/plans.html');
-        return;
-      }
-
-      // ✅ All checks passed → allow page to load
+      // ✅ Authenticated → allow page to load
     })
     .catch((err) => {
       console.error('Auth guard failed:', err);
 
-      // Hard reset on auth failure
-      localStorage.clear();
-      window.location.replace('/login.html');
+      if (err.message === 'AUTH_INVALID') {
+        localStorage.removeItem('accessToken');
+        window.location.replace('/login.html');
+      }
+
+      // Network / API errors → do NOT redirect
     });
 }
 
 /**
- * Optional helper
+ * Logout helper (explicit user action)
  */
 export function logout() {
   localStorage.removeItem('accessToken');

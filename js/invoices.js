@@ -54,8 +54,9 @@ function statusBadge(status) {
   }
 }
 
+/* ------------------ Client Name (AUTHORITATIVE) ------------------ */
 function clientName(inv) {
-  return inv.data_snapshot?.client?.name || '—';
+  return inv.client_company || inv.client_name || '—';
 }
 
 /* ------------------ PDF Download ------------------ */

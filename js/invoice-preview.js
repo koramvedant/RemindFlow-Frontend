@@ -1,12 +1,12 @@
 /* ===================================================
-   INVOICE PREVIEW — DRAFT + EXISTING (FINAL, FIXED)
+   INVOICE PREVIEW — FINAL (SENDER SOURCE FIXED)
 =================================================== */
 
 /* ------------------ Elements ------------------ */
 const box = document.getElementById('invoiceBox');
 const layoutSelect = document.getElementById('layoutSelect');
 
-/* ------------------ Auth Helper (BEARER TOKEN) ------------------ */
+/* ------------------ Auth Helper ------------------ */
 function getAuthHeaders() {
   const token = localStorage.getItem('accessToken');
   if (!token) return {};
@@ -14,6 +14,30 @@ function getAuthHeaders() {
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
   };
+}
+
+/* ------------------ Global Seller Cache ------------------ */
+let currentSeller = null;
+
+/* ------------------ Load Seller (SOURCE OF TRUTH) ------------------ */
+async function loadSeller() {
+  if (currentSeller) return currentSeller;
+
+  try {
+    const res = await fetch('/api/user/me', {
+      headers: getAuthHeaders(),
+      credentials: 'include',
+    });
+
+    if (!res.ok) throw new Error('Failed to load seller');
+
+    const data = await res.json();
+    currentSeller = data?.seller || null;
+    return currentSeller;
+  } catch (err) {
+    console.error('Failed to load seller info:', err);
+    return null;
+  }
 }
 
 /* ------------------ Utility: Alert ------------------ */
@@ -48,22 +72,15 @@ function normalizeLayout(value) {
 }
 
 /* ===================================================
-   🔧 NORMALIZE INVOICE FOR PREVIEW
+   NORMALIZE INVOICE FOR PREVIEW (AUTHORITATIVE)
 =================================================== */
-function normalizeInvoiceForPreview(invoice) {
+function normalizeInvoiceForPreview(invoice, seller) {
   return {
     ...invoice,
 
     seller: {
-      company_name:
-        invoice.business?.name ||
-        invoice.sender?.business_name ||
-        invoice.sender?.name ||
-        '—',
-      email:
-        invoice.sender?.email ||
-        invoice.business?.contact_email ||
-        '',
+      company_name: seller?.company_name || '—',
+      email: seller?.email || '',
     },
 
     client: {
@@ -131,27 +148,16 @@ function renderDraftPreview(invoice, rawLayout) {
   const layout = normalizeLayout(rawLayout);
   const total = calculateTotal(invoice);
 
-  /* FROM */
-  const fromName =
-    invoice.seller?.company_name ||
-    invoice.business?.name ||
-    '—';
+  const fromName = invoice.seller?.company_name || '—';
+  const fromEmail = invoice.seller?.email || '';
 
-  const fromEmail =
-    invoice.seller?.email ||
-    invoice.business?.contact_email ||
-    '';
-
-  /* BILLED TO */
   const billedToName =
     invoice.client?.company_name ||
     invoice.client?.name ||
     '—';
 
-  const billedToEmail =
-    invoice.client?.email || '';
+  const billedToEmail = invoice.client?.email || '';
 
-  /* PAYMENT PREVIEW (VISUAL ONLY) */
   const razorpayEnabled =
     invoice.payment?.razorpay_enabled ||
     draft?.payment?.razorpay_enabled;
@@ -174,7 +180,6 @@ function renderDraftPreview(invoice, rawLayout) {
       <h3>Invoice</h3>
 
       <p><strong>Invoice #:</strong> ${invoice.invoice_id || 'INV-XXXX'}</p>
-
       <hr />
 
       <p><strong>From:</strong><br/>
@@ -236,10 +241,12 @@ function renderDraftPreview(invoice, rawLayout) {
 }
 
 /* ===================================================
-   LOAD EXISTING INVOICE (DB — TOKEN AUTH)
+   LOAD EXISTING INVOICE
 =================================================== */
 async function loadExistingInvoice(id) {
   try {
+    const seller = await loadSeller();
+
     const res = await fetch(`/api/invoices/id/${id}`, {
       headers: getAuthHeaders(),
     });
@@ -248,7 +255,7 @@ async function loadExistingInvoice(id) {
 
     const { invoice } = await res.json();
 
-    const normalized = normalizeInvoiceForPreview(invoice);
+    const normalized = normalizeInvoiceForPreview(invoice, seller);
     renderDraftPreview(normalized, normalized.layout_id);
   } catch (err) {
     console.error(err);
@@ -289,12 +296,18 @@ if (!invoiceId && draft) {
 if (invoiceId) {
   loadExistingInvoice(invoiceId);
 } else if (draft) {
-  renderDraftPreview(draft, draft.layout_id);
+  loadSeller().then((seller) => {
+    const normalized = normalizeInvoiceForPreview(draft, seller);
+    renderDraftPreview(normalized, normalized.layout_id);
 
-  layoutSelect?.addEventListener('change', () => {
-    draft.layout_id = normalizeLayout(layoutSelect.value);
-    sessionStorage.setItem('invoiceDraft', JSON.stringify(draft));
-    renderDraftPreview(draft, draft.layout_id);
+    layoutSelect?.addEventListener('change', () => {
+      draft.layout_id = normalizeLayout(layoutSelect.value);
+      sessionStorage.setItem('invoiceDraft', JSON.stringify(draft));
+      renderDraftPreview(
+        normalizeInvoiceForPreview(draft, seller),
+        draft.layout_id
+      );
+    });
   });
 } else {
   window.location.href = '/dashboard.html';

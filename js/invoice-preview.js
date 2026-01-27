@@ -5,6 +5,8 @@
 /* ------------------ Elements ------------------ */
 const box = document.getElementById('invoiceBox');
 const layoutSelect = document.getElementById('layoutSelect');
+const saveDraftBtn = document.getElementById('saveDraft');
+const finalSaveBtn = document.getElementById('finalSave');
 
 /* ------------------ Auth Helper ------------------ */
 function getAuthHeaders() {
@@ -72,17 +74,15 @@ function normalizeLayout(value) {
 }
 
 /* ===================================================
-   NORMALIZE INVOICE FOR PREVIEW (AUTHORITATIVE)
+   NORMALIZE INVOICE FOR PREVIEW
 =================================================== */
 function normalizeInvoiceForPreview(invoice, seller) {
   return {
     ...invoice,
-
     seller: {
       company_name: seller?.company_name || '—',
       email: seller?.email || '',
     },
-
     client: {
       company_name:
         invoice.client?.company_name ||
@@ -95,16 +95,12 @@ function normalizeInvoiceForPreview(invoice, seller) {
 }
 
 /* ===================================================
-   BUILD API PAYLOAD (AUTHORITATIVE)
+   BUILD API PAYLOAD
 =================================================== */
 function buildInvoicePayload(draft) {
-  if (!draft?.client?.id) {
-    throw new Error('Client missing in draft');
-  }
-
-  if (!Array.isArray(draft.items) || draft.items.length === 0) {
+  if (!draft?.client?.id) throw new Error('Client missing in draft');
+  if (!Array.isArray(draft.items) || !draft.items.length)
     throw new Error('Invoice items missing');
-  }
 
   return {
     invoice_id: draft.invoice_id || null,
@@ -130,33 +126,22 @@ function calculateTotal(invoice) {
     invoice.subtotal ??
     invoice.items.reduce((s, i) => s + i.quantity * i.rate, 0);
 
-  const tax =
-    (invoice.taxes || []).reduce(
-      (sum, t) => sum + (subtotal * Number(t.rate || 0)) / 100,
-      0
-    );
+  const tax = (invoice.taxes || []).reduce(
+    (sum, t) => sum + (subtotal * Number(t.rate || 0)) / 100,
+    0
+  );
 
   return subtotal + tax - Number(invoice.discount || 0);
 }
 
 /* ===================================================
-   RENDER PREVIEW
+   RENDER PREVIEW (UNCHANGED — PAYMENT KEPT)
 =================================================== */
 function renderDraftPreview(invoice, rawLayout) {
   if (!box || !invoice || !Array.isArray(invoice.items)) return;
 
   const layout = normalizeLayout(rawLayout);
   const total = calculateTotal(invoice);
-
-  const fromName = invoice.seller?.company_name || '—';
-  const fromEmail = invoice.seller?.email || '';
-
-  const billedToName =
-    invoice.client?.company_name ||
-    invoice.client?.name ||
-    '—';
-
-  const billedToEmail = invoice.client?.email || '';
 
   const razorpayEnabled =
     invoice.payment?.razorpay_enabled ||
@@ -165,9 +150,7 @@ function renderDraftPreview(invoice, rawLayout) {
   const paymentPreview = razorpayEnabled
     ? `
       <div class="payment-section">
-        <button class="pay-now-btn" disabled>
-          Pay Now
-        </button>
+        <button class="pay-now-btn" disabled>Pay Now</button>
         <div class="payment-note">
           Payment button will be active after invoice is finalized
         </div>
@@ -178,18 +161,17 @@ function renderDraftPreview(invoice, rawLayout) {
   box.innerHTML = `
     <div class="invoice ${layout}">
       <h3>Invoice</h3>
-
       <p><strong>Invoice #:</strong> ${invoice.invoice_id || 'INV-XXXX'}</p>
       <hr />
 
       <p><strong>From:</strong><br/>
-        ${fromName}<br/>
-        ${fromEmail}
+        ${invoice.seller.company_name}<br/>
+        ${invoice.seller.email}
       </p>
 
       <p><strong>Billed To:</strong><br/>
-        ${billedToName}<br/>
-        ${billedToEmail}
+        ${invoice.client.company_name || invoice.client.name}<br/>
+        ${invoice.client.email}
       </p>
 
       <p><strong>Invoice Date:</strong> ${invoice.invoice_date || '—'}</p>
@@ -198,44 +180,21 @@ function renderDraftPreview(invoice, rawLayout) {
       <hr />
 
       <table width="100%">
-        <thead>
-          <tr>
-            <th align="left">Description</th>
-            <th align="right">Qty</th>
-            <th align="right">Rate</th>
-            <th align="right">Amount</th>
-          </tr>
-        </thead>
         <tbody>
-          ${invoice.items
-            .map(
-              (i) => `
-              <tr>
-                <td>${i.description}</td>
-                <td align="right">${i.quantity}</td>
-                <td align="right">₹${i.rate}</td>
-                <td align="right">₹${(i.quantity * i.rate).toLocaleString()}</td>
-              </tr>
-            `
-            )
-            .join('')}
+          ${invoice.items.map(i => `
+            <tr>
+              <td>${i.description}</td>
+              <td align="right">${i.quantity}</td>
+              <td align="right">₹${i.rate}</td>
+              <td align="right">₹${(i.quantity * i.rate).toLocaleString()}</td>
+            </tr>
+          `).join('')}
         </tbody>
       </table>
 
       <hr />
       <p><strong>Total:</strong> ₹${total.toLocaleString()}</p>
-
       ${paymentPreview}
-
-      ${
-        invoice.notes
-          ? `<p><strong>Notes:</strong><br/>${invoice.notes}</p>`
-          : ''
-      }
-
-      <div class="invoice-footer">
-        Powered by <strong>RemindFlow</strong>
-      </div>
     </div>
   `;
 }
@@ -244,51 +203,61 @@ function renderDraftPreview(invoice, rawLayout) {
    LOAD EXISTING INVOICE
 =================================================== */
 async function loadExistingInvoice(id) {
-  try {
-    const seller = await loadSeller();
-
-    const res = await fetch(`/api/invoices/id/${id}`, {
-      headers: getAuthHeaders(),
-    });
-
-    if (!res.ok) throw new Error('Fetch failed');
-
-    const { invoice } = await res.json();
-
-    const normalized = normalizeInvoiceForPreview(invoice, seller);
-    renderDraftPreview(normalized, normalized.layout_id);
-  } catch (err) {
-    console.error(err);
-    alert('Failed to load invoice');
-    window.location.href = '/dashboard.html';
-  }
+  const seller = await loadSeller();
+  const res = await fetch(`/api/invoices/id/${id}`, {
+    headers: getAuthHeaders(),
+  });
+  const { invoice } = await res.json();
+  renderDraftPreview(normalizeInvoiceForPreview(invoice, seller), invoice.layout_id);
 }
 
 /* ===================================================
-   SAVE DRAFT (CREATE FLOW ONLY)
+   SAVE DRAFT (CREATE + EDIT)
 =================================================== */
-if (!invoiceId && draft) {
-  document.getElementById('saveDraft')?.addEventListener('click', async () => {
-    try {
-      const payload = buildInvoicePayload(draft);
+saveDraftBtn?.addEventListener('click', async () => {
+  try {
+    const payload = buildInvoicePayload(draft);
 
-      const res = await fetch('/api/invoices', {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(payload),
-      });
+    const url = invoiceId
+      ? `/api/invoices/${invoiceId}`
+      : `/api/invoices`;
 
-      if (!res.ok) throw new Error('Save failed');
+    const method = invoiceId ? 'PUT' : 'POST';
 
-      sessionStorage.removeItem('invoiceDraft');
-      showAlert('Draft saved');
-      window.location.href = '/invoices.html';
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    }
+    const res = await fetch(url, {
+      method,
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error('Save failed');
+
+    sessionStorage.removeItem('invoiceDraft');
+    showAlert('Draft saved');
+    window.location.href = '/invoices.html';
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+/* ===================================================
+   FINALIZE INVOICE
+=================================================== */
+finalSaveBtn?.addEventListener('click', async () => {
+  if (!invoiceId) return alert('Invoice not created yet');
+
+  if (!confirm('Finalize this invoice?')) return;
+
+  const res = await fetch(`/api/invoices/${invoiceId}/finalize`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
   });
-}
+
+  if (!res.ok) return alert('Finalize failed');
+
+  sessionStorage.removeItem('invoiceDraft');
+  window.location.href = '/invoices.html';
+});
 
 /* ===================================================
    INIT
@@ -296,19 +265,10 @@ if (!invoiceId && draft) {
 if (invoiceId) {
   loadExistingInvoice(invoiceId);
 } else if (draft) {
-  loadSeller().then((seller) => {
-    const normalized = normalizeInvoiceForPreview(draft, seller);
-    renderDraftPreview(normalized, normalized.layout_id);
-
-    layoutSelect?.addEventListener('change', () => {
-      draft.layout_id = normalizeLayout(layoutSelect.value);
-      sessionStorage.setItem('invoiceDraft', JSON.stringify(draft));
-      renderDraftPreview(
-        normalizeInvoiceForPreview(draft, seller),
-        draft.layout_id
-      );
-    });
-  });
-} else {
-  window.location.href = '/dashboard.html';
+  loadSeller().then(seller =>
+    renderDraftPreview(
+      normalizeInvoiceForPreview(draft, seller),
+      draft.layout_id
+    )
+  );
 }

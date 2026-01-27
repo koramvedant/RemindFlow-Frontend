@@ -17,14 +17,18 @@ const discountInput = document.getElementById('discount');
 const notesInput = document.getElementById('notes');
 const layoutSelect = document.getElementById('layoutSelect');
 const enableRazorpay = document.getElementById('enableRazorpay');
-
-/* 🔑 NEW */
 const invoiceIdInput = document.getElementById('invoiceIdInput');
+
+/* 🔑 ITEMS UI */
+const itemsContainer = document.getElementById('itemsBody');
 
 /* ================= STATE ================= */
 let clients = [];
 let selectedClient = null;
 let activeIndex = -1;
+
+/* ✅ ITEMS STATE */
+let items = [];
 
 /* ================= FETCH CLIENTS ================= */
 async function loadClients() {
@@ -107,22 +111,41 @@ searchInput.addEventListener('keydown', (e) => {
   );
 });
 
-/* ================= ITEMS ================= */
-function getInvoiceItems() {
-  const rows = document.querySelectorAll('.item-row');
-  const items = [];
+/* ================= ITEMS RENDER ================= */
+function renderItems() {
+  itemsContainer.innerHTML = '';
 
-  rows.forEach((row) => {
-    const description = row.querySelector('.item-desc')?.value.trim();
-    const quantity = Number(row.querySelector('.item-qty')?.value);
-    const rate = Number(row.querySelector('.item-rate')?.value);
+  items.forEach((item, index) => {
+    const row = document.createElement('div');
+    row.className = 'item-row';
 
-    if (!description || quantity <= 0 || rate <= 0) return;
-    items.push({ description, quantity, rate });
+    row.innerHTML = `
+      <input value="${item.description}" disabled />
+      <input value="${item.quantity}" disabled />
+      <input value="${item.rate}" disabled />
+
+      <button
+        type="button"
+        class="item-delete"
+        data-index="${index}"
+        aria-label="Delete item"
+      >
+        🗑
+      </button>
+    `;
+
+    itemsContainer.appendChild(row);
   });
-
-  return items;
 }
+
+/* ✅ DELETE ITEM (EVENT DELEGATION) */
+itemsContainer.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('item-delete')) return;
+
+  const index = Number(e.target.dataset.index);
+  items.splice(index, 1);
+  renderItems();
+});
 
 /* ================= TAX ================= */
 function getTaxes() {
@@ -149,7 +172,6 @@ continueBtn.onclick = () => {
     return;
   }
 
-  const items = getInvoiceItems();
   if (!items.length) {
     alert('Add at least one invoice item');
     return;
@@ -161,11 +183,10 @@ continueBtn.onclick = () => {
   const discount = Number(discountInput.value) || 0;
   const total = subtotal + taxAmount - discount;
 
-  /* 🔑 CRITICAL */
   const manualInvoiceId = invoiceIdInput?.value.trim();
 
   const payload = {
-    invoice_id: manualInvoiceId || null, // ✅ FINAL RULE
+    invoice_id: manualInvoiceId || null,
     invoice_date: invoiceDate.value,
     due_date: dueDate.value,
 
@@ -175,7 +196,7 @@ continueBtn.onclick = () => {
     },
 
     client: {
-      id: selectedClient.client_id, // 🔒 REQUIRED
+      id: selectedClient.client_id,
       name: selectedClient.name,
       email: selectedClient.email || '',
     },

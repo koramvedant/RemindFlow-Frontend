@@ -27,7 +27,7 @@ let clients = [];
 let selectedClient = null;
 let activeIndex = -1;
 
-/* ✅ ITEMS STATE */
+/* ✅ SINGLE SOURCE OF TRUTH */
 let items = [];
 
 /* ================= FETCH CLIENTS ================= */
@@ -92,26 +92,26 @@ searchInput.addEventListener('input', () => {
 });
 
 searchInput.addEventListener('keydown', (e) => {
-  const items = dropdown.querySelectorAll('li');
-  if (!items.length) return;
+  const listItems = dropdown.querySelectorAll('li');
+  if (!listItems.length) return;
 
-  if (e.key === 'ArrowDown') activeIndex = (activeIndex + 1) % items.length;
-  if (e.key === 'ArrowUp') activeIndex = (activeIndex - 1 + items.length) % items.length;
+  if (e.key === 'ArrowDown') activeIndex = (activeIndex + 1) % listItems.length;
+  if (e.key === 'ArrowUp') activeIndex = (activeIndex - 1 + listItems.length) % listItems.length;
 
   if (e.key === 'Enter') {
     e.preventDefault();
-    items[activeIndex]?.click();
+    listItems[activeIndex]?.click();
     return;
   }
 
   if (e.key === 'Escape') dropdown.style.display = 'none';
 
-  items.forEach((li, i) =>
+  listItems.forEach((li, i) =>
     li.classList.toggle('active', i === activeIndex)
   );
 });
 
-/* ================= ITEMS RENDER ================= */
+/* ================= ITEMS RENDER (SOLE DOM AUTHORITY) ================= */
 function renderItems() {
   itemsContainer.innerHTML = '';
 
@@ -120,15 +120,15 @@ function renderItems() {
     row.className = 'item-row';
 
     row.innerHTML = `
-      <input value="${item.description}" disabled />
-      <input value="${item.quantity}" disabled />
-      <input value="${item.rate}" disabled />
+      <input value="${item.description}" />
+      <input type="number" value="${item.quantity}" />
+      <input type="number" value="${item.rate}" />
 
       <button
         type="button"
         class="item-delete"
         data-index="${index}"
-        aria-label="Delete item"
+        title="Delete item"
       >
         🗑
       </button>
@@ -138,7 +138,7 @@ function renderItems() {
   });
 }
 
-/* ✅ DELETE ITEM (EVENT DELEGATION) */
+/* ================= DELETE ITEM (ONE ONLY) ================= */
 itemsContainer.addEventListener('click', (e) => {
   if (!e.target.classList.contains('item-delete')) return;
 

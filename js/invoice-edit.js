@@ -31,9 +31,10 @@ const itemsContainer = document.getElementById('itemsBody');
 /* ================= STATE ================= */
 let clients = [];
 let selectedClient = null;
-let invoice = null;
-let draft = null;
 let activeIndex = -1;
+
+/* ✅ SINGLE SOURCE OF TRUTH */
+let draft = { items: [] };
 
 /* ================= FETCH CLIENTS ================= */
 async function loadClients() {
@@ -49,11 +50,10 @@ async function loadInvoice() {
   });
 
   const data = await res.json();
-  invoice = data.invoice;
 
   draft = {
-    ...invoice,
-    items: [...(invoice.items || [])],
+    ...data.invoice,
+    items: [...(data.invoice.items || [])],
   };
 
   sessionStorage.setItem('invoiceDraft', JSON.stringify(draft));
@@ -112,7 +112,7 @@ searchInput.addEventListener('input', () => {
   );
 });
 
-/* ================= ITEMS RENDER ================= */
+/* ================= ITEMS RENDER (SOLE DOM AUTHORITY) ================= */
 function renderItems() {
   itemsContainer.innerHTML = '';
 
@@ -138,7 +138,7 @@ function renderItems() {
   });
 }
 
-/* ================= DELETE ITEM ================= */
+/* ================= DELETE ITEM (ONLY ONE HANDLER) ================= */
 itemsContainer.addEventListener('click', (e) => {
   if (!e.target.classList.contains('item-delete')) return;
 

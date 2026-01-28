@@ -1,5 +1,5 @@
 /* ===================================================
-   INVOICE PREVIEW — FINAL (SENDER SOURCE FIXED)
+   INVOICE PREVIEW — FINAL (DRAFT-FIRST FIX APPLIED)
 =================================================== */
 
 /* ------------------ Elements ------------------ */
@@ -18,10 +18,20 @@ function getAuthHeaders() {
   };
 }
 
+/* ------------------ Date Formatter ------------------ */
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+
+  const d = new Date(dateStr);
+  if (isNaN(d)) return '—';
+
+  return d.toISOString().split('T')[0];
+}
+
 /* ------------------ Global Seller Cache ------------------ */
 let currentSeller = null;
 
-/* ------------------ Load Seller (SOURCE OF TRUTH) ------------------ */
+/* ------------------ Load Seller ------------------ */
 async function loadSeller() {
   if (currentSeller) return currentSeller;
 
@@ -73,9 +83,7 @@ function normalizeLayout(value) {
     : 'minimal';
 }
 
-/* ===================================================
-   NORMALIZE INVOICE FOR PREVIEW
-=================================================== */
+/* ------------------ Normalize Invoice ------------------ */
 function normalizeInvoiceForPreview(invoice, seller) {
   return {
     ...invoice,
@@ -94,9 +102,7 @@ function normalizeInvoiceForPreview(invoice, seller) {
   };
 }
 
-/* ===================================================
-   BUILD API PAYLOAD
-=================================================== */
+/* ------------------ Build Payload ------------------ */
 function buildInvoicePayload(draft) {
   if (!draft?.client?.id) throw new Error('Client missing in draft');
   if (!Array.isArray(draft.items) || !draft.items.length)
@@ -118,9 +124,7 @@ function buildInvoicePayload(draft) {
   };
 }
 
-/* ===================================================
-   TOTAL CALCULATOR
-=================================================== */
+/* ------------------ Total Calculator ------------------ */
 function calculateTotal(invoice) {
   const subtotal =
     invoice.subtotal ??
@@ -134,9 +138,7 @@ function calculateTotal(invoice) {
   return subtotal + tax - Number(invoice.discount || 0);
 }
 
-/* ===================================================
-   RENDER PREVIEW (UNCHANGED — PAYMENT KEPT)
-=================================================== */
+/* ------------------ Render Preview ------------------ */
 function renderDraftPreview(invoice, rawLayout) {
   if (!box || !invoice || !Array.isArray(invoice.items)) return;
 
@@ -174,21 +176,27 @@ function renderDraftPreview(invoice, rawLayout) {
         ${invoice.client.email}
       </p>
 
-      <p><strong>Invoice Date:</strong> ${invoice.invoice_date || '—'}</p>
-      <p><strong>Due Date:</strong> ${invoice.due_date || '—'}</p>
+      <p><strong>Invoice Date:</strong> ${formatDate(invoice.invoice_date)}</p>
+      <p><strong>Due Date:</strong> ${formatDate(invoice.due_date)}</p>
 
       <hr />
 
       <table width="100%">
         <tbody>
-          ${invoice.items.map(i => `
+          ${invoice.items
+            .map(
+              (i) => `
             <tr>
               <td>${i.description}</td>
               <td align="right">${i.quantity}</td>
               <td align="right">₹${i.rate}</td>
-              <td align="right">₹${(i.quantity * i.rate).toLocaleString()}</td>
+              <td align="right">₹${(
+                i.quantity * i.rate
+              ).toLocaleString()}</td>
             </tr>
-          `).join('')}
+          `
+            )
+            .join('')}
         </tbody>
       </table>
 
@@ -200,20 +208,31 @@ function renderDraftPreview(invoice, rawLayout) {
 }
 
 /* ===================================================
-   LOAD EXISTING INVOICE
+   LOAD EXISTING INVOICE (✅ DRAFT FIRST)
 =================================================== */
 async function loadExistingInvoice(id) {
   const seller = await loadSeller();
+
+  const storedDraft = sessionStorage.getItem('invoiceDraft');
+  if (storedDraft) {
+    const draft = JSON.parse(storedDraft);
+    const normalized = normalizeInvoiceForPreview(draft, seller);
+    renderDraftPreview(normalized, normalized.layout_id);
+    return;
+  }
+
   const res = await fetch(`/api/invoices/id/${id}`, {
     headers: getAuthHeaders(),
   });
+
   const { invoice } = await res.json();
-  renderDraftPreview(normalizeInvoiceForPreview(invoice, seller), invoice.layout_id);
+  renderDraftPreview(
+    normalizeInvoiceForPreview(invoice, seller),
+    invoice.layout_id
+  );
 }
 
-/* ===================================================
-   SAVE DRAFT (CREATE + EDIT)
-=================================================== */
+/* ------------------ Save Draft ------------------ */
 saveDraftBtn?.addEventListener('click', async () => {
   try {
     const payload = buildInvoicePayload(draft);
@@ -240,9 +259,7 @@ saveDraftBtn?.addEventListener('click', async () => {
   }
 });
 
-/* ===================================================
-   FINALIZE INVOICE
-=================================================== */
+/* ------------------ Finalize ------------------ */
 finalSaveBtn?.addEventListener('click', async () => {
   if (!invoiceId) return alert('Invoice not created yet');
 
@@ -259,13 +276,11 @@ finalSaveBtn?.addEventListener('click', async () => {
   window.location.href = '/invoices.html';
 });
 
-/* ===================================================
-   INIT
-=================================================== */
+/* ------------------ Init ------------------ */
 if (invoiceId) {
   loadExistingInvoice(invoiceId);
 } else if (draft) {
-  loadSeller().then(seller =>
+  loadSeller().then((seller) =>
     renderDraftPreview(
       normalizeInvoiceForPreview(draft, seller),
       draft.layout_id

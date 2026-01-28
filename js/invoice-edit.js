@@ -18,6 +18,7 @@ const searchInput = document.getElementById('clientSearch');
 const dropdown = document.getElementById('clientDropdown');
 const changeBtn = document.getElementById('changeClientBtn');
 const saveBtn = document.getElementById('saveBtn');
+const addItemBtn = document.getElementById('addItemBtn');
 
 const invoiceDate = document.getElementById('invoiceDate');
 const dueDate = document.getElementById('dueDate');
@@ -26,7 +27,8 @@ const notesInput = document.getElementById('notes');
 const layoutSelect = document.getElementById('layoutSelect');
 const enableRazorpay = document.getElementById('enableRazorpay');
 const invoiceIdInput = document.getElementById('invoiceIdInput');
-const itemsContainer = document.getElementById('itemsBody');
+
+const itemsContainer = document.getElementById('itemsContainer');
 
 /* ================= STATE ================= */
 let clients = [];
@@ -90,61 +92,82 @@ function selectClient(client) {
   changeBtn.style.display = 'inline-block';
 }
 
-/* ================= CHANGE CLIENT ================= */
-changeBtn.onclick = () => {
-  selectedClient = null;
-  searchInput.value = '';
-  searchInput.removeAttribute('readonly');
-  changeBtn.style.display = 'none';
-  renderDropdown(clients);
-  searchInput.focus();
-};
-
-/* ================= SEARCH ================= */
+/* ================= SEARCH HANDLERS ================= */
 searchInput.addEventListener('focus', () => {
   if (!selectedClient) renderDropdown(clients);
 });
 
 searchInput.addEventListener('input', () => {
   const val = searchInput.value.toLowerCase();
-  renderDropdown(
-    clients.filter((c) => c.name.toLowerCase().includes(val))
-  );
+  renderDropdown(clients.filter((c) => c.name.toLowerCase().includes(val)));
 });
 
-/* ================= ITEMS RENDER (SOLE DOM AUTHORITY) ================= */
+searchInput.addEventListener('keydown', (e) => {
+  const items = dropdown.querySelectorAll('li');
+  if (!items.length) return;
+
+  if (e.key === 'ArrowDown') activeIndex = (activeIndex + 1) % items.length;
+  if (e.key === 'ArrowUp') activeIndex = (activeIndex - 1 + items.length) % items.length;
+
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    items[activeIndex]?.click();
+    return;
+  }
+
+  if (e.key === 'Escape') dropdown.style.display = 'none';
+
+  items.forEach((li, i) => li.classList.toggle('active', i === activeIndex));
+});
+
+/* ================= ITEMS RENDER ================= */
 function renderItems() {
   itemsContainer.innerHTML = '';
 
   draft.items.forEach((item, index) => {
     const row = document.createElement('div');
-    row.className = 'item-row';
+    row.className = 'invoice-items-grid';
 
     row.innerHTML = `
-      <input value="${item.description}" disabled />
-      <input value="${item.quantity}" disabled />
-      <input value="${item.rate}" disabled />
-
-      <button
-        type="button"
-        class="item-delete"
-        data-index="${index}"
-      >
-        🗑
-      </button>
+      <input class="item-desc" value="${item.description}" />
+      <input class="item-qty" type="number" value="${item.quantity}" />
+      <input class="item-rate" type="number" value="${item.rate}" />
+      <button class="item-delete" data-index="${index}">🗑</button>
     `;
 
     itemsContainer.appendChild(row);
   });
 }
 
-/* ================= DELETE ITEM (ONLY ONE HANDLER) ================= */
+/* ================= COLLECT ITEMS (AUTHORITATIVE) ================= */
+function collectItems() {
+  const rows = itemsContainer.querySelectorAll('.invoice-items-grid');
+  const items = [];
+
+  rows.forEach((row) => {
+    const desc = row.querySelector('.item-desc')?.value.trim();
+    const qty = Number(row.querySelector('.item-qty')?.value);
+    const rate = Number(row.querySelector('.item-rate')?.value);
+
+    if (desc && qty > 0 && rate > 0) {
+      items.push({ description: desc, quantity: qty, rate });
+    }
+  });
+
+  return items;
+}
+
+/* ================= ADD ITEM ================= */
+addItemBtn?.addEventListener('click', () => {
+  draft.items.push({ description: '', quantity: 1, rate: 0 });
+  renderItems();
+});
+
+/* ================= DELETE ITEM ================= */
 itemsContainer.addEventListener('click', (e) => {
   if (!e.target.classList.contains('item-delete')) return;
-
   const index = Number(e.target.dataset.index);
   draft.items.splice(index, 1);
-  sessionStorage.setItem('invoiceDraft', JSON.stringify(draft));
   renderItems();
 });
 
@@ -156,7 +179,6 @@ function prefillForm() {
   discountInput.value = draft.total_discount || 0;
   notesInput.value = draft.notes || '';
   layoutSelect.value = draft.layout_id || 'minimal';
-
   enableRazorpay.checked = !!draft.payment?.razorpay_enabled;
 
   selectedClient = clients.find((c) => c.client_id === draft.client_id);
@@ -169,33 +191,53 @@ function prefillForm() {
   renderItems();
 }
 
-/* ================= SAVE ================= */
-saveBtn.onclick = async () => {
-  if (!selectedClient) return alert('Select a client');
-  if (!draft.items.length) return alert('Add at least one item');
+/* ================= PREVIEW / CONTINUE (🔥 FIX) ================= */
+document.getElementById('saveBtn')?.addEventListener('click', () => {
+  try {
+    if (!selectedClient || !selectedClient.client_id) {
+      alert('Client missing');
+      return;
+    }
 
-  const payload = {
-    invoice_id: invoiceIdInput.value || null,
-    client_id: selectedClient.client_id,
-    invoice_date: invoiceDate.value,
-    due_date: dueDate.value,
-    items: draft.items,
-    notes: notesInput.value || '',
-    layout_id: layoutSelect.value,
-    total_discount: Number(discountInput.value) || 0,
-    payment: {
-      razorpay_enabled: enableRazorpay.checked,
-    },
-  };
+    const items = collectItems();
+    if (!items.length) {
+      alert('Add at least one invoice item');
+      return;
+    }
 
-  await fetch(`/api/invoices/${draft.invoice_id}`, {
-    method: 'PUT',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(payload),
-  });
+    const rebuiltDraft = {
+      invoice_id: draft.invoice_id || null,
 
-  window.location.href = `/invoice-preview.html?id=${invoiceDbId}`;
-};
+      client: {
+        id: selectedClient.client_id,
+        name: selectedClient.name,
+        company: selectedClient.company || null,
+        email: selectedClient.email || null,
+      },
+
+      invoice_date: invoiceDate.value,
+      due_date: dueDate.value,
+
+      items,
+      taxes: draft.taxes || [],
+      discount: Number(discountInput.value || 0),
+      notes: notesInput.value || '',
+
+      layout_id: layoutSelect.value || 'minimal',
+
+      payment: {
+        razorpay_enabled: enableRazorpay.checked === true,
+      },
+    };
+
+    sessionStorage.setItem('invoiceDraft', JSON.stringify(rebuiltDraft));
+
+    window.location.href = `/invoice-preview.html?id=${invoiceDbId}`;
+  } catch (err) {
+    console.error(err);
+    alert('Something went wrong');
+  }
+});
 
 /* ================= INIT ================= */
 (async () => {

@@ -10,6 +10,7 @@ const searchInput = document.getElementById('clientSearch');
 const dropdown = document.getElementById('clientDropdown');
 const changeBtn = document.getElementById('changeClientBtn');
 const continueBtn = document.getElementById('continueBtn');
+const addItemBtn = document.getElementById('addItemBtn');
 
 const invoiceDate = document.getElementById('invoiceDate');
 const dueDate = document.getElementById('dueDate');
@@ -28,7 +29,7 @@ let selectedClient = null;
 let activeIndex = -1;
 
 /* ✅ SINGLE SOURCE OF TRUTH */
-let items = [];
+const items = [];
 
 /* ================= FETCH CLIENTS ================= */
 async function loadClients() {
@@ -96,7 +97,8 @@ searchInput.addEventListener('keydown', (e) => {
   if (!listItems.length) return;
 
   if (e.key === 'ArrowDown') activeIndex = (activeIndex + 1) % listItems.length;
-  if (e.key === 'ArrowUp') activeIndex = (activeIndex - 1 + listItems.length) % listItems.length;
+  if (e.key === 'ArrowUp')
+    activeIndex = (activeIndex - 1 + listItems.length) % listItems.length;
 
   if (e.key === 'Enter') {
     e.preventDefault();
@@ -111,18 +113,18 @@ searchInput.addEventListener('keydown', (e) => {
   );
 });
 
-/* ================= ITEMS RENDER (SOLE DOM AUTHORITY) ================= */
+/* ================= ITEMS RENDER (GRID-ALIGNED) ================= */
 function renderItems() {
   itemsContainer.innerHTML = '';
 
   items.forEach((item, index) => {
     const row = document.createElement('div');
-    row.className = 'item-row';
+    row.className = 'invoice-items-grid';
 
     row.innerHTML = `
-      <input value="${item.description}" />
-      <input type="number" value="${item.quantity}" />
-      <input type="number" value="${item.rate}" />
+      <input class="item-desc" value="${item.description}" />
+      <input class="item-qty" type="number" value="${item.quantity}" />
+      <input class="item-rate" type="number" value="${item.rate}" />
 
       <button
         type="button"
@@ -138,7 +140,18 @@ function renderItems() {
   });
 }
 
-/* ================= DELETE ITEM (ONE ONLY) ================= */
+/* ================= ADD ITEM ================= */
+addItemBtn.addEventListener('click', () => {
+  items.push({
+    description: '',
+    quantity: 1,
+    rate: 0,
+  });
+
+  renderItems();
+});
+
+/* ================= DELETE ITEM ================= */
 itemsContainer.addEventListener('click', (e) => {
   if (!e.target.classList.contains('item-delete')) return;
 
@@ -147,74 +160,40 @@ itemsContainer.addEventListener('click', (e) => {
   renderItems();
 });
 
-/* ================= TAX ================= */
-function getTaxes() {
-  const taxName = document.getElementById('taxName')?.value.trim();
-  const taxRate = Number(document.getElementById('taxRate')?.value);
-  if (!taxName || taxRate <= 0) return [];
-  return [{ label: taxName, rate: taxRate }];
-}
+/* ================= SYNC DOM → STATE ================= */
+function syncItemsFromDOM() {
+  items.length = 0;
 
-/* ================= TOTALS ================= */
-function calculateSubtotal(items) {
-  return items.reduce((sum, i) => sum + i.quantity * i.rate, 0);
-}
+  [...itemsContainer.querySelectorAll('.invoice-items-grid')].forEach(
+    (row) => {
+      const desc = row.querySelector('.item-desc').value.trim();
+      const qty = Number(row.querySelector('.item-qty').value);
+      const rate = Number(row.querySelector('.item-rate').value);
 
-function calculateTaxAmount(subtotal, taxes) {
-  if (!taxes.length) return 0;
-  return subtotal * (taxes[0].rate / 100);
+      if (desc && qty > 0 && rate > 0) {
+        items.push({ description: desc, quantity: qty, rate });
+      }
+    }
+  );
 }
 
 /* ================= CONTINUE ================= */
 continueBtn.onclick = () => {
-  if (!selectedClient) {
-    alert('Please select a client');
-    return;
-  }
+  if (!selectedClient) return alert('Please select a client');
 
-  if (!items.length) {
-    alert('Add at least one invoice item');
-    return;
-  }
-
-  const subtotal = calculateSubtotal(items);
-  const taxes = getTaxes();
-  const taxAmount = calculateTaxAmount(subtotal, taxes);
-  const discount = Number(discountInput.value) || 0;
-  const total = subtotal + taxAmount - discount;
-
-  const manualInvoiceId = invoiceIdInput?.value.trim();
+  syncItemsFromDOM();
+  if (!items.length) return alert('Add at least one invoice item');
 
   const payload = {
-    invoice_id: manualInvoiceId || null,
+    invoice_id: invoiceIdInput.value || null,
     invoice_date: invoiceDate.value,
     due_date: dueDate.value,
-
-    seller: {
-      name: 'RemindFlow',
-      email: 'billing@remindflow.in',
-    },
-
-    client: {
-      id: selectedClient.client_id,
-      name: selectedClient.name,
-      email: selectedClient.email || '',
-    },
-
+    client: selectedClient,
     items,
-    subtotal,
-    taxes,
-    discount,
-    total,
-
     notes: notesInput.value || '',
+    payment: { razorpay_enabled: enableRazorpay.checked },
+    layout_id: layoutSelect.value || 'minimal',
     status: 'draft',
-
-    payment: {
-      razorpay_enabled: enableRazorpay?.checked || false,
-    },
-
-    layout_id: layoutSelect?.value || 'minimal',
   };
 
   sessionStorage.setItem('invoiceDraft', JSON.stringify(payload));

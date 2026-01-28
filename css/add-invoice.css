@@ -24,15 +24,17 @@ label {
   margin: 14px 0 6px;
 }
 
+/* ================= GLOBAL INPUTS (SAFE) ================= */
 input,
 textarea,
 select {
-  width: 100%;
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 15px;
 }
+
+/* ❗ NO global width on inputs */
 
 textarea {
   resize: vertical;
@@ -48,6 +50,7 @@ textarea {
   flex: 1;
 }
 
+/* ================= CLIENT SELECT ================= */
 .client-select {
   display: flex;
   gap: 10px;
@@ -69,7 +72,7 @@ textarea {
   cursor: default;
 }
 
-/* Dropdown */
+/* ================= DROPDOWN ================= */
 .dropdown {
   list-style: none;
   margin: 0;
@@ -104,6 +107,7 @@ textarea {
   background: #eef2ff;
 }
 
+/* ================= BUTTONS ================= */
 .primary-btn {
   margin-top: 25px;
   width: 100%;
@@ -131,4 +135,47 @@ textarea {
   color: #555;
   cursor: pointer;
   margin-bottom: 10px;
+}
+
+/* =====================================================
+   ✅ INVOICE ITEMS — SINGLE GRID SOURCE OF TRUTH
+===================================================== */
+
+.invoice-items-grid {
+  display: grid;
+  grid-template-columns: 1fr 80px 120px 40px;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Header row */
+.invoice-items-grid.header {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Scope width ONLY to invoice inputs */
+.invoice-items-grid input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Delete button */
+.item-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #888;
+}
+
+.item-delete:hover {
+  color: #e11d48;
+}
+
+/* ================= MOBILE SAFE ================= */
+@media (max-width: 600px) {
+  .invoice-items-grid {
+    grid-template-columns: 1fr;
+  }
 }

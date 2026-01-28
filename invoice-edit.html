@@ -16,11 +16,7 @@
 
       <!-- Invoice ID (Optional) -->
       <label>Invoice ID (optional)</label>
-      <input
-        type="text"
-        id="invoiceIdInput"
-        placeholder="INV-XXXX"
-      />
+      <input type="text" id="invoiceIdInput" placeholder="INV-XXXX" />
 
       <!-- Client Selection -->
       <label>Client *</label>
@@ -68,18 +64,21 @@
       <!-- Line Items -->
       <h3>Invoice Items</h3>
 
-      <table class="items-table">
-        <thead>
-          <tr>
-            <th>Description</th>
-            <th width="100">Qty</th>
-            <th width="120">Rate</th>
-          </tr>
-        </thead>
-        <tbody id="itemsBody"></tbody>
-      </table>
+      <!-- ✅ FIXED STRUCTURE -->
+      <div class="invoice-items-grid header">
+        <div>Description</div>
+        <div>Qty</div>
+        <div>Rate</div>
+        <div></div>
+      </div>
 
-      <button type="button" class="secondary-btn" id="addItemBtn">
+      <div id="itemsContainer"></div>
+
+      <button
+        type="button"
+        id="addItemBtn"
+        class="secondary-btn add-item-btn"
+      >
         + Add Item
       </button>
 
@@ -127,18 +126,5 @@
 
     <!-- Page Logic -->
     <script type="module" src="/js/invoice-edit.js"></script>
-
-    <script>
-      document.getElementById("addItemBtn").onclick = () => {
-        const row = document.createElement("tr");
-        row.className = "item-row";
-        row.innerHTML = `
-          <td><input class="item-desc" /></td>
-          <td><input class="item-qty" type="number" min="1" value="1" /></td>
-          <td><input class="item-rate" type="number" step="0.01" /></td>
-        `;
-        document.getElementById("itemsBody").appendChild(row);
-      };
-    </script>
   </body>
 </html>

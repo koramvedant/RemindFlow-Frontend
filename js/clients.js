@@ -1,5 +1,7 @@
 // clients.js
 
+import { API_BASE } from './api.js';
+
 // ---------------- Clients Data ----------------
 let clients = [];
 let filtered = [];
@@ -70,7 +72,7 @@ async function loadClients() {
   }
 
   try {
-    const res = await fetch('/api/clients', {
+    const res = await fetch(`${API_BASE}/api/clients`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

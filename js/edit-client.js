@@ -1,4 +1,5 @@
 // edit-client.js
+import { API_BASE } from './api.js';
 
 const form = document.getElementById('editClientForm');
 const saveBtn = document.getElementById('saveBtn');
@@ -24,7 +25,7 @@ let initialData = null;
 /* ------------------ PREFILL ------------------ */
 async function loadClient() {
   try {
-    const res = await fetch(`/api/clients/${clientId}`);
+    const res = await fetch(`${API_BASE}/api/clients/${clientId}`);
     if (!res.ok) throw new Error('Fetch failed');
 
     const client = await res.json();
@@ -93,7 +94,7 @@ form?.addEventListener('submit', async (e) => {
   };
 
   try {
-    const res = await fetch(`/api/clients/${clientId}`, {
+    const res = await fetch(`${API_BASE}/api/clients/${clientId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

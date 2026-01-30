@@ -1,3 +1,5 @@
+import { API_BASE } from './api.js';
+
 /* ================= AUTH ================= */
 function getAuthHeaders() {
   const token = localStorage.getItem('accessToken');
@@ -38,16 +40,21 @@ let draft = null;
 
 /* ================= FETCH CLIENTS ================= */
 async function loadClients() {
-  const res = await fetch('/api/clients', { headers: getAuthHeaders() });
+  const res = await fetch(`${API_BASE}/api/clients`, {
+    headers: getAuthHeaders(),
+  });
   const data = await res.json();
   clients = data.clients || [];
 }
 
 /* ================= FETCH INVOICE (DB → DRAFT) ================= */
 async function loadInvoiceFromDB() {
-  const res = await fetch(`/api/invoices/id/${invoiceDbId}`, {
-    headers: getAuthHeaders(),
-  });
+  const res = await fetch(
+    `${API_BASE}/api/invoices/id/${invoiceDbId}`,
+    {
+      headers: getAuthHeaders(),
+    }
+  );
 
   const { invoice } = await res.json();
 
@@ -85,12 +92,21 @@ function renderDropdown(list) {
 
   list.forEach((c) => {
     const li = document.createElement('li');
-    li.innerHTML = `<div class="name">${c.name}</div>`;
+    li.innerHTML = `
+      <div class="name">${c.company || c.name}</div>
+      <div class="email">${c.email || ''}</div>
+    `;
     li.onclick = () => selectClient(c);
     dropdown.appendChild(li);
   });
 
   dropdown.style.display = 'block';
+}
+
+/* ✅ STEP 1 — helper */
+function closeDropdown() {
+  dropdown.style.display = 'none';
+  activeIndex = -1;
 }
 
 function selectClient(client) {
@@ -101,7 +117,62 @@ function selectClient(client) {
   dropdown.style.display = 'none';
 }
 
-/* ================= CHANGE CLIENT (FINAL FIX) ================= */
+/* ================= SEARCH + KEYBOARD ================= */
+searchInput.addEventListener('focus', () => {
+  if (!selectedClient) renderDropdown(clients);
+});
+
+searchInput.addEventListener('input', () => {
+  const val = searchInput.value.toLowerCase();
+  renderDropdown(
+    clients.filter((c) =>
+      (c.company || c.name || '').toLowerCase().includes(val)
+    )
+  );
+});
+
+searchInput.addEventListener('keydown', (e) => {
+  const listItems = dropdown.querySelectorAll('li');
+  if (!listItems.length) return;
+
+  if (e.key === 'ArrowDown') {
+    activeIndex = (activeIndex + 1) % listItems.length;
+  }
+
+  if (e.key === 'ArrowUp') {
+    activeIndex =
+      (activeIndex - 1 + listItems.length) % listItems.length;
+  }
+
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    listItems[activeIndex]?.click();
+    return;
+  }
+
+  if (e.key === 'Escape') {
+    closeDropdown();
+    searchInput.blur();
+  }
+
+  listItems.forEach((li, i) =>
+    li.classList.toggle('active', i === activeIndex)
+  );
+});
+
+/* ✅ STEP 3 — outside click close */
+document.addEventListener('click', (e) => {
+  const clickedInside =
+    searchInput.contains(e.target) ||
+    dropdown.contains(e.target) ||
+    changeBtn.contains(e.target);
+
+  if (!clickedInside) {
+    closeDropdown();
+  }
+});
+
+/* ================= CHANGE CLIENT ================= */
 changeBtn.onclick = () => {
   selectedClient = null;
 
@@ -157,14 +228,12 @@ function collectItems() {
     .filter((i) => i.description && i.quantity > 0 && i.rate > 0);
 }
 
-/* ================= PREFILL (FINAL FIX) ================= */
+/* ================= PREFILL ================= */
 function prefillFromDraft(draft) {
-  // Invoice ID
   if (draft.invoice_id && invoiceIdInput) {
     invoiceIdInput.value = draft.invoice_id;
   }
 
-  // Client from client_id
   if (draft.client_id && Array.isArray(clients)) {
     const matchedClient = clients.find(
       (c) => c.client_id === draft.client_id
@@ -172,14 +241,11 @@ function prefillFromDraft(draft) {
 
     if (matchedClient) {
       selectedClient = matchedClient;
-
       searchInput.value =
         matchedClient.company || matchedClient.name || '';
-
       searchInput.readOnly = true;
       changeBtn.style.display = 'inline-block';
     } else {
-      // 🔓 allow user to reselect if mismatch
       selectedClient = null;
       searchInput.readOnly = false;
       changeBtn.style.display = 'none';

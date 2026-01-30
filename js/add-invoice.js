@@ -1,3 +1,5 @@
+import { API_BASE } from './api.js';
+
 /* ================= AUTH ================= */
 function getAuthHeaders() {
   const token = localStorage.getItem('accessToken');
@@ -36,7 +38,7 @@ async function loadClients() {
   const headers = getAuthHeaders();
   if (!headers) return location.replace('/login.html');
 
-  const res = await fetch('/api/clients', { headers });
+  const res = await fetch(`${API_BASE}/api/clients`, { headers });
   const data = await res.json();
   clients = data.clients || [];
 }

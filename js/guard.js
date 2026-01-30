@@ -1,5 +1,7 @@
 // js/guard.js
 
+import { API_BASE } from './api.js';
+
 /**
  * Auth guard (FINAL — cookie + bearer compatible)
  *
@@ -27,7 +29,7 @@ export function requireAuth() {
   // -----------------------------
   // 2️⃣ Fetch identity (SOURCE OF TRUTH)
   // -----------------------------
-  fetch('/api/user/me', {
+  fetch(`${API_BASE}/api/user/me`, {
     headers: token
       ? {
           Authorization: `Bearer ${token}`,

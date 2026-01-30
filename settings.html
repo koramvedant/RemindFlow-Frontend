@@ -78,6 +78,32 @@
       </div>
     </section>
 
+    <!-- TAXES -->
+    <section class="settings-section">
+      <div class="section-header" data-toggle="taxes">
+        Taxes
+        <span class="arrow">▶</span>
+      </div>
+
+      <div class="section-body" id="taxes">
+        <div class="items-header">
+          <span>Tax Name</span>
+          <span>Rate (%)</span>
+          <span></span>
+        </div>
+
+        <div id="taxesContainer"></div>
+
+        <button class="secondary-btn" id="addTaxBtn">
+          + Add Tax
+        </button>
+
+        <button class="primary-btn" id="saveTaxes">
+          Save Taxes
+        </button>
+      </div>
+    </section>
+
     <!-- BILLING -->
     <section class="settings-section">
       <div class="section-header" data-toggle="billing">
@@ -112,6 +138,6 @@
   </div>
 
   <!-- JS -->
-  <script src="/js/settings.js"></script>
+  <script type="module" src="/js/settings.js"></script>
 </body>
 </html>

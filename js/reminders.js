@@ -1,5 +1,7 @@
 // public/js/reminders.js
 
+import { API_BASE } from './api.js';
+
 /* -------------------------
    DOM Elements
 ------------------------- */
@@ -17,7 +19,9 @@ let reminders = [];
 ------------------------- */
 async function fetchReminders() {
   try {
-    const res = await fetch('/api/reminders', { credentials: 'include' });
+    const res = await fetch(`${API_BASE}/api/reminders`, {
+      credentials: 'include',
+    });
     if (!res.ok) throw new Error('Failed to fetch reminders');
 
     const data = await res.json();
@@ -62,11 +66,14 @@ function renderTable() {
     const tr = document.createElement('tr');
 
     // Capitalize stage for display
-    const stageText = r.stage.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    const stageText = r.stage
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
 
-    const statusText = r.status === 'queued'
-      ? 'Upcoming'
-      : r.status.charAt(0).toUpperCase() + r.status.slice(1);
+    const statusText =
+      r.status === 'queued'
+        ? 'Upcoming'
+        : r.status.charAt(0).toUpperCase() + r.status.slice(1);
 
     tr.innerHTML = `
       <td>${new Date(r.date).toLocaleDateString()}</td>

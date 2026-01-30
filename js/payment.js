@@ -1,5 +1,7 @@
 // /public/js/payment.js
 
+import { API_BASE } from './api.js';
+
 /* -------------------------
    DOM Elements
 ------------------------- */
@@ -87,7 +89,7 @@ payBtn?.addEventListener('click', async () => {
     /* -------------------------
        Create Razorpay Order
     ------------------------- */
-    const res = await fetch('/api/payments/create-order', {
+    const res = await fetch(`${API_BASE}/api/payments/create-order`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

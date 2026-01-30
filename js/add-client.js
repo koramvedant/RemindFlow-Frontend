@@ -1,4 +1,5 @@
 // add-client.js
+import { API_BASE } from './api.js';
 
 // Elements
 const form = document.getElementById('addClientForm');
@@ -66,7 +67,7 @@ if (form) {
 
     try {
       // 🔴 CORRECT ROUTE + AUTH HEADER
-      const res = await fetch('/api/clients', {
+      const res = await fetch(`${API_BASE}/api/clients`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

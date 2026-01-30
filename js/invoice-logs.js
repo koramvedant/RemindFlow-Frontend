@@ -1,4 +1,5 @@
 // invoice-logs.js
+import { API_BASE } from './api.js';
 
 /* ------------------ Read client_id from URL ------------------ */
 const params = new URLSearchParams(window.location.search);
@@ -29,7 +30,10 @@ async function loadClientInfo(clientId) {
   }
 
   try {
-    const res = await fetch(`/api/clients/${clientId}`, { headers });
+    const res = await fetch(
+      `${API_BASE}/api/clients/${clientId}`,
+      { headers }
+    );
     const data = await res.json();
 
     if (!res.ok || !data.client) {
@@ -175,7 +179,7 @@ async function loadInvoices() {
 
   try {
     const res = await fetch(
-      `/api/invoices/client/${encodeURIComponent(clientId)}`,
+      `${API_BASE}/api/invoices/client/${encodeURIComponent(clientId)}`,
       { headers }
     );
 
@@ -187,7 +191,7 @@ async function loadInvoices() {
 
     // ✅ IMPORTANT: backend returns { success, invoices }
     invoices = (data.invoices || []).map((i) => ({
-      id: i.id, // invoices.id (PK)
+      id: i.id,
       amount: i.grand_total || 0,
       status: i.invoice_status,
       date: i.invoice_date || i.created_at?.split('T')[0] || '—',

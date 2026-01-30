@@ -3,14 +3,9 @@
 // Google Login (Firebase compat → Backend)
 // --------------------------------------------------
 
+import { API_BASE } from './api.js';
+
 console.log('🔥 login.js loaded');
-
-// Backend URL injected from HTML
-const BACKEND_URL = window.BACKEND_URL;
-
-if (!BACKEND_URL) {
-  console.error('❌ BACKEND_URL is not defined');
-}
 
 // Google login button
 const googleBtn = document.getElementById('googleLoginBtn');
@@ -36,7 +31,7 @@ if (!googleBtn) {
       if (!idToken) throw new Error('No Firebase ID token received');
 
       // Send ID token to backend
-      const res = await fetch(`${BACKEND_URL}/api/auth/google`, {
+      const res = await fetch(`${API_BASE}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),

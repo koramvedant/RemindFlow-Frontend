@@ -1,7 +1,6 @@
 // public/info.js
 
-// Backend URL (can be set globally in frontend)
-const apiBase = window.REMINDFLOW_API_BASE || '';
+import { API_BASE } from './api.js';
 
 // ---------------------- Pre-fill from OAuth ----------------------
 async function prefillUser() {
@@ -13,7 +12,7 @@ async function prefillUser() {
   if (!nameInput && !emailInput && !phoneInput && !companyInput) return;
 
   try {
-    const res = await fetch(`${apiBase}/api/user/me`, {
+    const res = await fetch(`${API_BASE}/api/user/me`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`,
@@ -47,7 +46,7 @@ infoForm?.addEventListener('submit', async (e) => {
   };
 
   try {
-    const res = await fetch(`${apiBase}/api/user/update-profile`, {
+    const res = await fetch(`${API_BASE}/api/user/update-profile`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

@@ -1,4 +1,5 @@
 // /js/dashboard.js
+import { API_BASE } from './api.js';
 
 /* ------------------ Utils ------------------ */
 const $ = (id) => document.getElementById(id);
@@ -13,9 +14,6 @@ const safeText = (el, text, fallback = '—') => {
 
 const capitalize = (str) =>
   str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
-
-// Backend base (optional override)
-const backendBase = window.REMINDFLOW_API_BASE || '';
 
 /* ------------------ Auth Helper ------------------ */
 function getAuthHeaders() {
@@ -108,7 +106,7 @@ async function fetchJSON(path) {
   }
 
   try {
-    const res = await fetch(backendBase + path, { headers });
+    const res = await fetch(`${API_BASE}${path}`, { headers });
 
     if (res.status === 401 || res.status === 403) {
       localStorage.clear();

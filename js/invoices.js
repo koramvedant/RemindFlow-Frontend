@@ -2,6 +2,8 @@
    INVOICES LIST — USER VIEW (DRAFT AWARE)
 =================================================== */
 
+import { API_BASE } from './api.js';
+
 /* ------------------ Elements ------------------ */
 const table = document.getElementById('invoiceTable');
 const totalInvoices = document.getElementById('totalInvoices');
@@ -62,7 +64,9 @@ function clientName(inv) {
 /* ------------------ PDF Download ------------------ */
 async function downloadPdf(invoiceId) {
   try {
-    const res = await authFetch(`/api/invoices/${invoiceId}/pdf`);
+    const res = await authFetch(
+      `${API_BASE}/api/invoices/${invoiceId}/pdf`
+    );
     if (!res.ok) throw new Error('PDF not available');
 
     const { pdf_signed_url } = await res.json();
@@ -149,7 +153,10 @@ table.addEventListener('click', async (e) => {
   if (e.target.classList.contains('delete')) {
     if (!confirm('Delete this invoice?')) return;
 
-    await authFetch(`/api/invoices/${id}`, { method: 'DELETE' });
+    await authFetch(
+      `${API_BASE}/api/invoices/${id}`,
+      { method: 'DELETE' }
+    );
     invoices = invoices.filter((i) => i.id !== Number(id));
     applyFilters();
     showToast('Invoice deleted');
@@ -158,9 +165,10 @@ table.addEventListener('click', async (e) => {
   if (e.target.classList.contains('finalize')) {
     if (!confirm('Finalize this invoice?')) return;
 
-    const res = await authFetch(`/api/invoices/${id}/finalize`, {
-      method: 'PUT',
-    });
+    const res = await authFetch(
+      `${API_BASE}/api/invoices/${id}/finalize`,
+      { method: 'PUT' }
+    );
 
     if (!res.ok) {
       showToast('Failed to finalize invoice', 'error');
@@ -179,7 +187,7 @@ table.addEventListener('click', async (e) => {
 /* ------------------ Load ------------------ */
 async function loadInvoices() {
   try {
-    const res = await authFetch('/api/invoices');
+    const res = await authFetch(`${API_BASE}/api/invoices`);
     if (!res.ok) throw new Error('Unauthorized');
 
     const data = await res.json();

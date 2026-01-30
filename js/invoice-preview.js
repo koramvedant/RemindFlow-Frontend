@@ -1,3 +1,5 @@
+import { API_BASE } from './api.js';
+
 /* ===================================================
    INVOICE PREVIEW — DRAFT-FIRST + CANONICAL CLIENT
 =================================================== */
@@ -32,7 +34,7 @@ let currentSeller = null;
 async function loadSeller() {
   if (currentSeller) return currentSeller;
 
-  const res = await fetch('/api/user/me', {
+  const res = await fetch(`${API_BASE}/api/user/me`, {
     headers: getAuthHeaders(),
     credentials: 'include',
   });
@@ -180,7 +182,7 @@ async function loadExistingInvoice(id) {
     return;
   }
 
-  const res = await fetch(`/api/invoices/id/${id}`, {
+  const res = await fetch(`${API_BASE}/api/invoices/id/${id}`, {
     headers: getAuthHeaders(),
   });
 
@@ -205,8 +207,8 @@ saveDraftBtn?.addEventListener('click', async () => {
     const payload = buildInvoicePayload(draft);
 
     const url = invoiceId
-      ? `/api/invoices/${invoiceId}`
-      : `/api/invoices`;
+      ? `${API_BASE}/api/invoices/${invoiceId}`
+      : `${API_BASE}/api/invoices`;
 
     const method = invoiceId ? 'PUT' : 'POST';
 
@@ -237,7 +239,7 @@ finalSaveBtn?.addEventListener('click', async () => {
 
   if (!confirm('Finalize this invoice?')) return;
 
-  await fetch(`/api/invoices/${invoiceId}/finalize`, {
+  await fetch(`${API_BASE}/api/invoices/${invoiceId}/finalize`, {
     method: 'PUT',
     headers: getAuthHeaders(),
   });

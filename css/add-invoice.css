@@ -138,23 +138,26 @@ textarea {
 }
 
 /* =====================================================
-   ✅ INVOICE ITEMS — SINGLE GRID SOURCE OF TRUTH
+   ✅ INVOICE ITEMS — CANONICAL GRID (DO NOT CHANGE)
 ===================================================== */
 
+/* Header + rows share same grid */
 .invoice-items-grid {
   display: grid;
-  grid-template-columns: 1fr 80px 120px 40px;
+  grid-template-columns: 2.5fr 1fr 1.5fr 40px;
   gap: 12px;
   align-items: center;
+  margin-bottom: 10px;
 }
 
-/* Header row */
-.invoice-items-grid.header {
+/* Header text style */
+.items-header span {
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 8px;
+  color: #444;
 }
 
-/* Scope width ONLY to invoice inputs */
+/* Inputs inside rows */
 .invoice-items-grid input {
   width: 100%;
   box-sizing: border-box;

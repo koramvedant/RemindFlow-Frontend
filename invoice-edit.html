@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/css/add-invoice.css" />
+    <link rel="stylesheet" href="/css/add-invoice.css?v=2026-01-29" />
   </head>
   <body>
     <div class="container">
@@ -61,26 +61,24 @@
         </div>
       </div>
 
-      <!-- Line Items -->
+      <!-- ================= INVOICE ITEMS (CANONICAL) ================= -->
       <h3>Invoice Items</h3>
 
-      <!-- ✅ FIXED STRUCTURE -->
-      <div class="invoice-items-grid header">
-        <div>Description</div>
-        <div>Qty</div>
-        <div>Rate</div>
-        <div></div>
+      <!-- ✅ SINGLE HEADER (ONCE ONLY) -->
+      <div class="items-header invoice-items-grid">
+        <span>Description</span>
+        <span>Qty</span>
+        <span>Rate</span>
+        <span></span>
       </div>
 
+      <!-- ✅ JS RENDERS ITEMS HERE -->
       <div id="itemsContainer"></div>
 
-      <button
-        type="button"
-        id="addItemBtn"
-        class="secondary-btn add-item-btn"
-      >
+      <button id="addItemBtn" class="secondary-btn">
         + Add Item
       </button>
+      <!-- ============================================================ -->
 
       <!-- Tax -->
       <h3>Tax (optional)</h3>
@@ -125,6 +123,6 @@
     </script>
 
     <!-- Page Logic -->
-    <script type="module" src="/js/invoice-edit.js"></script>
+    <script type="module" src="/js/invoice-edit.js?v=2026-01-29"></script>
   </body>
 </html>

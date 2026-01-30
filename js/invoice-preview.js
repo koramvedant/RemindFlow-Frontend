@@ -1,5 +1,5 @@
 /* ===================================================
-   INVOICE PREVIEW — FINAL (DRAFT-FIRST FIX APPLIED)
+   INVOICE PREVIEW — DRAFT-FIRST + CANONICAL CLIENT
 =================================================== */
 
 /* ------------------ Elements ------------------ */
@@ -21,48 +21,25 @@ function getAuthHeaders() {
 /* ------------------ Date Formatter ------------------ */
 function formatDate(dateStr) {
   if (!dateStr) return '—';
-
   const d = new Date(dateStr);
   if (isNaN(d)) return '—';
-
   return d.toISOString().split('T')[0];
 }
 
-/* ------------------ Global Seller Cache ------------------ */
+/* ------------------ Seller Cache ------------------ */
 let currentSeller = null;
 
-/* ------------------ Load Seller ------------------ */
 async function loadSeller() {
   if (currentSeller) return currentSeller;
 
-  try {
-    const res = await fetch('/api/user/me', {
-      headers: getAuthHeaders(),
-      credentials: 'include',
-    });
+  const res = await fetch('/api/user/me', {
+    headers: getAuthHeaders(),
+    credentials: 'include',
+  });
 
-    if (!res.ok) throw new Error('Failed to load seller');
-
-    const data = await res.json();
-    currentSeller = data?.seller || null;
-    return currentSeller;
-  } catch (err) {
-    console.error('Failed to load seller info:', err);
-    return null;
-  }
-}
-
-/* ------------------ Utility: Alert ------------------ */
-function showAlert(message, type = 'success') {
-  const alert = document.createElement('div');
-  alert.className = `alert alert-${type}`;
-  alert.textContent = message;
-  document.body.appendChild(alert);
-
-  setTimeout(() => {
-    alert.classList.add('fade-out');
-    setTimeout(() => alert.remove(), 300);
-  }, 2500);
+  const data = await res.json();
+  currentSeller = data?.seller || null;
+  return currentSeller;
 }
 
 /* ------------------ URL + Draft ------------------ */
@@ -83,30 +60,31 @@ function normalizeLayout(value) {
     : 'minimal';
 }
 
-/* ------------------ Normalize Invoice ------------------ */
+/* ===================================================
+   CANONICAL NORMALIZATION (ONE SHAPE ONLY)
+=================================================== */
 function normalizeInvoiceForPreview(invoice, seller) {
   return {
     ...invoice,
+
     seller: {
       company_name: seller?.company_name || '—',
       email: seller?.email || '',
     },
+
     client: {
-      company_name:
-        invoice.client?.company_name ||
-        invoice.client?.company ||
-        null,
+      id: invoice.client?.id || invoice.client_id || null,
       name: invoice.client?.name || '—',
+      company: invoice.client?.company || null,
       email: invoice.client?.email || '',
     },
   };
 }
 
-/* ------------------ Build Payload ------------------ */
+/* ------------------ Build API Payload ------------------ */
 function buildInvoicePayload(draft) {
   if (!draft?.client?.id) throw new Error('Client missing in draft');
-  if (!Array.isArray(draft.items) || !draft.items.length)
-    throw new Error('Invoice items missing');
+  if (!draft.items?.length) throw new Error('Invoice items missing');
 
   return {
     invoice_id: draft.invoice_id || null,
@@ -124,47 +102,27 @@ function buildInvoicePayload(draft) {
   };
 }
 
-/* ------------------ Total Calculator ------------------ */
+/* ------------------ Total ------------------ */
 function calculateTotal(invoice) {
   const subtotal =
-    invoice.subtotal ??
     invoice.items.reduce((s, i) => s + i.quantity * i.rate, 0);
 
-  const tax = (invoice.taxes || []).reduce(
-    (sum, t) => sum + (subtotal * Number(t.rate || 0)) / 100,
-    0
-  );
-
-  return subtotal + tax - Number(invoice.discount || 0);
+  return subtotal - Number(invoice.discount || 0);
 }
 
 /* ------------------ Render Preview ------------------ */
 function renderDraftPreview(invoice, rawLayout) {
-  if (!box || !invoice || !Array.isArray(invoice.items)) return;
+  if (!box || !invoice?.items) return;
 
   const layout = normalizeLayout(rawLayout);
   const total = calculateTotal(invoice);
 
-  const razorpayEnabled =
-    invoice.payment?.razorpay_enabled ||
-    draft?.payment?.razorpay_enabled;
-
-  const paymentPreview = razorpayEnabled
-    ? `
-      <div class="payment-section">
-        <button class="pay-now-btn" disabled>Pay Now</button>
-        <div class="payment-note">
-          Payment button will be active after invoice is finalized
-        </div>
-      </div>
-    `
-    : '';
+  const razorpayEnabled = !!invoice.payment?.razorpay_enabled;
 
   box.innerHTML = `
     <div class="invoice ${layout}">
       <h3>Invoice</h3>
       <p><strong>Invoice #:</strong> ${invoice.invoice_id || 'INV-XXXX'}</p>
-      <hr />
 
       <p><strong>From:</strong><br/>
         ${invoice.seller.company_name}<br/>
@@ -172,7 +130,7 @@ function renderDraftPreview(invoice, rawLayout) {
       </p>
 
       <p><strong>Billed To:</strong><br/>
-        ${invoice.client.company_name || invoice.client.name}<br/>
+        ${invoice.client.company || invoice.client.name}<br/>
         ${invoice.client.email}
       </p>
 
@@ -182,40 +140,41 @@ function renderDraftPreview(invoice, rawLayout) {
       <hr />
 
       <table width="100%">
-        <tbody>
-          ${invoice.items
-            .map(
-              (i) => `
-            <tr>
-              <td>${i.description}</td>
-              <td align="right">${i.quantity}</td>
-              <td align="right">₹${i.rate}</td>
-              <td align="right">₹${(
-                i.quantity * i.rate
-              ).toLocaleString()}</td>
-            </tr>
-          `
-            )
-            .join('')}
-        </tbody>
+        ${invoice.items
+          .map(
+            (i) => `
+          <tr>
+            <td>${i.description}</td>
+            <td align="right">${i.quantity}</td>
+            <td align="right">₹${i.rate}</td>
+            <td align="right">₹${(i.quantity * i.rate).toLocaleString()}</td>
+          </tr>
+        `
+          )
+          .join('')}
       </table>
 
       <hr />
       <p><strong>Total:</strong> ₹${total.toLocaleString()}</p>
-      ${paymentPreview}
+
+      ${
+        razorpayEnabled
+          ? `<button disabled>Pay Now (after finalize)</button>`
+          : ''
+      }
     </div>
   `;
 }
 
 /* ===================================================
-   LOAD EXISTING INVOICE (✅ DRAFT FIRST)
+   LOAD EXISTING (DRAFT FIRST)
 =================================================== */
 async function loadExistingInvoice(id) {
   const seller = await loadSeller();
 
   const storedDraft = sessionStorage.getItem('invoiceDraft');
   if (storedDraft) {
-    const draft = JSON.parse(storedDraft);
+    draft = JSON.parse(storedDraft);
     const normalized = normalizeInvoiceForPreview(draft, seller);
     renderDraftPreview(normalized, normalized.layout_id);
     return;
@@ -232,9 +191,17 @@ async function loadExistingInvoice(id) {
   );
 }
 
-/* ------------------ Save Draft ------------------ */
+/* ===================================================
+   SAVE DRAFT (REBUILD AUTHORITATIVE DRAFT)
+=================================================== */
 saveDraftBtn?.addEventListener('click', async () => {
   try {
+    draft = {
+      ...draft,
+      items: draft.items,
+      payment: draft.payment,
+    };
+
     const payload = buildInvoicePayload(draft);
 
     const url = invoiceId
@@ -243,34 +210,37 @@ saveDraftBtn?.addEventListener('click', async () => {
 
     const method = invoiceId ? 'PUT' : 'POST';
 
-    const res = await fetch(url, {
+    await fetch(url, {
       method,
       headers: getAuthHeaders(),
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) throw new Error('Save failed');
-
     sessionStorage.removeItem('invoiceDraft');
-    showAlert('Draft saved');
     window.location.href = '/invoices.html';
   } catch (err) {
     alert(err.message);
   }
 });
 
-/* ------------------ Finalize ------------------ */
+/* ===================================================
+   FINALIZE (REBUILD DRAFT FIRST)
+=================================================== */
 finalSaveBtn?.addEventListener('click', async () => {
   if (!invoiceId) return alert('Invoice not created yet');
 
+  draft = {
+    ...draft,
+    items: draft.items,
+    payment: draft.payment,
+  };
+
   if (!confirm('Finalize this invoice?')) return;
 
-  const res = await fetch(`/api/invoices/${invoiceId}/finalize`, {
+  await fetch(`/api/invoices/${invoiceId}/finalize`, {
     method: 'PUT',
     headers: getAuthHeaders(),
   });
-
-  if (!res.ok) return alert('Finalize failed');
 
   sessionStorage.removeItem('invoiceDraft');
   window.location.href = '/invoices.html';

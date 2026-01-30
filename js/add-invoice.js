@@ -20,8 +20,8 @@ const layoutSelect = document.getElementById('layoutSelect');
 const enableRazorpay = document.getElementById('enableRazorpay');
 const invoiceIdInput = document.getElementById('invoiceIdInput');
 
-/* 🔑 ITEMS UI */
-const itemsContainer = document.getElementById('itemsBody');
+/* 🔑 ITEMS UI — FIXED ID */
+const itemsContainer = document.getElementById('itemsContainer');
 
 /* ================= STATE ================= */
 let clients = [];

@@ -24,7 +24,10 @@ const addItemBtn = document.getElementById('addItemBtn');
 
 const invoiceDate = document.getElementById('invoiceDate');
 const dueDate = document.getElementById('dueDate');
-const discountInput = document.getElementById('discount');
+
+const discountTypeSelect = document.getElementById('discountType');
+const discountValueInput = document.getElementById('discountValue');
+
 const notesInput = document.getElementById('notes');
 const layoutSelect = document.getElementById('layoutSelect');
 const enableRazorpay = document.getElementById('enableRazorpay');
@@ -64,7 +67,10 @@ async function loadInvoiceFromDB() {
     due_date: invoice.due_date,
     items: invoice.items || [],
     taxes: invoice.taxes || [],
-    discount: invoice.discount || 0,
+    discount: {
+      type: invoice.discount_type || 'flat',
+      value: Number(invoice.discount_value || 0),
+    },
     notes: invoice.notes || '',
     layout_id: invoice.layout_id || 'minimal',
     payment: {
@@ -240,18 +246,13 @@ function renderTaxes() {
 
 /* ================= PREFILL ================= */
 async function prefillFromDraft(draft) {
-  if (draft.invoice_id && invoiceIdInput) {
-    invoiceIdInput.value = draft.invoice_id;
-  }
+  if (draft.invoice_id) invoiceIdInput.value = draft.invoice_id;
 
   if (draft.client_id) {
-    const matched = clients.find(
-      (c) => c.client_id === draft.client_id
-    );
+    const matched = clients.find((c) => c.client_id === draft.client_id);
     if (matched) {
       selectedClient = matched;
-      searchInput.value =
-        matched.company || matched.name || '';
+      searchInput.value = matched.company || matched.name || '';
       searchInput.readOnly = true;
       changeBtn.style.display = 'inline-block';
     }
@@ -262,6 +263,9 @@ async function prefillFromDraft(draft) {
   notesInput.value = draft.notes || '';
   layoutSelect.value = draft.layout_id || 'minimal';
   enableRazorpay.checked = !!draft.payment?.razorpay_enabled;
+
+  discountTypeSelect.value = draft.discount?.type || 'flat';
+  discountValueInput.value = draft.discount?.value || 0;
 
   renderItems();
 
@@ -300,7 +304,10 @@ saveBtn.addEventListener('click', () => {
     due_date: dueDate.value,
     items,
     taxes: draft.taxes,
-    discount: Number(discountInput.value || 0),
+    discount: {
+      type: discountTypeSelect.value,
+      value: Number(discountValueInput.value || 0),
+    },
     notes: notesInput.value || '',
     layout_id: layoutSelect.value || 'minimal',
     payment: { razorpay_enabled: enableRazorpay.checked },

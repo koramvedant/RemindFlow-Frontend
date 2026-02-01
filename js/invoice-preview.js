@@ -211,16 +211,25 @@ function renderDraftPreview(invoice, rawLayout) {
       <hr />
 
       <table width="100%">
-        ${taxes
-          .map(
-            (t) => `
-          <tr>
-            <td>${t.name} (${t.rate}%)</td>
-            <td align="right">₹${t.amount.toLocaleString()}</td>
-          </tr>
-        `
-          )
-          .join('')}
+  <!-- Subtotal -->
+  <tr>
+    <td>Subtotal</td>
+    <td align="right">₹${subtotal.toLocaleString()}</td>
+  </tr>
+
+  <!-- Taxes -->
+  ${taxes
+    .map(
+      (t) => `
+    <tr>
+      <td>${t.name} (${t.rate}%)</td>
+      <td align="right">₹${t.amount.toLocaleString()}</td>
+    </tr>
+  `
+    )
+    .join('')}
+
+        
 
         ${
           discountAmount > 0

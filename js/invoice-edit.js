@@ -31,6 +31,7 @@ const enableRazorpay = document.getElementById('enableRazorpay');
 const invoiceIdInput = document.getElementById('invoiceIdInput');
 
 const itemsContainer = document.getElementById('itemsContainer');
+const taxesContainer = document.getElementById('taxesContainer');
 
 /* ================= STATE ================= */
 let clients = [];
@@ -51,9 +52,7 @@ async function loadClients() {
 async function loadInvoiceFromDB() {
   const res = await fetch(
     `${API_BASE}/api/invoices/id/${invoiceDbId}`,
-    {
-      headers: getAuthHeaders(),
-    }
+    { headers: getAuthHeaders() }
   );
 
   const { invoice } = await res.json();
@@ -61,17 +60,13 @@ async function loadInvoiceFromDB() {
   draft = {
     invoice_id: invoice.invoice_id || null,
     client_id: invoice.client?.client_id || null,
-
     invoice_date: invoice.invoice_date,
     due_date: invoice.due_date,
-
     items: invoice.items || [],
     taxes: invoice.taxes || [],
     discount: invoice.discount || 0,
     notes: invoice.notes || '',
-
     layout_id: invoice.layout_id || 'minimal',
-
     payment: {
       razorpay_enabled: !!invoice.payment?.razorpay_enabled,
     },
@@ -103,7 +98,6 @@ function renderDropdown(list) {
   dropdown.style.display = 'block';
 }
 
-/* ✅ STEP 1 — helper */
 function closeDropdown() {
   dropdown.style.display = 'none';
   activeIndex = -1;
@@ -114,7 +108,7 @@ function selectClient(client) {
   searchInput.value = client.company || client.name || '';
   searchInput.readOnly = true;
   changeBtn.style.display = 'inline-block';
-  dropdown.style.display = 'none';
+  closeDropdown();
 }
 
 /* ================= SEARCH + KEYBOARD ================= */
@@ -135,19 +129,13 @@ searchInput.addEventListener('keydown', (e) => {
   const listItems = dropdown.querySelectorAll('li');
   if (!listItems.length) return;
 
-  if (e.key === 'ArrowDown') {
-    activeIndex = (activeIndex + 1) % listItems.length;
-  }
-
-  if (e.key === 'ArrowUp') {
-    activeIndex =
-      (activeIndex - 1 + listItems.length) % listItems.length;
-  }
+  if (e.key === 'ArrowDown') activeIndex = (activeIndex + 1) % listItems.length;
+  if (e.key === 'ArrowUp')
+    activeIndex = (activeIndex - 1 + listItems.length) % listItems.length;
 
   if (e.key === 'Enter') {
     e.preventDefault();
     listItems[activeIndex]?.click();
-    return;
   }
 
   if (e.key === 'Escape') {
@@ -160,14 +148,12 @@ searchInput.addEventListener('keydown', (e) => {
   );
 });
 
-/* ✅ STEP 3 — outside click close */
 document.addEventListener('click', (e) => {
-  const clickedInside =
-    searchInput.contains(e.target) ||
-    dropdown.contains(e.target) ||
-    changeBtn.contains(e.target);
-
-  if (!clickedInside) {
+  if (
+    !searchInput.contains(e.target) &&
+    !dropdown.contains(e.target) &&
+    !changeBtn.contains(e.target)
+  ) {
     closeDropdown();
   }
 });
@@ -175,16 +161,13 @@ document.addEventListener('click', (e) => {
 /* ================= CHANGE CLIENT ================= */
 changeBtn.onclick = () => {
   selectedClient = null;
-
-  if (draft) {
-    draft.client_id = null;
-    sessionStorage.setItem('invoiceDraft', JSON.stringify(draft));
-  }
+  draft.client_id = null;
+  sessionStorage.setItem('invoiceDraft', JSON.stringify(draft));
 
   searchInput.value = '';
   searchInput.readOnly = false;
   changeBtn.style.display = 'none';
-  dropdown.style.display = 'block';
+  renderDropdown(clients);
   searchInput.focus();
 };
 
@@ -228,27 +211,49 @@ function collectItems() {
     .filter((i) => i.description && i.quantity > 0 && i.rate > 0);
 }
 
+/* ================= TAXES ================= */
+function renderTaxes() {
+  taxesContainer.innerHTML = '';
+
+  draft.taxes.forEach((t, index) => {
+    const row = document.createElement('div');
+    row.className = 'invoice-items-grid';
+
+    row.innerHTML = `
+      <input value="${t.name}" readonly />
+      <input type="number" value="${t.rate}" />
+      <button class="item-delete">🗑</button>
+    `;
+
+    row.querySelector('input[type="number"]').oninput = (e) => {
+      draft.taxes[index].rate = Number(e.target.value);
+    };
+
+    row.querySelector('.item-delete').onclick = () => {
+      draft.taxes.splice(index, 1);
+      renderTaxes();
+    };
+
+    taxesContainer.appendChild(row);
+  });
+}
+
 /* ================= PREFILL ================= */
-function prefillFromDraft(draft) {
+async function prefillFromDraft(draft) {
   if (draft.invoice_id && invoiceIdInput) {
     invoiceIdInput.value = draft.invoice_id;
   }
 
-  if (draft.client_id && Array.isArray(clients)) {
-    const matchedClient = clients.find(
+  if (draft.client_id) {
+    const matched = clients.find(
       (c) => c.client_id === draft.client_id
     );
-
-    if (matchedClient) {
-      selectedClient = matchedClient;
+    if (matched) {
+      selectedClient = matched;
       searchInput.value =
-        matchedClient.company || matchedClient.name || '';
+        matched.company || matched.name || '';
       searchInput.readOnly = true;
       changeBtn.style.display = 'inline-block';
-    } else {
-      selectedClient = null;
-      searchInput.readOnly = false;
-      changeBtn.style.display = 'none';
     }
   }
 
@@ -259,6 +264,19 @@ function prefillFromDraft(draft) {
   enableRazorpay.checked = !!draft.payment?.razorpay_enabled;
 
   renderItems();
+
+  if (!Array.isArray(draft.taxes)) {
+    const res = await fetch(`${API_BASE}/api/settings/taxes`, {
+      headers: getAuthHeaders(),
+    });
+    const data = await res.json();
+    draft.taxes = (data.taxes || []).map((t) => ({
+      name: t.name,
+      rate: Number(t.rate),
+    }));
+  }
+
+  renderTaxes();
 }
 
 /* ================= SAVE → PREVIEW ================= */
@@ -281,7 +299,7 @@ saveBtn.addEventListener('click', () => {
     invoice_date: invoiceDate.value,
     due_date: dueDate.value,
     items,
-    taxes: draft.taxes || [],
+    taxes: draft.taxes,
     discount: Number(discountInput.value || 0),
     notes: notesInput.value || '',
     layout_id: layoutSelect.value || 'minimal',
@@ -303,5 +321,5 @@ saveBtn.addEventListener('click', () => {
     await loadInvoiceFromDB();
   }
 
-  prefillFromDraft(draft);
+  await prefillFromDraft(draft);
 })();

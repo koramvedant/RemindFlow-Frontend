@@ -1,7 +1,7 @@
 import { API_BASE } from './api.js';
 
 /* ===================================================
-   INVOICE PREVIEW — DRAFT-FIRST + CANONICAL CLIENT
+   INVOICE PREVIEW — DRAFT-FIRST + TAX SNAPSHOT SAFE
 =================================================== */
 
 /* ------------------ Elements ------------------ */
@@ -63,7 +63,7 @@ function normalizeLayout(value) {
 }
 
 /* ===================================================
-   CANONICAL NORMALIZATION (ONE SHAPE ONLY)
+   CANONICAL NORMALIZATION
 =================================================== */
 function normalizeInvoiceForPreview(invoice, seller) {
   return {
@@ -83,7 +83,7 @@ function normalizeInvoiceForPreview(invoice, seller) {
   };
 }
 
-/* ------------------ Build API Payload ------------------ */
+/* ------------------ Build API Payload (FIXED) ------------------ */
 function buildInvoicePayload(draft) {
   if (!draft?.client?.id) throw new Error('Client missing in draft');
   if (!draft.items?.length) throw new Error('Invoice items missing');
@@ -95,7 +95,10 @@ function buildInvoicePayload(draft) {
     due_date: draft.due_date,
     items: draft.items,
     taxes: draft.taxes || [],
-    discount: draft.discount || 0,
+
+    discount_type: draft.discount_type || 'amount',
+    discount_value: Number(draft.discount_value || 0),
+
     notes: draft.notes || '',
     layout_id: normalizeLayout(draft.layout_id),
     payment: {
@@ -104,27 +107,70 @@ function buildInvoicePayload(draft) {
   };
 }
 
-/* ------------------ Total ------------------ */
-function calculateTotal(invoice) {
-  const subtotal =
-    invoice.items.reduce((s, i) => s + i.quantity * i.rate, 0);
+/* ------------------ Totals (FIXED) ------------------ */
+function calculateTotals(invoice) {
+  const subtotal = invoice.items.reduce(
+    (s, i) => s + i.quantity * i.rate,
+    0
+  );
 
-  return subtotal - Number(invoice.discount || 0);
+  const taxes = Array.isArray(invoice.taxes)
+    ? invoice.taxes.map((t) => {
+        const rate = Number(t.rate || 0);
+        return {
+          name: t.name,
+          rate,
+          amount: (subtotal * rate) / 100,
+        };
+      })
+    : [];
+
+  const totalTax = taxes.reduce((s, t) => s + t.amount, 0);
+
+  // ✅ DISCOUNT CALCULATION
+  let discountAmount = 0;
+
+  if (invoice.discount_type === 'percentage') {
+    discountAmount =
+      (subtotal * Number(invoice.discount_value || 0)) / 100;
+  } else {
+    discountAmount = Number(invoice.discount_value || 0);
+  }
+
+  return {
+    subtotal,
+    taxes,
+    discountAmount,
+    discountLabel:
+      invoice.discount_type === 'percentage'
+        ? `Discount (${invoice.discount_value}%)`
+        : 'Discount',
+    total: subtotal + totalTax - discountAmount,
+  };
 }
 
-/* ------------------ Render Preview ------------------ */
+/* ------------------ Render Preview (FIXED) ------------------ */
 function renderDraftPreview(invoice, rawLayout) {
   if (!box || !invoice?.items) return;
 
   const layout = normalizeLayout(rawLayout);
-  const total = calculateTotal(invoice);
+
+  const {
+    subtotal,
+    taxes,
+    discountAmount,
+    discountLabel,
+    total,
+  } = calculateTotals(invoice);
 
   const razorpayEnabled = !!invoice.payment?.razorpay_enabled;
 
   box.innerHTML = `
     <div class="invoice ${layout}">
       <h3>Invoice</h3>
-      <p><strong>Invoice #:</strong> ${invoice.invoice_id || 'INV-XXXX'}</p>
+      <p><strong>Invoice #:</strong> ${
+        invoice.invoice_id || 'INV-XXXX'
+      }</p>
 
       <p><strong>From:</strong><br/>
         ${invoice.seller.company_name}<br/>
@@ -136,8 +182,12 @@ function renderDraftPreview(invoice, rawLayout) {
         ${invoice.client.email}
       </p>
 
-      <p><strong>Invoice Date:</strong> ${formatDate(invoice.invoice_date)}</p>
-      <p><strong>Due Date:</strong> ${formatDate(invoice.due_date)}</p>
+      <p><strong>Invoice Date:</strong> ${formatDate(
+        invoice.invoice_date
+      )}</p>
+      <p><strong>Due Date:</strong> ${formatDate(
+        invoice.due_date
+      )}</p>
 
       <hr />
 
@@ -149,7 +199,9 @@ function renderDraftPreview(invoice, rawLayout) {
             <td>${i.description}</td>
             <td align="right">${i.quantity}</td>
             <td align="right">₹${i.rate}</td>
-            <td align="right">₹${(i.quantity * i.rate).toLocaleString()}</td>
+            <td align="right">₹${(
+              i.quantity * i.rate
+            ).toLocaleString()}</td>
           </tr>
         `
           )
@@ -157,7 +209,36 @@ function renderDraftPreview(invoice, rawLayout) {
       </table>
 
       <hr />
-      <p><strong>Total:</strong> ₹${total.toLocaleString()}</p>
+
+      <table width="100%">
+        ${taxes
+          .map(
+            (t) => `
+          <tr>
+            <td>${t.name} (${t.rate}%)</td>
+            <td align="right">₹${t.amount.toLocaleString()}</td>
+          </tr>
+        `
+          )
+          .join('')}
+
+        ${
+          discountAmount > 0
+            ? `
+          <tr>
+            <td>${discountLabel}</td>
+            <td align="right">-₹${discountAmount.toLocaleString()}</td>
+          </tr>`
+            : ''
+        }
+
+        <tr><td colspan="2"><hr /></td></tr>
+
+        <tr>
+          <td><strong>Total</strong></td>
+          <td align="right"><strong>₹${total.toLocaleString()}</strong></td>
+        </tr>
+      </table>
 
       ${
         razorpayEnabled
@@ -194,16 +275,10 @@ async function loadExistingInvoice(id) {
 }
 
 /* ===================================================
-   SAVE DRAFT (REBUILD AUTHORITATIVE DRAFT)
+   SAVE DRAFT
 =================================================== */
 saveDraftBtn?.addEventListener('click', async () => {
   try {
-    draft = {
-      ...draft,
-      items: draft.items,
-      payment: draft.payment,
-    };
-
     const payload = buildInvoicePayload(draft);
 
     const url = invoiceId
@@ -226,16 +301,10 @@ saveDraftBtn?.addEventListener('click', async () => {
 });
 
 /* ===================================================
-   FINALIZE (REBUILD DRAFT FIRST)
+   FINALIZE
 =================================================== */
 finalSaveBtn?.addEventListener('click', async () => {
   if (!invoiceId) return alert('Invoice not created yet');
-
-  draft = {
-    ...draft,
-    items: draft.items,
-    payment: draft.payment,
-  };
 
   if (!confirm('Finalize this invoice?')) return;
 

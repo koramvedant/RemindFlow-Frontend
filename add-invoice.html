@@ -83,16 +83,39 @@
         + Add Item
       </button>
 
-      <!-- Tax -->
+      <!-- ✅ TAX (CANONICAL, SETTINGS-DRIVEN) -->
       <h3>Tax (optional)</h3>
-      <div class="row">
-        <input id="taxName" placeholder="Tax name (e.g. GST)" />
-        <input id="taxRate" type="number" placeholder="Rate (%)" />
+
+      <div class="items-header invoice-items-grid">
+        <span>Tax Name</span>
+        <span>Rate (%)</span>
+        <span></span>
       </div>
 
-      <!-- Discount -->
-      <label>Discount (optional)</label>
-      <input type="number" id="discount" step="0.01" placeholder="₹ 0.00" />
+      <div id="taxesContainer"></div>
+
+      <!-- 🟢 DISCOUNT (FLEXIBLE) -->
+      <h3>Discount (optional)</h3>
+
+      <div class="row">
+        <div>
+          <label>Discount Type</label>
+          <select id="discountType">
+            <option value="flat">Flat Amount (₹)</option>
+            <option value="percentage">Percentage (%)</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Discount Value</label>
+          <input
+            type="number"
+            id="discountValue"
+            step="0.01"
+            placeholder="0"
+          />
+        </div>
+      </div>
 
       <!-- Payment Options -->
       <h3>Payment Options</h3>

@@ -32,17 +32,33 @@ h1 {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  user-select: none;
+}
+
+/* Open-state polish */
+.settings-section.open .section-header {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .section-body {
   display: none;
   background: #f9fafb;
+
   padding: 20px;
-  border-radius: 8px;
   margin-top: 6px;
+
+  border-radius: 0 0 8px 8px;
+}
+
+/* State-driven visibility */
+.settings-section.open .section-body {
+  display: block;
 }
 
 /* -------------------- Form Elements -------------------- */
@@ -118,7 +134,8 @@ textarea {
   transition: transform 0.2s;
 }
 
-.arrow.open {
+/* State-based arrow rotation */
+.settings-section.open .arrow {
   transform: rotate(90deg);
 }
 
@@ -128,24 +145,31 @@ textarea {
 }
 
 /* =====================================================
-   ✅ TAXES — SAME GRID AS INVOICE ITEMS (CANONICAL)
-   DO NOT DIVERGE FROM add-invoice.css
+   ✅ TAXES — GRID FIX (MATCHES HEADER EXACTLY)
 ===================================================== */
 
-/* Header + rows share same grid */
-.invoice-items-grid {
+/* Header row (MUST MATCH invoice-items-grid) */
+.items-header {
   display: grid;
-  grid-template-columns: 2.5fr 1fr 1.5fr 40px;
+  grid-template-columns: 2.5fr 1fr 40px;
   gap: 12px;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
-/* Header text */
 .items-header span {
   font-size: 14px;
   font-weight: 600;
   color: #444;
+}
+
+/* Tax rows */
+.invoice-items-grid {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 40px;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 /* Inputs inside grid rows */

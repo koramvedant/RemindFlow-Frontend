@@ -2,21 +2,28 @@
 import { API_BASE } from './api.js';
 
 /* -------------------------
-   Section Toggles
+   Auth Helper (ADDED)
+------------------------- */
+function getAuthHeaders() {
+  const token = localStorage.getItem('accessToken');
+  if (!token) return {};
+  return {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+}
+
+/* -------------------------
+   Section Toggles (FINAL)
 ------------------------- */
 const toggles = document.querySelectorAll('.section-header[data-toggle]');
 
 toggles.forEach((header) => {
   header.addEventListener('click', () => {
-    const id = header.dataset.toggle;
-    const body = document.getElementById(id);
-    const arrow = header.querySelector('.arrow');
+    const section = header.closest('.settings-section');
+    if (!section) return;
 
-    if (!body) return;
-
-    const isOpen = body.style.display === 'block';
-    body.style.display = isOpen ? 'none' : 'block';
-    arrow?.classList.toggle('open', !isOpen);
+    section.classList.toggle('open');
   });
 });
 
@@ -33,12 +40,12 @@ function cacheSellerInfo(data) {
 }
 
 /* -------------------------
-   Load Settings
+   Load Settings (FIXED)
 ------------------------- */
 async function loadSettings() {
   try {
     const res = await fetch(`${API_BASE}/api/settings`, {
-      credentials: 'include',
+      headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to fetch settings');
 
@@ -76,8 +83,7 @@ document.getElementById('saveAccount')?.addEventListener('click', async () => {
   try {
     const res = await fetch(`${API_BASE}/api/settings`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+      headers: getAuthHeaders(),
       body: JSON.stringify(payload),
     });
 
@@ -107,8 +113,7 @@ document
     try {
       const res = await fetch(`${API_BASE}/api/settings`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
 
@@ -132,12 +137,12 @@ const saveTaxesBtn = document.getElementById('saveTaxes');
 let taxes = [];
 
 /* -------------------------
-   Load Taxes
+   Load Taxes (FIXED)
 ------------------------- */
 async function loadTaxes() {
   try {
-    const res = await fetch(`${API_BASE}/api/user/taxes`, {
-      credentials: 'include',
+    const res = await fetch(`${API_BASE}/api/settings/taxes`, {
+      headers: getAuthHeaders(),
     });
 
     if (!res.ok) throw new Error('Failed to load taxes');
@@ -213,7 +218,7 @@ taxesContainer?.addEventListener('click', (e) => {
 });
 
 /* -------------------------
-   Save Taxes (FULL REPLACE)
+   Save Taxes (FIXED)
 ------------------------- */
 saveTaxesBtn?.addEventListener('click', async () => {
   const rows = [
@@ -240,10 +245,9 @@ saveTaxesBtn?.addEventListener('click', async () => {
     .filter(Boolean);
 
   try {
-    const res = await fetch(`${API_BASE}/api/user/taxes`, {
+    const res = await fetch(`${API_BASE}/api/settings/taxes`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+      headers: getAuthHeaders(),
       body: JSON.stringify({ taxes: payload }),
     });
 

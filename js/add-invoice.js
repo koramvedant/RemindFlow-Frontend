@@ -1,5 +1,9 @@
 import { API_BASE } from './api.js';
 
+/* ================= URL CONTROL ================= */
+const params = new URLSearchParams(window.location.search);
+const fromPreview = params.get('from') === 'preview';
+
 /* ================= AUTH ================= */
 function getAuthHeaders() {
   const token = localStorage.getItem('accessToken');
@@ -17,14 +21,18 @@ const addItemBtn = document.getElementById('addItemBtn');
 const invoiceDate = document.getElementById('invoiceDate');
 const dueDate = document.getElementById('dueDate');
 
-/* ✅ DISCOUNT (NEW, CORRECT) */
+/* ✅ DISCOUNT (CANONICAL) */
 const discountTypeSelect = document.getElementById('discountType');
 const discountValueInput = document.getElementById('discountValue');
 
 const notesInput = document.getElementById('notes');
 const layoutSelect = document.getElementById('layoutSelect');
-const enableRazorpay = document.getElementById('enableRazorpay');
 const invoiceIdInput = document.getElementById('invoiceIdInput');
+
+/* 🔑 PAYMENT OPTIONS (MANUAL) */
+const payUpiCheckbox = document.getElementById('pay_upi');
+const payBankCheckbox = document.getElementById('pay_bank');
+const payCashCheckbox = document.getElementById('pay_cash');
 
 /* 🔑 ITEMS UI */
 const itemsContainer = document.getElementById('itemsContainer');
@@ -61,8 +69,7 @@ async function loadUserTaxes() {
 
   const { data } = await res.json();
 
-  taxes.length = 0; // ✅ CRITICAL RESET
-
+  taxes.length = 0;
   (data || []).forEach((t) => {
     taxes.push({
       name: t.name,
@@ -135,7 +142,6 @@ searchInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
     listItems[activeIndex]?.click();
-    return;
   }
 
   if (e.key === 'Escape') dropdown.style.display = 'none';
@@ -164,7 +170,6 @@ function renderItems() {
   });
 }
 
-/* 🔥 SYNC BEFORE ADD */
 addItemBtn.addEventListener('click', () => {
   syncItemsFromDOM();
   items.push({ description: '', quantity: 1, rate: 0 });
@@ -195,8 +200,6 @@ function syncItemsFromDOM() {
 
 /* ================= TAXES ================= */
 function renderTaxes() {
-  if (!taxesContainer) return;
-
   taxesContainer.innerHTML = '';
 
   taxes.forEach((t, index) => {
@@ -206,7 +209,7 @@ function renderTaxes() {
     row.innerHTML = `
       <input value="${t.name}" readonly />
       <input type="number" value="${t.rate}" />
-      <button type="button" class="item-delete" data-index="${index}">🗑</button>
+      <button type="button" class="item-delete">🗑</button>
     `;
 
     row.querySelector('input[type="number"]').oninput = (e) => {
@@ -222,15 +225,80 @@ function renderTaxes() {
   });
 }
 
-/* ================= CONTINUE (FINAL) ================= */
+/* ================= RESTORE DRAFT ================= */
+function loadDraftFromSession() {
+  const stored = sessionStorage.getItem('invoiceDraft');
+  if (!stored) return;
+
+  const draft = JSON.parse(stored);
+
+  if (draft.client) {
+    selectedClient = draft.client;
+  }
+
+  if (selectedClient) {
+    searchInput.value = selectedClient.name;
+    searchInput.setAttribute('readonly', true);
+    changeBtn.style.display = 'inline-block';
+  }
+
+  invoiceDate.value = draft.invoice_date || '';
+  dueDate.value = draft.due_date || '';
+
+  items.length = 0;
+  (draft.items || []).forEach((i) => items.push(i));
+  renderItems();
+
+  taxes.length = 0;
+  (draft.taxes || []).forEach((t) => taxes.push(t));
+  renderTaxes();
+
+  if (draft.discount) {
+    discountTypeSelect.value =
+      draft.discount.type === 'percent'
+        ? 'percentage'
+        : 'flat';
+    discountValueInput.value = draft.discount.value;
+  }
+
+  notesInput.value = draft.notes || '';
+  layoutSelect.value = draft.layout_id || 'minimal';
+
+  if (draft.payment_methods) {
+    payUpiCheckbox.checked = !!draft.payment_methods.upi;
+    payBankCheckbox.checked = !!draft.payment_methods.bank;
+    payCashCheckbox.checked = !!draft.payment_methods.cash;
+  }
+}
+
+/* ================= CONTINUE ================= */
 continueBtn.onclick = () => {
   if (!selectedClient) return alert('Please select a client');
 
   syncItemsFromDOM();
   if (!items.length) return alert('Add at least one invoice item');
 
-  const discount_type = discountTypeSelect?.value || 'amount';
-  const discount_value = Number(discountValueInput?.value || 0);
+  if (
+    !payUpiCheckbox.checked &&
+    !payBankCheckbox.checked &&
+    !payCashCheckbox.checked
+  ) {
+    return alert('Select at least one payment option');
+  }
+
+  const discount = {
+    type:
+      discountTypeSelect.value === 'percentage'
+        ? 'percent'
+        : 'flat',
+    value: Number(discountValueInput.value || 0),
+  };
+
+  const payment_methods = {
+    upi: payUpiCheckbox.checked,
+    bank: payBankCheckbox.checked,
+    cash: payCashCheckbox.checked,
+  };
 
   const payload = {
     invoice_id: invoiceIdInput.value || null,
@@ -239,12 +307,9 @@ continueBtn.onclick = () => {
     client: selectedClient,
     items,
     taxes: taxes.map((t) => ({ ...t })),
-
-    discount_type,
-    discount_value,
-
+    discount,
     notes: notesInput.value || '',
-    payment: { razorpay_enabled: enableRazorpay.checked },
+    payment_methods,
     layout_id: layoutSelect.value || 'minimal',
     status: 'draft',
   };
@@ -257,4 +322,10 @@ continueBtn.onclick = () => {
 (async () => {
   await loadClients();
   await loadUserTaxes();
+
+  if (fromPreview) {
+    loadDraftFromSession();
+  } else {
+    sessionStorage.removeItem('invoiceDraft');
+  }
 })();

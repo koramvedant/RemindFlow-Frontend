@@ -62,19 +62,21 @@ async function loadInvoiceFromDB() {
 
   draft = {
     invoice_id: invoice.invoice_id || null,
-    client_id: invoice.client?.client_id || null,
+    client_id:
+      invoice.client?.client_id ||
+      invoice.client_id ||
+      null,
     invoice_date: invoice.invoice_date,
     due_date: invoice.due_date,
     items: invoice.items || [],
     taxes: invoice.taxes || [],
-    discount: {
-      type: invoice.discount_type || 'flat',
-      value: Number(invoice.discount_value || 0),
-    },
+    discount: invoice.discount || { type: 'flat', value: 0 },
     notes: invoice.notes || '',
     layout_id: invoice.layout_id || 'minimal',
     payment: {
-      razorpay_enabled: !!invoice.payment?.razorpay_enabled,
+      razorpay_enabled:
+        !!invoice.payment?.razorpay_enabled ||
+        !!invoice.payment_payload?.razorpay_enabled,
     },
   };
 
@@ -264,12 +266,15 @@ async function prefillFromDraft(draft) {
   layoutSelect.value = draft.layout_id || 'minimal';
   enableRazorpay.checked = !!draft.payment?.razorpay_enabled;
 
-  discountTypeSelect.value = draft.discount?.type || 'flat';
+  discountTypeSelect.value =
+    draft.discount?.type === 'percent'
+      ? 'percentage'
+      : 'flat';
   discountValueInput.value = draft.discount?.value || 0;
 
   renderItems();
 
-  if (!Array.isArray(draft.taxes)) {
+  if (!Array.isArray(draft.taxes) || !draft.taxes.length) {
     const res = await fetch(`${API_BASE}/api/settings/taxes`, {
       headers: getAuthHeaders(),
     });
@@ -287,7 +292,11 @@ async function prefillFromDraft(draft) {
 saveBtn.addEventListener('click', () => {
   const items = collectItems();
 
-  if (!selectedClient?.client_id) {
+  const clientId =
+    selectedClient?.client_id ||
+    selectedClient?.id;
+
+  if (!clientId) {
     alert('Client missing');
     return;
   }
@@ -299,13 +308,16 @@ saveBtn.addEventListener('click', () => {
 
   const finalDraft = {
     invoice_id: draft.invoice_id || null,
-    client_id: selectedClient.client_id,
+    client_id: clientId,
     invoice_date: invoiceDate.value,
     due_date: dueDate.value,
     items,
     taxes: draft.taxes,
     discount: {
-      type: discountTypeSelect.value,
+      type:
+        discountTypeSelect.value === 'percentage'
+          ? 'percent'
+          : 'flat',
       value: Number(discountValueInput.value || 0),
     },
     notes: notesInput.value || '',
@@ -317,15 +329,22 @@ saveBtn.addEventListener('click', () => {
   window.location.href = `/invoice-preview.html?id=${invoiceDbId}`;
 });
 
-/* ================= INIT ================= */
+/* ================= INIT (FINAL, CORRECT) ================= */
 (async () => {
   await loadClients();
 
+  // 🔥 ALWAYS load fresh invoice from DB for edit
+  await loadInvoiceFromDB();
+
+  // Optional: allow preview → edit roundtrip override
   const stored = sessionStorage.getItem('invoiceDraft');
   if (stored) {
-    draft = JSON.parse(stored);
-  } else {
-    await loadInvoiceFromDB();
+    const tempDraft = JSON.parse(stored);
+
+    // Only merge if same invoice
+    if (tempDraft.invoice_id === draft.invoice_id) {
+      draft = tempDraft;
+    }
   }
 
   await prefillFromDraft(draft);

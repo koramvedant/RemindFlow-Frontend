@@ -85,19 +85,29 @@ function normalizeInvoiceForPreview(invoice, seller) {
 
 /* ------------------ Build API Payload (FIXED) ------------------ */
 function buildInvoicePayload(draft) {
-  if (!draft?.client?.id) throw new Error('Client missing in draft');
-  if (!draft.items?.length) throw new Error('Invoice items missing');
+  const clientId =
+    draft?.client?.id ||
+    draft?.client?.client_id ||
+    draft?.client_id;
+
+  if (!clientId) {
+    throw new Error('Client missing in draft');
+  }
+
+  if (!draft.items?.length) {
+    throw new Error('Invoice items missing');
+  }
 
   return {
     invoice_id: draft.invoice_id || null,
-    client_id: draft.client.id,
+    client_id: clientId,
     invoice_date: draft.invoice_date,
     due_date: draft.due_date,
     items: draft.items,
     taxes: draft.taxes || [],
 
-    discount_type: draft.discount_type || 'amount',
-    discount_value: Number(draft.discount_value || 0),
+    // ✅ CANONICAL DISCOUNT CONTRACT
+    discount: draft.discount || { type: 'flat', value: 0 },
 
     notes: draft.notes || '',
     layout_id: normalizeLayout(draft.layout_id),
@@ -127,14 +137,15 @@ function calculateTotals(invoice) {
 
   const totalTax = taxes.reduce((s, t) => s + t.amount, 0);
 
-  // ✅ DISCOUNT CALCULATION
-  let discountAmount = 0;
+  // ✅ CANONICAL DISCOUNT HANDLING
+  const discountObj = invoice.discount || { type: 'flat', value: 0 };
 
-  if (invoice.discount_type === 'percentage') {
+  let discountAmount = 0;
+  if (discountObj.type === 'percent') {
     discountAmount =
-      (subtotal * Number(invoice.discount_value || 0)) / 100;
+      (subtotal * Number(discountObj.value || 0)) / 100;
   } else {
-    discountAmount = Number(invoice.discount_value || 0);
+    discountAmount = Number(discountObj.value || 0);
   }
 
   return {
@@ -142,14 +153,14 @@ function calculateTotals(invoice) {
     taxes,
     discountAmount,
     discountLabel:
-      invoice.discount_type === 'percentage'
-        ? `Discount (${invoice.discount_value}%)`
+      discountObj.type === 'percent'
+        ? `Discount (${discountObj.value}%)`
         : 'Discount',
     total: subtotal + totalTax - discountAmount,
   };
 }
 
-/* ------------------ Render Preview (FIXED) ------------------ */
+/* ------------------ Render Preview ------------------ */
 function renderDraftPreview(invoice, rawLayout) {
   if (!box || !invoice?.items) return;
 
@@ -211,25 +222,21 @@ function renderDraftPreview(invoice, rawLayout) {
       <hr />
 
       <table width="100%">
-  <!-- Subtotal -->
-  <tr>
-    <td>Subtotal</td>
-    <td align="right">₹${subtotal.toLocaleString()}</td>
-  </tr>
+        <tr>
+          <td>Subtotal</td>
+          <td align="right">₹${subtotal.toLocaleString()}</td>
+        </tr>
 
-  <!-- Taxes -->
-  ${taxes
-    .map(
-      (t) => `
-    <tr>
-      <td>${t.name} (${t.rate}%)</td>
-      <td align="right">₹${t.amount.toLocaleString()}</td>
-    </tr>
-  `
-    )
-    .join('')}
-
-        
+        ${taxes
+          .map(
+            (t) => `
+          <tr>
+            <td>${t.name} (${t.rate}%)</td>
+            <td align="right">₹${t.amount.toLocaleString()}</td>
+          </tr>
+        `
+          )
+          .join('')}
 
         ${
           discountAmount > 0

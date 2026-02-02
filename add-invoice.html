@@ -119,10 +119,25 @@
 
       <!-- Payment Options -->
       <h3>Payment Options</h3>
+
       <label class="checkbox-row">
-        <input type="checkbox" id="enableRazorpay" />
-        Enable online payment via Razorpay
+        <input type="checkbox" id="pay_upi" checked />
+        <span>UPI</span>
       </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="pay_bank" checked />
+        <span>Bank Transfer</span>
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="pay_cash" />
+        <span>Cash</span>
+      </label>
+
+      <p class="hint">
+        Selected payment options will be shown on the invoice.
+      </p>
 
       <!-- Template -->
       <label>Invoice Template *</label>

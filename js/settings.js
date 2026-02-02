@@ -1,4 +1,3 @@
-// public/js/settings.js
 import { API_BASE } from './api.js';
 
 /* -------------------------
@@ -127,6 +126,66 @@ document
   });
 
 /* =====================================================
+   PAYMENTS (MANUAL METHODS ONLY)
+===================================================== */
+
+const savePaymentsBtn = document.getElementById('savePayments');
+
+const upiInput = document.getElementById('upi_id');
+const bankNameInput = document.getElementById('bank_name');
+const accountNumberInput = document.getElementById('account_number');
+const ifscInput = document.getElementById('ifsc_code');
+
+/* -------------------------
+   Load Payment Settings
+------------------------- */
+async function loadPayments() {
+  try {
+    const res = await fetch(`${API_BASE}/api/settings/payments`, {
+      headers: getAuthHeaders(),
+    });
+
+    if (!res.ok) throw new Error('Failed to load payments');
+
+    const { data } = await res.json();
+
+    upiInput.value = data.upi_id || '';
+    bankNameInput.value = data.bank_name || '';
+    accountNumberInput.value = data.account_number || '';
+    ifscInput.value = data.ifsc_code || '';
+  } catch (err) {
+    console.warn('⚠️ Payment settings not loaded:', err);
+  }
+}
+
+/* -------------------------
+   Save Payment Settings
+------------------------- */
+savePaymentsBtn?.addEventListener('click', async () => {
+  const payload = {
+    upi_id: upiInput.value.trim(),
+    bank_name: bankNameInput.value.trim(),
+    account_number: accountNumberInput.value.trim(),
+    ifsc_code: ifscInput.value.trim(),
+  };
+
+  try {
+    const res = await fetch(`${API_BASE}/api/settings/payments`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error('Save failed');
+
+    alert('✅ Payment settings saved');
+  } catch (err) {
+    console.error('❌ Payment save error:', err);
+    alert('❌ Failed to save payment settings');
+  }
+});
+
+/* =====================================================
    TAXES — ONLY RESPONSIBILITY BELOW
 ===================================================== */
 
@@ -137,7 +196,7 @@ const saveTaxesBtn = document.getElementById('saveTaxes');
 let taxes = [];
 
 /* -------------------------
-   Load Taxes (FIXED)
+   Load Taxes
 ------------------------- */
 async function loadTaxes() {
   try {
@@ -169,22 +228,10 @@ function renderTaxes() {
     row.className = 'invoice-items-grid';
 
     row.innerHTML = `
-      <input
-        type="text"
-        value="${tax.name || ''}"
-        data-field="name"
-      />
-      <input
-        type="number"
-        value="${tax.rate ?? ''}"
-        data-field="rate"
-      />
+      <input type="text" value="${tax.name || ''}" data-field="name" />
+      <input type="number" value="${tax.rate ?? ''}" data-field="rate" />
       <div></div>
-      <button
-        class="item-delete"
-        data-index="${index}"
-        title="Delete tax"
-      >
+      <button class="item-delete" data-index="${index}" title="Delete tax">
         🗑
       </button>
     `;
@@ -218,7 +265,7 @@ taxesContainer?.addEventListener('click', (e) => {
 });
 
 /* -------------------------
-   Save Taxes (FIXED)
+   Save Taxes
 ------------------------- */
 saveTaxesBtn?.addEventListener('click', async () => {
   const rows = [
@@ -263,7 +310,8 @@ saveTaxesBtn?.addEventListener('click', async () => {
 });
 
 /* -------------------------
-   Init
+   Init (FINAL)
 ------------------------- */
 loadSettings();
 loadTaxes();
+loadPayments();

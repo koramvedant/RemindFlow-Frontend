@@ -126,13 +126,33 @@
     </section>
 
     <!-- PAYMENT SETTINGS -->
-    <section class="settings-section disabled">
-      <div class="section-header">Payment Settings</div>
+    <section class="settings-section">
+      <div class="section-header" data-toggle="payments">
+        Payment Settings
+        <span class="arrow">▶</span>
+      </div>
 
-      <div class="section-body">
-        <p>
-          Payment settings will be available once payment gateway integration is enabled.
+      <div class="section-body" id="payments">
+        <label>UPI ID</label>
+        <input type="text" id="upi_id" placeholder="example@upi" />
+
+        <label>Bank Name</label>
+        <input type="text" id="bank_name" placeholder="HDFC Bank" />
+
+        <label>Account Number</label>
+        <input type="text" id="account_number" placeholder="XXXXXXXXXX" />
+
+        <label>IFSC Code</label>
+        <input type="text" id="ifsc_code" placeholder="HDFC0001234" />
+
+        <p class="hint">
+          Payments are handled directly between you and your client.
+          RemindFlow helps you track and send reminders.
         </p>
+
+        <button class="primary-btn" id="savePayments">
+          Save Payment Settings
+        </button>
       </div>
     </section>
   </div>

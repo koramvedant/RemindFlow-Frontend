@@ -20,12 +20,16 @@ let reminders = [];
 async function fetchReminders() {
   try {
     const res = await fetch(`${API_BASE}/api/reminders`, {
-      credentials: 'include',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        'Content-Type': 'application/json',
+      },
     });
+
     if (!res.ok) throw new Error('Failed to fetch reminders');
 
     const data = await res.json();
-    reminders = data;
+    reminders = data.reminders || []; // ✅ FIXED
     renderTable();
   } catch (err) {
     console.error('Error fetching reminders:', err);

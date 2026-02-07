@@ -10,6 +10,15 @@ const layoutSelect = document.getElementById('layoutSelect');
 const saveDraftBtn = document.getElementById('saveDraft');
 const finalSaveBtn = document.getElementById('finalSave');
 
+/* 🔑 PAYMENT DOM */
+const paymentSection = document.getElementById('paymentSection');
+const paymentUpi = document.getElementById('paymentUpi');
+const paymentBank = document.getElementById('paymentBank');
+const paymentCash = document.getElementById('paymentCash');
+
+const upiText = document.getElementById('upiText');
+const bankText = document.getElementById('bankText');
+
 /* ------------------ Auth Helper ------------------ */
 function getAuthHeaders() {
   const token = localStorage.getItem('accessToken');
@@ -72,6 +81,10 @@ function normalizeInvoiceForPreview(invoice, seller) {
     seller: {
       company_name: seller?.company_name || '—',
       email: seller?.email || '',
+      upi_id: seller?.upi_id || '',
+      bank_name: seller?.bank_name || '',
+      account_number: seller?.account_number || '',
+      ifsc_code: seller?.ifsc_code || '',
     },
 
     client: {
@@ -106,18 +119,20 @@ function buildInvoicePayload(draft) {
     items: draft.items,
     taxes: draft.taxes || [],
 
-    // ✅ CANONICAL DISCOUNT CONTRACT
     discount: draft.discount || { type: 'flat', value: 0 },
 
     notes: draft.notes || '',
     layout_id: normalizeLayout(draft.layout_id),
-    payment: {
-      razorpay_enabled: !!draft.payment?.razorpay_enabled,
+
+    payment_methods: draft.payment_methods || {
+      upi: false,
+      bank: false,
+      cash: false,
     },
   };
 }
 
-/* ------------------ Totals (FIXED) ------------------ */
+/* ------------------ Totals ------------------ */
 function calculateTotals(invoice) {
   const subtotal = invoice.items.reduce(
     (s, i) => s + i.quantity * i.rate,
@@ -137,7 +152,6 @@ function calculateTotals(invoice) {
 
   const totalTax = taxes.reduce((s, t) => s + t.amount, 0);
 
-  // ✅ CANONICAL DISCOUNT HANDLING
   const discountObj = invoice.discount || { type: 'flat', value: 0 };
 
   let discountAmount = 0;
@@ -160,6 +174,54 @@ function calculateTotals(invoice) {
   };
 }
 
+/* ------------------ Payment Instructions ------------------ */
+function renderPaymentInstructions(invoice) {
+  if (!paymentSection) return;
+
+  const pm = invoice.payment_methods || {
+    upi: false,
+    bank: false,
+    cash: false,
+  };
+
+  paymentSection.classList.add('hidden');
+  paymentUpi.classList.add('hidden');
+  paymentBank.classList.add('hidden');
+  paymentCash.classList.add('hidden');
+
+  let hasAny = false;
+
+  if (pm.upi && invoice.seller?.upi_id) {
+    upiText.textContent = invoice.seller.upi_id;
+    paymentUpi.classList.remove('hidden');
+    hasAny = true;
+  }
+
+  if (
+    pm.bank &&
+    invoice.seller?.bank_name &&
+    invoice.seller?.account_number &&
+    invoice.seller?.ifsc_code
+  ) {
+    bankText.innerHTML = `
+      Bank: ${invoice.seller.bank_name}<br/>
+      A/C: ${invoice.seller.account_number}<br/>
+      IFSC: ${invoice.seller.ifsc_code}
+    `;
+    paymentBank.classList.remove('hidden');
+    hasAny = true;
+  }
+
+  if (pm.cash) {
+    paymentCash.classList.remove('hidden');
+    hasAny = true;
+  }
+
+  if (hasAny) {
+    paymentSection.classList.remove('hidden');
+  }
+}
+
 /* ------------------ Render Preview ------------------ */
 function renderDraftPreview(invoice, rawLayout) {
   if (!box || !invoice?.items) return;
@@ -174,11 +236,10 @@ function renderDraftPreview(invoice, rawLayout) {
     total,
   } = calculateTotals(invoice);
 
-  const razorpayEnabled = !!invoice.payment?.razorpay_enabled;
-
   box.innerHTML = `
     <div class="invoice ${layout}">
       <h3>Invoice</h3>
+
       <p><strong>Invoice #:</strong> ${
         invoice.invoice_id || 'INV-XXXX'
       }</p>
@@ -193,12 +254,8 @@ function renderDraftPreview(invoice, rawLayout) {
         ${invoice.client.email}
       </p>
 
-      <p><strong>Invoice Date:</strong> ${formatDate(
-        invoice.invoice_date
-      )}</p>
-      <p><strong>Due Date:</strong> ${formatDate(
-        invoice.due_date
-      )}</p>
+      <p><strong>Invoice Date:</strong> ${formatDate(invoice.invoice_date)}</p>
+      <p><strong>Due Date:</strong> ${formatDate(invoice.due_date)}</p>
 
       <hr />
 
@@ -210,9 +267,7 @@ function renderDraftPreview(invoice, rawLayout) {
             <td>${i.description}</td>
             <td align="right">${i.quantity}</td>
             <td align="right">₹${i.rate}</td>
-            <td align="right">₹${(
-              i.quantity * i.rate
-            ).toLocaleString()}</td>
+            <td align="right">₹${(i.quantity * i.rate).toLocaleString()}</td>
           </tr>
         `
           )
@@ -255,14 +310,10 @@ function renderDraftPreview(invoice, rawLayout) {
           <td align="right"><strong>₹${total.toLocaleString()}</strong></td>
         </tr>
       </table>
-
-      ${
-        razorpayEnabled
-          ? `<button disabled>Pay Now (after finalize)</button>`
-          : ''
-      }
     </div>
   `;
+
+  renderPaymentInstructions(invoice);
 }
 
 /* ===================================================
@@ -290,9 +341,7 @@ async function loadExistingInvoice(id) {
   );
 }
 
-/* ===================================================
-   SAVE DRAFT
-=================================================== */
+/* ------------------ Save Draft ------------------ */
 saveDraftBtn?.addEventListener('click', async () => {
   try {
     const payload = buildInvoicePayload(draft);
@@ -316,9 +365,7 @@ saveDraftBtn?.addEventListener('click', async () => {
   }
 });
 
-/* ===================================================
-   FINALIZE
-=================================================== */
+/* ------------------ Finalize ------------------ */
 finalSaveBtn?.addEventListener('click', async () => {
   if (!invoiceId) return alert('Invoice not created yet');
 

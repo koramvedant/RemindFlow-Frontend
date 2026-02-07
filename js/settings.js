@@ -136,6 +136,43 @@ const bankNameInput = document.getElementById('bank_name');
 const accountNumberInput = document.getElementById('account_number');
 const ifscInput = document.getElementById('ifsc_code');
 
+/* 🔑 DEFAULT PAYMENT METHODS */
+const defaultPayUpi = document.getElementById('default_pay_upi');
+const defaultPayBank = document.getElementById('default_pay_bank');
+const defaultPayCash = document.getElementById('default_pay_cash');
+
+/* -------------------------
+   Helper Validation (ADDED)
+------------------------- */
+function isUpiFilled() {
+  return upiInput.value.trim().length > 0;
+}
+
+function isBankFilled() {
+  return (
+    bankNameInput.value.trim().length > 0 &&
+    accountNumberInput.value.trim().length > 0 &&
+    ifscInput.value.trim().length > 0
+  );
+}
+
+/* -------------------------
+   Guard Checkbox Interactions
+------------------------- */
+defaultPayUpi?.addEventListener('change', () => {
+  if (defaultPayUpi.checked && !isUpiFilled()) {
+    alert('Please fill UPI ID before enabling UPI.');
+    defaultPayUpi.checked = false;
+  }
+});
+
+defaultPayBank?.addEventListener('change', () => {
+  if (defaultPayBank.checked && !isBankFilled()) {
+    alert('Please fill bank details before enabling Bank Transfer.');
+    defaultPayBank.checked = false;
+  }
+});
+
 /* -------------------------
    Load Payment Settings
 ------------------------- */
@@ -149,24 +186,51 @@ async function loadPayments() {
 
     const { data } = await res.json();
 
+    // Manual payment details
     upiInput.value = data.upi_id || '';
     bankNameInput.value = data.bank_name || '';
     accountNumberInput.value = data.account_number || '';
     ifscInput.value = data.ifsc_code || '';
+
+    // Default payment methods
+    if (data.default_payment_methods) {
+      defaultPayUpi.checked = !!data.default_payment_methods.upi;
+      defaultPayBank.checked = !!data.default_payment_methods.bank;
+      defaultPayCash.checked = !!data.default_payment_methods.cash;
+    }
   } catch (err) {
     console.warn('⚠️ Payment settings not loaded:', err);
   }
 }
 
 /* -------------------------
-   Save Payment Settings
+   Save Payment Settings (GUARDED)
 ------------------------- */
 savePaymentsBtn?.addEventListener('click', async () => {
+  const upiEnabled = defaultPayUpi.checked;
+  const bankEnabled = defaultPayBank.checked;
+
+  if (upiEnabled && !isUpiFilled()) {
+    alert('UPI is selected but UPI ID is missing.');
+    return;
+  }
+
+  if (bankEnabled && !isBankFilled()) {
+    alert('Bank Transfer is selected but bank details are incomplete.');
+    return;
+  }
+
   const payload = {
     upi_id: upiInput.value.trim(),
     bank_name: bankNameInput.value.trim(),
     account_number: accountNumberInput.value.trim(),
     ifsc_code: ifscInput.value.trim(),
+
+    default_payment_methods: {
+      upi: upiEnabled,
+      bank: bankEnabled,
+      cash: defaultPayCash.checked,
+    },
   };
 
   try {

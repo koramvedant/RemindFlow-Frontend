@@ -15,6 +15,10 @@ const safeText = (el, text, fallback = '—') => {
 const capitalize = (str) =>
   str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
 
+/* ✅ Money formatter (SAFE) */
+const formatMoney = (value) =>
+  typeof value === 'number' ? `₹${value.toLocaleString()}` : '₹0';
+
 /* ------------------ Auth Helper ------------------ */
 function getAuthHeaders() {
   const token = localStorage.getItem('accessToken');
@@ -25,75 +29,6 @@ function getAuthHeaders() {
     'Content-Type': 'application/json',
   };
 }
-
-/* ------------------ Theme & Sidebar ------------------ */
-const themeKey = 'remindflow_theme';
-const sidebarKey = 'remindflow_sidebar_collapsed';
-
-const sidebarEl = $('sidebar');
-const mainEl = document.querySelector('.main');
-
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem(themeKey, theme);
-
-  const icon = theme === 'dark' ? '☀️' : '🌙';
-  document.querySelectorAll('#themeToggle').forEach((btn) => {
-    if (btn) btn.textContent = icon;
-  });
-}
-
-function toggleTheme() {
-  const current =
-    localStorage.getItem(themeKey) ||
-    (window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light');
-
-  applyTheme(current === 'dark' ? 'light' : 'dark');
-}
-
-function applySidebar(collapsed) {
-  if (!sidebarEl) return;
-
-  sidebarEl.classList.toggle('collapsed', collapsed);
-  mainEl?.classList.toggle('collapsed', collapsed);
-  localStorage.setItem(sidebarKey, collapsed ? '1' : '0');
-}
-
-/* ------------------ Event Listeners ------------------ */
-$('themeToggle')?.addEventListener('click', toggleTheme);
-
-$('collapseToggle')?.addEventListener('click', () => {
-  if (!sidebarEl) return;
-  applySidebar(!sidebarEl.classList.contains('collapsed'));
-});
-
-/* ------------------ Mobile Sidebar ------------------ */
-const mobileHamburger = $('mobileHamburger');
-
-if (mobileHamburger && sidebarEl) {
-  mobileHamburger.addEventListener('click', () => {
-    sidebarEl.classList.toggle('visible');
-    mobileHamburger.classList.toggle('active');
-  });
-}
-
-/* ------------------ Init UI State ------------------ */
-(function initUIState() {
-  const savedTheme =
-    localStorage.getItem(themeKey) ||
-    (window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light');
-
-  applyTheme(savedTheme);
-  applySidebar(localStorage.getItem(sidebarKey) === '1');
-
-  document.querySelectorAll('.disabled').forEach((el) => {
-    el.addEventListener('click', (e) => e.preventDefault());
-  });
-})();
 
 /* ------------------ Fetch Helper (JWT AUTH) ------------------ */
 async function fetchJSON(path) {
@@ -136,21 +71,30 @@ async function loadDashboard() {
 
   const { user, stats } = data;
 
-  // ------------------ User / Business Name ------------------
+  /* ------------------ User / Business ------------------ */
   safeText(
     $('userName'),
-    user.business_name || user.name || user.email
+    user.display_name || user.name || user.email
   );
 
-  // ------------------ Plan Info ------------------
+  safeText(
+    $('userEmail'),
+    user.display_email || user.email || ''
+  );
+
+  /* ------------------ Plan Info ------------------ */
   safeText($('planType'), capitalize(user.plan_type));
   safeText($('userPlan'), capitalize(user.plan_code));
 
-  // ------------------ Stats ------------------
-  safeText($('totalClients'), stats.totalClients, '0');
-  safeText($('totalInvoices'), stats.totalInvoices, '0');
+  /* ------------------ Stats ------------------ */
+  safeText($('amountDue'), formatMoney(stats.amountDue));
+  safeText($('amountRecovered'), formatMoney(stats.amountRecovered));
   safeText($('pendingInvoices'), stats.pendingInvoices, '0');
-  safeText($('remindersSent'), stats.remindersSent, '0');
+
+  safeText(
+    $('slotsLeft'),
+    stats.slotsLeft === null ? 'Unlimited' : stats.slotsLeft
+  );
 }
 
 /* ------------------ Boot ------------------ */

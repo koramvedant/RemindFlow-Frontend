@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard – RemindFlow</title>
 
+  <link rel="stylesheet" href="/css/sidebar.css" />
   <link rel="stylesheet" href="/css/dashboard.css" />
 
   <!-- ✅ Auth Guard (MODULE SAFE) -->
@@ -14,20 +15,22 @@
   </script>
 </head>
 
-<body>
+<body class="light">
   <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <h2>RemindFlow</h2>
-    </div>
+    <h2>RemindFlow</h2>
 
-    <nav>
+    <nav class="sidebar-nav">
       <a href="/dashboard.html" class="active">🏠 Dashboard</a>
       <a href="/clients.html">👥 Clients</a>
       <a href="/invoices.html">🧾 Invoices</a>
       <a href="/reminders.html">⏰ Reminders</a>
       <a href="/settings.html">⚙️ Settings</a>
-      <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
+      <a href="/index.html">🔒 Logout</a>
     </nav>
+
+    <div id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
   </aside>
 
   <main class="main">
@@ -35,18 +38,13 @@
     <section class="user-info card">
       <!-- Profile -->
       <div class="profile">
-        <img
-          id="userAvatar"
-          src="/assets/default-avatar.png"
-          alt="User Avatar"
-        />
         <div class="meta">
           <h3 id="userName">—</h3>
           <p id="userEmail">—</p>
         </div>
       </div>
 
-      <!-- Plan Info (quiet, secondary) -->
+      <!-- Plan Info -->
       <div class="plan-info">
         <div>
           Plan Type:
@@ -60,36 +58,32 @@
 
       <!-- Actions -->
       <div class="dashboard-actions">
-        <a href="/add-client.html" class="action-btn">
-          + Add Client
-        </a>
-        <a href="/add-invoice.html" class="action-btn subtle">
-          + Add Invoice
-        </a>
+        <a href="/add-client.html" class="action-btn">+ Add Client</a>
+        <a href="/add-invoice.html" class="action-btn subtle">+ Add Invoice</a>
       </div>
     </section>
 
     <!-- ================= STATS ================= -->
     <section class="stats-section">
-      <div class="stats-cards">
-        <div class="card">
-          <h4>Total Clients</h4>
-          <div id="totalClients">0</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h4>Amount Due</h4>
+          <div id="amountDue">₹0</div>
         </div>
 
-        <div class="card">
+        <div class="stat-card">
+          <h4>Amount Recovered</h4>
+          <div id="amountRecovered">₹0</div>
+        </div>
+
+        <div class="stat-card">
           <h4>Pending Invoices</h4>
           <div id="pendingInvoices">0</div>
         </div>
 
-        <div class="card">
-          <h4>Total Invoices</h4>
-          <div id="totalInvoices">0</div>
-        </div>
-
-        <div class="card">
-          <h4>Reminders Sent</h4>
-          <div id="remindersSent">0</div>
+        <div class="stat-card">
+          <h4>Slots Left</h4>
+          <div id="slotsLeft">0</div>
         </div>
       </div>
     </section>
@@ -98,11 +92,7 @@
   <!-- Dashboard Logic -->
   <script type="module" src="/js/dashboard.js"></script>
 
-  <script>
-    document.getElementById('logoutBtn')?.addEventListener('click', () => {
-      localStorage.removeItem('accessToken');
-      window.location.href = '/login.html';
-    });
-  </script>
+  <!-- Sidebar toggle -->
+  <script src="/js/sidebar.js"></script>
 </body>
 </html>

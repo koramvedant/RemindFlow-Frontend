@@ -5,159 +5,214 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Settings | RemindFlow</title>
   <link rel="stylesheet" href="/css/settings.css" />
+  <link rel="stylesheet" href="/css/sidebar.css" />
 </head>
 <body>
-  <div class="settings-container">
-    <h1>Settings</h1>
 
-    <!-- ACCOUNT SETTINGS -->
-    <section class="settings-section">
-      <div class="section-header" data-toggle="account">
-        Account Settings
-        <span class="arrow">▶</span>
-      </div>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <h2>RemindFlow</h2>
 
-      <div class="section-body" id="account">
-        <label>Name</label>
-        <input type="text" id="name" />
+    <a href="/dashboard.html">🏠 Dashboard</a>
+    <a href="/clients.html">👥 Clients</a>
+    <a href="/invoices.html">🧾 Invoices</a>
+    <a href="/reminders.html">⏰ Reminders</a>
+    <a href="/settings.html" class="active">⚙️ Settings</a>
+    <a href="/index.html">🔒 Logout</a>
 
-        <label>Email (Login)</label>
-        <input type="email" id="email" required />
+    <!-- Hamburger INSIDE sidebar -->
+    <div id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </aside>
 
-        <label>Company Name</label>
-        <input type="text" id="company_name" />
+  <div class="main">
+    <div class="settings-container">
+      <h1>Settings</h1>
 
-        <label>Timezone</label>
-        <select id="timezone">
-          <option value="Asia/Kolkata">Asia/Kolkata</option>
-          <option value="UTC">UTC</option>
-          <option value="Europe/London">Europe/London</option>
-          <option value="America/New_York">America/New_York</option>
-        </select>
-
-        <label>Company Logo</label>
-        <input type="file" id="logo" accept="image/*" />
-
-        <label>Business Address</label>
-        <textarea id="address"></textarea>
-
-        <label>Tax ID (GST / VAT)</label>
-        <input type="text" id="tax_id" />
-
-        <label>Default Payment Terms</label>
-        <textarea
-          id="default_terms"
-          placeholder="e.g. Payment due within 15 days"
-        ></textarea>
-
-        <button class="primary-btn" id="saveAccount">
-          Save Account Settings
-        </button>
-      </div>
-    </section>
-
-    <!-- COMMUNICATION SETTINGS -->
-    <section class="settings-section">
-      <div class="section-header" data-toggle="communication">
-        Communication Settings
-        <span class="arrow">▶</span>
-      </div>
-
-      <div class="section-body" id="communication">
-        <div class="checkbox-row">
-          <input type="checkbox" id="disable_whatsapp" />
-          <label for="disable_whatsapp">Disable WhatsApp reminders</label>
-        </div>
-        <p class="hint">
-          When disabled, all reminders will be sent only via email.
-        </p>
-
-        <button class="primary-btn" id="saveCommunication">
-          Save Communication Settings
-        </button>
-      </div>
-    </section>
-
-    <!-- TAXES -->
-    <section class="settings-section">
-      <div class="section-header" data-toggle="taxes">
-        Taxes
-        <span class="arrow">▶</span>
-      </div>
-
-      <div class="section-body" id="taxes">
-        <div class="items-header">
-          <span>Tax Name</span>
-          <span>Rate (%)</span>
-          <span></span>
+      <!-- ACCOUNT SETTINGS -->
+      <section class="settings-section">
+        <div class="section-header" data-toggle="account">
+          Account Settings
+          <span class="arrow">▶</span>
         </div>
 
-        <div id="taxesContainer"></div>
+        <div class="section-body" id="account">
+          <label>Name</label>
+          <input type="text" id="name" />
 
-        <button class="secondary-btn" id="addTaxBtn">
-          + Add Tax
-        </button>
+          <label>Email (Login)</label>
+          <input type="email" id="email" required />
 
-        <button class="primary-btn" id="saveTaxes">
-          Save Taxes
-        </button>
-      </div>
-    </section>
+          <label>Company Name</label>
+          <input type="text" id="company_name" />
 
-    <!-- BILLING -->
-    <section class="settings-section">
-      <div class="section-header" data-toggle="billing">
-        Billing
-        <span class="arrow">▶</span>
-      </div>
+          <label>Timezone</label>
+          <select id="timezone">
+            <option value="Asia/Kolkata">Asia/Kolkata</option>
+            <option value="UTC">UTC</option>
+            <option value="Europe/London">Europe/London</option>
+            <option value="America/New_York">America/New_York</option>
+          </select>
 
-      <div class="section-body" id="billing">
-        <p><strong>Current Plan:</strong> Free</p>
-        <p><strong>Billing Cycle:</strong> Monthly</p>
+          <label>Company Logo</label>
+          <input type="file" id="logo" accept="image/*" />
 
-        <button class="secondary-btn" disabled>Upgrade / Downgrade</button>
-        <button class="secondary-btn" disabled>Change Billing Cycle</button>
-        <button class="danger-btn" disabled>Cancel Plan</button>
+          <label>Business Address</label>
+          <textarea id="address"></textarea>
 
-        <p class="hint">
-          Billing actions will be enabled after payment gateway integration.
-        </p>
-      </div>
-    </section>
+          <label>Tax ID (GST / VAT)</label>
+          <input type="text" id="tax_id" />
 
-    <!-- PAYMENT SETTINGS -->
-    <section class="settings-section">
-      <div class="section-header" data-toggle="payments">
-        Payment Settings
-        <span class="arrow">▶</span>
-      </div>
+          <label>Default Payment Terms</label>
+          <textarea
+            id="default_terms"
+            placeholder="e.g. Payment due within 15 days"
+          ></textarea>
 
-      <div class="section-body" id="payments">
-        <label>UPI ID</label>
-        <input type="text" id="upi_id" placeholder="example@upi" />
+          <button class="primary-btn" id="saveAccount">
+            Save Account Settings
+          </button>
+        </div>
+      </section>
 
-        <label>Bank Name</label>
-        <input type="text" id="bank_name" placeholder="HDFC Bank" />
+      <!-- COMMUNICATION SETTINGS -->
+      <section class="settings-section">
+        <div class="section-header" data-toggle="communication">
+          Communication Settings
+          <span class="arrow">▶</span>
+        </div>
 
-        <label>Account Number</label>
-        <input type="text" id="account_number" placeholder="XXXXXXXXXX" />
+        <div class="section-body" id="communication">
+          <div class="checkbox-row">
+            <input type="checkbox" id="disable_whatsapp" />
+            <label for="disable_whatsapp">Disable WhatsApp reminders</label>
+          </div>
+          <p class="hint">
+            When disabled, all reminders will be sent only via email.
+          </p>
 
-        <label>IFSC Code</label>
-        <input type="text" id="ifsc_code" placeholder="HDFC0001234" />
+          <button class="primary-btn" id="saveCommunication">
+            Save Communication Settings
+          </button>
+        </div>
+      </section>
 
-        <p class="hint">
-          Payments are handled directly between you and your client.
-          RemindFlow helps you track and send reminders.
-        </p>
+      <!-- TAXES -->
+      <section class="settings-section">
+        <div class="section-header" data-toggle="taxes">
+          Taxes
+          <span class="arrow">▶</span>
+        </div>
 
-        <button class="primary-btn" id="savePayments">
-          Save Payment Settings
-        </button>
-      </div>
-    </section>
+        <div class="section-body" id="taxes">
+          <div class="items-header">
+            <span>Tax Name</span>
+            <span>Rate (%)</span>
+            <span></span>
+          </div>
+
+          <div id="taxesContainer"></div>
+
+          <button class="secondary-btn" id="addTaxBtn">
+            + Add Tax
+          </button>
+
+          <button class="primary-btn" id="saveTaxes">
+            Save Taxes
+          </button>
+        </div>
+      </section>
+
+      <!-- BILLING -->
+      <section class="settings-section">
+        <div class="section-header" data-toggle="billing">
+          Billing
+          <span class="arrow">▶</span>
+        </div>
+
+        <div class="section-body" id="billing">
+          <p><strong>Current Plan:</strong> Free</p>
+          <p><strong>Billing Cycle:</strong> Monthly</p>
+
+          <button class="secondary-btn" disabled>Upgrade / Downgrade</button>
+          <button class="secondary-btn" disabled>Change Billing Cycle</button>
+          <button class="danger-btn" disabled>Cancel Plan</button>
+
+          <p class="hint">
+            Billing actions will be enabled after payment gateway integration.
+          </p>
+        </div>
+      </section>
+
+      <!-- PAYMENT SETTINGS -->
+      <section class="settings-section">
+        <div class="section-header" data-toggle="payments">
+          Payment Settings
+          <span class="arrow">▶</span>
+        </div>
+
+        <div class="section-body" id="payments">
+          <label>UPI ID</label>
+          <input type="text" id="upi_id" placeholder="example@upi" />
+
+          <label>Bank Name</label>
+          <input type="text" id="bank_name" placeholder="HDFC Bank" />
+
+          <label>Account Number</label>
+          <input type="text" id="account_number" placeholder="XXXXXXXXXX" />
+
+          <label>IFSC Code</label>
+          <input type="text" id="ifsc_code" placeholder="HDFC0001234" />
+
+          <h3>Default Payment Methods</h3>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="default_pay_upi" checked />
+            <span>UPI</span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="default_pay_bank" checked />
+            <span>Bank Transfer</span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="default_pay_cash" />
+            <span>Cash</span>
+          </label>
+
+          <p class="hint">
+            These will be pre-selected when creating a new invoice.
+          </p>
+
+          <button class="primary-btn" id="savePayments">
+            Save Payment Settings
+          </button>
+        </div>
+      </section>
+    </div>
   </div>
 
-  <!-- JS -->
+  <!-- Sidebar JS -->
+  <script type="module">
+    const sidebar = document.getElementById('sidebar');
+    const main = document.querySelector('.main');
+    const hamburger = document.getElementById('hamburger');
+
+    hamburger.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      main.classList.toggle('collapsed');
+      hamburger.classList.toggle('active');
+    });
+  </script>
+
+  <!-- Page JS -->
   <script type="module" src="/js/settings.js"></script>
+
+  <!-- Sidebar toggle -->
+  <script src="/js/sidebar.js"></script>
 </body>
 </html>

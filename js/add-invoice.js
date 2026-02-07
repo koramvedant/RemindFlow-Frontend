@@ -80,6 +80,51 @@ async function loadUserTaxes() {
   renderTaxes();
 }
 
+/* ================= FETCH PAYMENT SETTINGS ================= */
+async function loadPaymentSettings() {
+  const res = await fetch(`${API_BASE}/api/settings/payments`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (!res.ok) return null;
+
+  const { data } = await res.json();
+  return data;
+}
+
+/* ================= PAYMENT AVAILABILITY HELPERS ================= */
+function isUpiAvailable() {
+  return (
+    window.__paymentSettings &&
+    window.__paymentSettings.upi_id &&
+    window.__paymentSettings.upi_id.trim().length > 0
+  );
+}
+
+function isBankAvailable() {
+  return (
+    window.__paymentSettings &&
+    window.__paymentSettings.bank_name &&
+    window.__paymentSettings.account_number &&
+    window.__paymentSettings.ifsc_code
+  );
+}
+
+/* ================= PAYMENT CHECKBOX GUARDS ================= */
+payUpiCheckbox?.addEventListener('change', () => {
+  if (payUpiCheckbox.checked && !isUpiAvailable()) {
+    alert('Please add your UPI ID in Settings before using UPI.');
+    payUpiCheckbox.checked = false;
+  }
+});
+
+payBankCheckbox?.addEventListener('change', () => {
+  if (payBankCheckbox.checked && !isBankAvailable()) {
+    alert('Please add your bank details in Settings before using Bank Transfer.');
+    payBankCheckbox.checked = false;
+  }
+});
+
 /* ================= DROPDOWN ================= */
 function renderDropdown(list) {
   dropdown.innerHTML = '';
@@ -286,6 +331,14 @@ continueBtn.onclick = () => {
     return alert('Select at least one payment option');
   }
 
+  if (payUpiCheckbox.checked && !isUpiAvailable()) {
+    return alert('UPI selected but UPI ID is missing in settings.');
+  }
+
+  if (payBankCheckbox.checked && !isBankAvailable()) {
+    return alert('Bank transfer selected but bank details are missing in settings.');
+  }
+
   const discount = {
     type:
       discountTypeSelect.value === 'percentage'
@@ -323,9 +376,18 @@ continueBtn.onclick = () => {
   await loadClients();
   await loadUserTaxes();
 
+  const paymentSettings = await loadPaymentSettings();
+  window.__paymentSettings = paymentSettings;
+
   if (fromPreview) {
     loadDraftFromSession();
   } else {
     sessionStorage.removeItem('invoiceDraft');
+
+    if (paymentSettings?.default_payment_methods) {
+      payUpiCheckbox.checked = !!paymentSettings.default_payment_methods.upi;
+      payBankCheckbox.checked = !!paymentSettings.default_payment_methods.bank;
+      payCashCheckbox.checked = !!paymentSettings.default_payment_methods.cash;
+    }
   }
 })();

@@ -6,6 +6,7 @@
     <title>Clients – RemindFlow</title>
 
     <!-- Styles -->
+    <link rel="stylesheet" href="/css/sidebar.css" />
     <link rel="stylesheet" href="/css/clients.css" />
   </head>
 
@@ -92,16 +93,6 @@
     <script type="module" src="/js/clients.js"></script>
 
     <!-- Sidebar toggle -->
-    <script>
-      const sidebar = document.getElementById("sidebar");
-      const main = document.querySelector(".main");
-      const hamburger = document.getElementById("hamburger");
-
-      hamburger.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
-        main.classList.toggle("collapsed");
-        hamburger.classList.toggle("active");
-      });
-    </script>
+    <script src="/js/sidebar.js"></script>
   </body>
 </html>

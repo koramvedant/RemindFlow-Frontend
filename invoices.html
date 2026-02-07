@@ -7,6 +7,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
     <link rel="stylesheet" href="/css/invoices.css" />
   </head>
 
@@ -97,17 +98,7 @@
     <!-- Page Logic -->
     <script type="module" src="/js/invoices.js"></script>
 
-    <!-- Sidebar Hamburger -->
-    <script type="module">
-      const sidebar = document.getElementById('sidebar');
-      const main = document.querySelector('.main');
-      const hamburger = document.getElementById('hamburger');
-
-      hamburger.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        main.classList.toggle('collapsed');
-        hamburger.classList.toggle('active');
-      });
-    </script>
+    <!-- Sidebar toggle -->
+    <script src="/js/sidebar.js"></script>
   </body>
 </html>

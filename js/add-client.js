@@ -53,8 +53,21 @@ if (form) {
       name: document.getElementById('clientName')?.value.trim(),
       email: document.getElementById('clientEmail')?.value.trim(),
       phone: document.getElementById('clientPhone')?.value.trim() || null,
-      company: document.getElementById('clientCompany')?.value.trim() || null,
-      address: document.getElementById('clientAddress')?.value.trim() || null,
+      company_name:
+        document.getElementById('clientCompany')?.value.trim() || null,
+
+      // 🏠 Structured client address
+      address_line1:
+        document.getElementById('address_line1')?.value.trim() || null,
+      address_line2:
+        document.getElementById('address_line2')?.value.trim() || null,
+      city: document.getElementById('city')?.value.trim() || null,
+      state: document.getElementById('state')?.value.trim() || null,
+      postal_code:
+        document.getElementById('postal_code')?.value.trim() || null,
+      country:
+        document.getElementById('country')?.value.trim() || 'India',
+
       tax_id: document.getElementById('clientTaxId')?.value.trim() || null,
       notes: document.getElementById('clientNotes')?.value.trim() || null,
     };

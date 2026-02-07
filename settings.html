@@ -6,6 +6,13 @@
   <title>Settings | RemindFlow</title>
   <link rel="stylesheet" href="/css/settings.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
+
+  <!-- Tiny UX polish for section spacing -->
+  <style>
+    .section-subtitle {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
 
@@ -60,8 +67,69 @@
           <label>Company Logo</label>
           <input type="file" id="logo" accept="image/*" />
 
-          <label>Business Address</label>
-          <textarea id="address"></textarea>
+          <!-- BUSINESS ADDRESS (STRUCTURED) -->
+          <h3 class="section-subtitle">Business Address</h3>
+
+          <label>Address Line 1</label>
+          <input
+            type="text"
+            id="address_line1"
+            name="address_line1"
+            placeholder="Building, Street name"
+          />
+
+          <label>Address Line 2 (Optional)</label>
+          <input
+            type="text"
+            id="address_line2"
+            name="address_line2"
+            placeholder="Area, Landmark"
+          />
+
+          <div class="address-row">
+            <div>
+              <label>City</label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+              />
+            </div>
+
+            <div>
+              <label>State / Province</label>
+              <input
+                type="text"
+                id="state"
+                name="state"
+              />
+            </div>
+          </div>
+
+          <div class="address-row">
+            <div>
+              <label>Postal Code</label>
+              <input
+                type="text"
+                id="postal_code"
+                name="postal_code"
+                inputmode="numeric"
+                placeholder="PIN / ZIP"
+              />
+            </div>
+
+            <div>
+              <label>Country</label>
+              <input
+                type="text"
+                id="country"
+                name="country"
+                value="India"
+                readonly
+              />
+            </div>
+          </div>
+          <!-- END BUSINESS ADDRESS -->
 
           <label>Tax ID (GST / VAT)</label>
           <input type="text" id="tax_id" />

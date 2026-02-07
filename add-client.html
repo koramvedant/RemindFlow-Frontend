@@ -41,8 +41,38 @@
             <label for="clientCompany">Company Name</label>
             <input type="text" id="clientCompany" />
 
-            <label for="clientAddress">Address</label>
-            <textarea id="clientAddress" rows="3"></textarea>
+            <!-- STRUCTURED CLIENT ADDRESS -->
+            <h3>Client Address</h3>
+
+            <label>Address Line 1</label>
+            <input type="text" id="address_line1" />
+
+            <label>Address Line 2 (Optional)</label>
+            <input type="text" id="address_line2" />
+
+            <div class="address-row">
+              <div>
+                <label>City</label>
+                <input type="text" id="city" />
+              </div>
+
+              <div>
+                <label>State / Province</label>
+                <input type="text" id="state" />
+              </div>
+            </div>
+
+            <div class="address-row">
+              <div>
+                <label>Postal Code</label>
+                <input type="text" id="postal_code" />
+              </div>
+
+              <div>
+                <label>Country</label>
+                <input type="text" id="country" value="India" />
+              </div>
+            </div>
 
             <label for="clientTaxId">Tax ID (GST / VAT / etc.)</label>
             <input type="text" id="clientTaxId" />

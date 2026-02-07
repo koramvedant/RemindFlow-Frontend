@@ -34,8 +34,23 @@ async function loadClient() {
     document.getElementById('clientName')?.value = client.name || '';
     document.getElementById('email')?.value = client.email || '';
     document.getElementById('phone')?.value = client.phone || '';
-    document.getElementById('companyName')?.value = client.company_name || '';
-    document.getElementById('address')?.value = client.address || '';
+    document.getElementById('companyName')?.value =
+      client.company_name || '';
+
+    // 🏠 Structured address prefill
+    document.getElementById('address_line1').value =
+      client.address_line1 || '';
+    document.getElementById('address_line2').value =
+      client.address_line2 || '';
+    document.getElementById('city').value =
+      client.city || '';
+    document.getElementById('state').value =
+      client.state || '';
+    document.getElementById('postal_code').value =
+      client.postal_code || '';
+    document.getElementById('country').value =
+      client.country || 'India';
+
     document.getElementById('taxId')?.value = client.tax_id || '';
     document.getElementById('notes')?.value = client.notes || '';
 
@@ -87,10 +102,27 @@ form?.addEventListener('submit', async (e) => {
     name: document.getElementById('clientName')?.value.trim() || '',
     email: emailInput.value.trim(),
     phone: document.getElementById('phone')?.value.trim() || null,
-    company_name: document.getElementById('companyName')?.value.trim() || null,
-    address: document.getElementById('address')?.value.trim() || null,
-    tax_id: document.getElementById('taxId')?.value.trim() || null,
-    notes: document.getElementById('notes')?.value.trim() || null,
+    company_name:
+      document.getElementById('companyName')?.value.trim() || null,
+
+    // 🏠 Structured address
+    address_line1:
+      document.getElementById('address_line1')?.value.trim() || null,
+    address_line2:
+      document.getElementById('address_line2')?.value.trim() || null,
+    city:
+      document.getElementById('city')?.value.trim() || null,
+    state:
+      document.getElementById('state')?.value.trim() || null,
+    postal_code:
+      document.getElementById('postal_code')?.value.trim() || null,
+    country:
+      document.getElementById('country')?.value.trim() || 'India',
+
+    tax_id:
+      document.getElementById('taxId')?.value.trim() || null,
+    notes:
+      document.getElementById('notes')?.value.trim() || null,
   };
 
   try {

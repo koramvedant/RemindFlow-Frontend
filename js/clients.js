@@ -92,7 +92,7 @@ async function loadClients() {
       }
 
       return {
-        id: c.client_id,
+        id: c.client_id || c.id, // ✅ normalized, safe
         name: c.name,
         userTrust,
         lastPayment: c.last_payment || null,
@@ -114,7 +114,7 @@ if (table) {
     if (!id) return;
 
     if (e.target.classList.contains('edit')) {
-      window.location.href = `/clients-edit.html?id=${id}`;
+      window.location.href = `/edit-client.html?id=${id}`; // ✅ fixed
       return;
     }
 

@@ -60,6 +60,20 @@ async function loadSettings() {
     document.getElementById('disable_whatsapp').checked =
       data.whatsapp_enabled === false;
 
+    // 🏢 Business Address (Structured)
+    document.getElementById('address_line1').value =
+      data.address_line1 || '';
+    document.getElementById('address_line2').value =
+      data.address_line2 || '';
+    document.getElementById('city').value =
+      data.city || '';
+    document.getElementById('state').value =
+      data.state || '';
+    document.getElementById('postal_code').value =
+      data.postal_code || '';
+    document.getElementById('country').value =
+      data.country || 'India';
+
     cacheSellerInfo(data);
   } catch (err) {
     console.warn('⚠️ Failed to load settings:', err);
@@ -71,13 +85,34 @@ async function loadSettings() {
 ------------------------- */
 document.getElementById('saveAccount')?.addEventListener('click', async () => {
   const payload = {
+    // User / Account
     name: document.getElementById('name').value.trim(),
     email: document.getElementById('email').value.trim(),
     company_name: document
       .getElementById('company_name')
       .value.trim(),
     timezone: document.getElementById('timezone').value,
+
+    // 🏢 Business Address (Structured)
+    address_line1: document
+      .getElementById('address_line1')
+      .value.trim(),
+    address_line2: document
+      .getElementById('address_line2')
+      .value.trim(),
+    city: document.getElementById('city').value.trim(),
+    state: document.getElementById('state').value.trim(),
+    postal_code: document
+      .getElementById('postal_code')
+      .value.trim(),
+    country: document.getElementById('country').value.trim(),
   };
+
+  // Optional safety (allowed)
+  if (!payload.address_line1 || !payload.city) {
+    alert('Please complete business address');
+    return;
+  }
 
   try {
     const res = await fetch(`${API_BASE}/api/settings`, {
@@ -186,13 +221,11 @@ async function loadPayments() {
 
     const { data } = await res.json();
 
-    // Manual payment details
     upiInput.value = data.upi_id || '';
     bankNameInput.value = data.bank_name || '';
     accountNumberInput.value = data.account_number || '';
     ifscInput.value = data.ifsc_code || '';
 
-    // Default payment methods
     if (data.default_payment_methods) {
       defaultPayUpi.checked = !!data.default_payment_methods.upi;
       defaultPayBank.checked = !!data.default_payment_methods.bank;

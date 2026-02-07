@@ -37,6 +37,23 @@ function formatDate(dateStr) {
   return d.toISOString().split('T')[0];
 }
 
+/* ------------------ Address Formatter (MANDATORY) ------------------ */
+function formatAddress(entity) {
+  if (!entity) return '';
+
+  return [
+    entity.address_line1,
+    entity.address_line2,
+    entity.city && entity.state
+      ? `${entity.city}, ${entity.state}`
+      : entity.city || entity.state,
+    entity.postal_code,
+    entity.country,
+  ]
+    .filter(Boolean)
+    .join('<br/>');
+}
+
 /* ------------------ Seller Cache ------------------ */
 let currentSeller = null;
 
@@ -79,8 +96,17 @@ function normalizeInvoiceForPreview(invoice, seller) {
     ...invoice,
 
     seller: {
+      name: seller?.name || '—',
       company_name: seller?.company_name || '—',
       email: seller?.email || '',
+
+      address_line1: seller?.address_line1,
+      address_line2: seller?.address_line2,
+      city: seller?.city,
+      state: seller?.state,
+      postal_code: seller?.postal_code,
+      country: seller?.country,
+
       upi_id: seller?.upi_id || '',
       bank_name: seller?.bank_name || '',
       account_number: seller?.account_number || '',
@@ -90,8 +116,15 @@ function normalizeInvoiceForPreview(invoice, seller) {
     client: {
       id: invoice.client?.id || invoice.client_id || null,
       name: invoice.client?.name || '—',
-      company: invoice.client?.company || null,
+      company_name: invoice.client?.company_name || null,
       email: invoice.client?.email || '',
+
+      address_line1: invoice.client?.address_line1,
+      address_line2: invoice.client?.address_line2,
+      city: invoice.client?.city,
+      state: invoice.client?.state,
+      postal_code: invoice.client?.postal_code,
+      country: invoice.client?.country,
     },
   };
 }
@@ -118,12 +151,9 @@ function buildInvoicePayload(draft) {
     due_date: draft.due_date,
     items: draft.items,
     taxes: draft.taxes || [],
-
     discount: draft.discount || { type: 'flat', value: 0 },
-
     notes: draft.notes || '',
     layout_id: normalizeLayout(draft.layout_id),
-
     payment_methods: draft.payment_methods || {
       upi: false,
       bank: false,
@@ -245,12 +275,20 @@ function renderDraftPreview(invoice, rawLayout) {
       }</p>
 
       <p><strong>From:</strong><br/>
-        ${invoice.seller.company_name}<br/>
+        ${invoice.seller.name}<br/>
+        <strong>${invoice.seller.company_name}</strong><br/>
+        ${formatAddress(invoice.seller)}<br/>
         ${invoice.seller.email}
       </p>
 
       <p><strong>Billed To:</strong><br/>
-        ${invoice.client.company || invoice.client.name}<br/>
+        ${invoice.client.name}<br/>
+        ${
+          invoice.client.company_name
+            ? `<strong>${invoice.client.company_name}</strong><br/>`
+            : ''
+        }
+        ${formatAddress(invoice.client)}<br/>
         ${invoice.client.email}
       </p>
 

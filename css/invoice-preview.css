@@ -48,6 +48,85 @@ body {
   margin-top: 0;
 }
 
+/* ---------------- Invoice Header ---------------- */
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 25px;
+}
+
+.invoice-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.invoice-meta {
+  text-align: right;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ---------------- Invoice Parties ---------------- */
+.invoice-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 25px;
+}
+
+.party-label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.party-body {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.party-name {
+  font-weight: 600;
+}
+
+.party-company {
+  font-weight: 500;
+}
+
+.party-email {
+  color: #555;
+  font-size: 13px;
+}
+
+.party-address {
+  margin-top: 4px;
+  color: #444;
+  font-size: 13px;
+}
+
+/* Right-align Seller (From) section */
+.invoice-parties .party:last-child {
+  text-align: right;
+}
+
+/* ---------------- Invoice Tables ---------------- */
+.items-table td,
+.totals-table td {
+  padding: 6px 0;
+  font-size: 14px;
+}
+
+.totals-table {
+  margin-top: 10px;
+}
+
+/* ---------------- Invoice Notes ---------------- */
+.invoice-notes {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
 /* ---------------- Layouts ---------------- */
 
 /* Minimal */
@@ -223,5 +302,18 @@ body {
 
   .invoice-footer {
     text-align: center;
+  }
+
+  .invoice-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .invoice-meta {
+    text-align: left;
+  }
+
+  .invoice-parties {
+    grid-template-columns: 1fr;
   }
 }

@@ -9,6 +9,12 @@ const emailError = document.getElementById('emailError');
 const toggle = document.getElementById('toggleAdvanced');
 const advanced = document.getElementById('advancedSection');
 
+/* ------------------ SAFE SETTER ------------------ */
+function setValue(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.value = value ?? '';
+}
+
 /* ------------------ CLIENT ID ------------------ */
 const params = new URLSearchParams(window.location.search);
 const clientId = params.get('id');
@@ -25,34 +31,33 @@ let initialData = null;
 /* ------------------ PREFILL ------------------ */
 async function loadClient() {
   try {
-    const res = await fetch(`${API_BASE}/api/clients/${clientId}`);
+    const res = await fetch(`${API_BASE}/api/clients/${clientId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+
     if (!res.ok) throw new Error('Fetch failed');
 
-    const client = await res.json();
+    const json = await res.json();
+    const client = json.client || json.data || json;
+
     initialData = client;
 
-    document.getElementById('clientName')?.value = client.name || '';
-    document.getElementById('email')?.value = client.email || '';
-    document.getElementById('phone')?.value = client.phone || '';
-    document.getElementById('companyName')?.value =
-      client.company_name || '';
+    setValue('clientName', client.name);
+    setValue('email', client.email);
+    setValue('phone', client.phone);
+    setValue('companyName', client.company_name);
 
-    // 🏠 Structured address prefill
-    document.getElementById('address_line1').value =
-      client.address_line1 || '';
-    document.getElementById('address_line2').value =
-      client.address_line2 || '';
-    document.getElementById('city').value =
-      client.city || '';
-    document.getElementById('state').value =
-      client.state || '';
-    document.getElementById('postal_code').value =
-      client.postal_code || '';
-    document.getElementById('country').value =
-      client.country || 'India';
+    setValue('address_line1', client.address_line1);
+    setValue('address_line2', client.address_line2);
+    setValue('city', client.city);
+    setValue('state', client.state);
+    setValue('postal_code', client.postal_code);
+    setValue('country', client.country || 'India');
 
-    document.getElementById('taxId')?.value = client.tax_id || '';
-    document.getElementById('notes')?.value = client.notes || '';
+    setValue('taxId', client.tax_id);
+    setValue('notes', client.notes);
 
     if (saveBtn) saveBtn.disabled = true;
     isDirty = false;
@@ -105,15 +110,12 @@ form?.addEventListener('submit', async (e) => {
     company_name:
       document.getElementById('companyName')?.value.trim() || null,
 
-    // 🏠 Structured address
     address_line1:
       document.getElementById('address_line1')?.value.trim() || null,
     address_line2:
       document.getElementById('address_line2')?.value.trim() || null,
-    city:
-      document.getElementById('city')?.value.trim() || null,
-    state:
-      document.getElementById('state')?.value.trim() || null,
+    city: document.getElementById('city')?.value.trim() || null,
+    state: document.getElementById('state')?.value.trim() || null,
     postal_code:
       document.getElementById('postal_code')?.value.trim() || null,
     country:
@@ -128,7 +130,10 @@ form?.addEventListener('submit', async (e) => {
   try {
     const res = await fetch(`${API_BASE}/api/clients/${clientId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
       body: JSON.stringify(payload),
     });
 

@@ -252,6 +252,29 @@ function renderPaymentInstructions(invoice) {
   }
 }
 
+/* ===================================================
+   🔒 REUSABLE PARTY RENDERER (LOCKED ORDER)
+=================================================== */
+function renderParty(label, party) {
+  return `
+    <div class="party">
+      <div class="party-label">${label}</div>
+      <div class="party-body">
+        <div class="party-name">${party.name}</div>
+        ${
+          party.company_name
+            ? `<div class="party-company">${party.company_name}</div>`
+            : ''
+        }
+        <div class="party-email">${party.email}</div>
+        <div class="party-address">
+          ${formatAddress(party)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 /* ------------------ Render Preview ------------------ */
 function renderDraftPreview(invoice, rawLayout) {
   if (!box || !invoice?.items) return;
@@ -268,36 +291,27 @@ function renderDraftPreview(invoice, rawLayout) {
 
   box.innerHTML = `
     <div class="invoice ${layout}">
-      <h3>Invoice</h3>
 
-      <p><strong>Invoice #:</strong> ${
-        invoice.invoice_id || 'INV-XXXX'
-      }</p>
+      <!-- HEADER -->
+      <div class="invoice-header">
+        <div class="invoice-title">INVOICE</div>
+        <div class="invoice-meta">
+          <div><strong>Invoice #:</strong> ${invoice.invoice_id || 'INV-XXXX'}</div>
+          <div><strong>Date:</strong> ${formatDate(invoice.invoice_date)}</div>
+          <div><strong>Due Date:</strong> ${formatDate(invoice.due_date)}</div>
+        </div>
+      </div>
 
-      <p><strong>From:</strong><br/>
-        ${invoice.seller.name}<br/>
-        <strong>${invoice.seller.company_name}</strong><br/>
-        ${formatAddress(invoice.seller)}<br/>
-        ${invoice.seller.email}
-      </p>
-
-      <p><strong>Billed To:</strong><br/>
-        ${invoice.client.name}<br/>
-        ${
-          invoice.client.company_name
-            ? `<strong>${invoice.client.company_name}</strong><br/>`
-            : ''
-        }
-        ${formatAddress(invoice.client)}<br/>
-        ${invoice.client.email}
-      </p>
-
-      <p><strong>Invoice Date:</strong> ${formatDate(invoice.invoice_date)}</p>
-      <p><strong>Due Date:</strong> ${formatDate(invoice.due_date)}</p>
+      <!-- PARTIES -->
+      <div class="invoice-parties">
+        ${renderParty('Billed To', invoice.client)}
+        ${renderParty('From', invoice.seller)}
+      </div>
 
       <hr />
 
-      <table width="100%">
+      <!-- ITEMS -->
+      <table width="100%" class="items-table">
         ${invoice.items
           .map(
             (i) => `
@@ -314,7 +328,8 @@ function renderDraftPreview(invoice, rawLayout) {
 
       <hr />
 
-      <table width="100%">
+      <!-- TOTALS -->
+      <table width="100%" class="totals-table">
         <tr>
           <td>Subtotal</td>
           <td align="right">₹${subtotal.toLocaleString()}</td>
@@ -348,9 +363,22 @@ function renderDraftPreview(invoice, rawLayout) {
           <td align="right"><strong>₹${total.toLocaleString()}</strong></td>
         </tr>
       </table>
+
+      ${
+        invoice.notes
+          ? `
+        <div class="invoice-notes">
+          <strong>Notes</strong><br/>
+          ${invoice.notes}
+        </div>
+      `
+          : ''
+      }
+
     </div>
   `;
 
+  // 🔒 DO NOT MOVE
   renderPaymentInstructions(invoice);
 }
 

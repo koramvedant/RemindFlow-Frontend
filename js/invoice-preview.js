@@ -91,6 +91,20 @@ function normalizeLayout(value) {
 /* ===================================================
    CANONICAL NORMALIZATION
 =================================================== */
+async function fetchClientById(clientId) {
+  if (!clientId) return null;
+
+  const res = await fetch(`${API_BASE}/api/clients/${clientId}`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (!res.ok) return null;
+
+  const data = await res.json();
+  return data.client || null;
+}
+
+
 function normalizeInvoiceForPreview(invoice, seller) {
   return {
     ...invoice,
@@ -391,7 +405,15 @@ async function loadExistingInvoice(id) {
   const storedDraft = sessionStorage.getItem('invoiceDraft');
   if (storedDraft) {
     draft = JSON.parse(storedDraft);
-    const normalized = normalizeInvoiceForPreview(draft, seller);
+    const client = 
+     draft.client ||
+      (draft.client_id ? await fetchClientById(draft.client_id) : null);
+
+    const enrichedDraft = {
+      ...draft,
+      client,
+    };
+    const normalized = normalizeInvoiceForPreview(enrichedDraft, seller);
     renderDraftPreview(normalized, normalized.layout_id);
     return;
   }
@@ -412,17 +434,33 @@ saveDraftBtn?.addEventListener('click', async () => {
   try {
     const payload = buildInvoicePayload(draft);
 
-    const url = invoiceId
-      ? `${API_BASE}/api/invoices/${invoiceId}`
-      : `${API_BASE}/api/invoices`;
+    let url;
+    let method;
 
-    const method = invoiceId ? 'PUT' : 'POST';
+    if (invoiceId) {
+      // 🔒 UPDATE EXISTING DRAFT → MUST USE invoice_code
+      if (!draft.invoice_id) {
+        throw new Error('Invoice code missing');
+      }
 
-    await fetch(url, {
+      url = `${API_BASE}/api/invoices/code/${encodeURIComponent(draft.invoice_id)}`;
+      method = 'PUT';
+    } else {
+      // 🆕 CREATE NEW DRAFT
+      url = `${API_BASE}/api/invoices`;
+      method = 'POST';
+    }
+
+    const res = await fetch(url, {
       method,
       headers: getAuthHeaders(),
       body: JSON.stringify(payload),
     });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Failed to save draft');
+    }
 
     sessionStorage.removeItem('invoiceDraft');
     window.location.href = '/invoices.html';
@@ -450,10 +488,21 @@ finalSaveBtn?.addEventListener('click', async () => {
 if (invoiceId) {
   loadExistingInvoice(invoiceId);
 } else if (draft) {
-  loadSeller().then((seller) =>
+  (async () => {
+    const seller = await loadSeller();
+
+    const client =
+      draft.client ||
+      (draft.client_id
+        ? await fetchClientById(draft.client_id)
+        : null);
+
     renderDraftPreview(
-      normalizeInvoiceForPreview(draft, seller),
+      normalizeInvoiceForPreview(
+        { ...draft, client },
+        seller
+      ),
       draft.layout_id
-    )
-  );
+    );
+  })();
 }

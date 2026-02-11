@@ -15,9 +15,9 @@ const safeText = (el, text, fallback = '—') => {
 const capitalize = (str) =>
   str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
 
-/* ✅ Money formatter (SAFE) */
+/* ✅ Money formatter (NUMBER ONLY) */
 const formatMoney = (value) =>
-  typeof value === 'number' ? `₹${value.toLocaleString()}` : '₹0';
+  typeof value === 'number' ? value.toLocaleString() : '0';
 
 /* ------------------ Auth Helper ------------------ */
 function getAuthHeaders() {
@@ -43,9 +43,16 @@ async function fetchJSON(path) {
   try {
     const res = await fetch(`${API_BASE}${path}`, { headers });
 
-    if (res.status === 401 || res.status === 403) {
+    // 🔐 401 → unauthenticated → logout
+    if (res.status === 401) {
       localStorage.clear();
       window.location.replace('/login.html');
+      return null;
+    }
+
+    // 🔒 403 → authenticated but blocked (plan)
+    if (res.status === 403) {
+      console.warn('Access blocked by plan');
       return null;
     }
 
@@ -83,17 +90,34 @@ async function loadDashboard() {
   );
 
   /* ------------------ Plan Info ------------------ */
-  safeText($('planType'), capitalize(user.plan_type));
-  safeText($('userPlan'), capitalize(user.plan_code));
+  safeText(
+    $('planType'),
+    user.plan_type ? capitalize(user.plan_type) : 'Free'
+  );
+
+  safeText(
+    $('userPlan'),
+    user.plan_code ? capitalize(user.plan_code) : 'Trial'
+  );
 
   /* ------------------ Stats ------------------ */
-  safeText($('amountDue'), formatMoney(stats.amountDue));
-  safeText($('amountRecovered'), formatMoney(stats.amountRecovered));
+  safeText(
+    $('amountDue'),
+    `₹${formatMoney(stats.amountDue)}`
+  );
+
+  safeText(
+    $('amountRecovered'),
+    `₹${formatMoney(stats.amountRecovered)}`
+  );
+
   safeText($('pendingInvoices'), stats.pendingInvoices, '0');
 
   safeText(
     $('slotsLeft'),
-    stats.slotsLeft === null ? 'Unlimited' : stats.slotsLeft
+    stats.slotsLeft === null
+      ? 'Unlimited'
+      : `${stats.slotsLeft} remaining`
   );
 }
 

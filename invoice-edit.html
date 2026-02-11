@@ -1,340 +1,175 @@
-import { API_BASE } from './api.js';
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Edit Invoice | RemindFlow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-/* ================= AUTH ================= */
-function getAuthHeaders() {
-  const token = localStorage.getItem('accessToken');
-  if (!token) return null;
-  return {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-}
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/add-invoice.css?v=2026-01-29" />
+  </head>
+  <body>
+    <div class="container">
+      <button class="back-btn" onclick="history.back()">← Back</button>
 
-/* ================= URL ================= */
-const params = new URLSearchParams(window.location.search);
-const invoiceDbId = params.get('id');
-if (!invoiceDbId) location.replace('/invoices.html');
+      <h2>Edit Invoice</h2>
 
-/* ================= ELEMENTS ================= */
-const searchInput = document.getElementById('clientSearch');
-const dropdown = document.getElementById('clientDropdown');
-const changeBtn = document.getElementById('changeClientBtn');
-const saveBtn = document.getElementById('saveBtn');
-const addItemBtn = document.getElementById('addItemBtn');
+      <!-- Invoice ID (Optional) -->
+      <label>
+        Invoice ID (optional)
+        <span class="hint">(must be unique)</span>
+      </label>
+      <input type="text" id="invoiceIdInput" placeholder="INV-XXXX" />
 
-const invoiceDate = document.getElementById('invoiceDate');
-const dueDate = document.getElementById('dueDate');
+      <!-- Client Selection -->
+      <label>Client *</label>
+      <div class="client-select">
+        <input
+          type="text"
+          id="clientSearch"
+          placeholder="Search or select client"
+          autocomplete="off"
+          required
+          disabled
+        />
 
-const discountTypeSelect = document.getElementById('discountType');
-const discountValueInput = document.getElementById('discountValue');
+        <button
+          id="changeClientBtn"
+          type="button"
+          class="change-client-btn"
+          style="display: none"
+          disabled
+        >
+          Change
+        </button>
 
-const notesInput = document.getElementById('notes');
-const layoutSelect = document.getElementById('layoutSelect');
-const enableRazorpay = document.getElementById('enableRazorpay');
-const invoiceIdInput = document.getElementById('invoiceIdInput');
+        <button
+          class="add-client-btn"
+          type="button"
+          onclick="location.href='/add-client.html'"
+          disabled
+        >
+          + Add Client
+        </button>
+      </div>
 
-const itemsContainer = document.getElementById('itemsContainer');
-const taxesContainer = document.getElementById('taxesContainer');
+      <p class="hint">
+        Client cannot be changed after invoice creation.
+      </p>
 
-/* ================= STATE ================= */
-let clients = [];
-let selectedClient = null;
-let activeIndex = -1;
-let draft = null;
+      <ul id="clientDropdown" class="dropdown"></ul>
 
-/* ================= FETCH CLIENTS ================= */
-async function loadClients() {
-  const res = await fetch(`${API_BASE}/api/clients`, {
-    headers: getAuthHeaders(),
-  });
-  const data = await res.json();
-  clients = data.clients || [];
-}
+      <!-- Invoice Meta -->
+      <div class="row">
+        <div>
+          <label>Invoice Date *</label>
+          <input type="date" id="invoiceDate" required />
+        </div>
+        <div>
+          <label>Due Date *</label>
+          <input type="date" id="dueDate" required />
+        </div>
+      </div>
 
-/* ================= FETCH INVOICE (DB → DRAFT) ================= */
-async function loadInvoiceFromDB() {
-  const res = await fetch(
-    `${API_BASE}/api/invoices/id/${invoiceDbId}`,
-    { headers: getAuthHeaders() }
-  );
+      <!-- ================= INVOICE ITEMS (CANONICAL) ================= -->
+      <h3>Invoice Items</h3>
 
-  const { invoice } = await res.json();
+      <div class="items-header invoice-items-grid">
+        <span>Description</span>
+        <span>Qty</span>
+        <span>Rate</span>
+        <span></span>
+      </div>
 
-  draft = {
-    invoice_id: invoice.invoice_id || null,
-    client_id:
-      invoice.client?.client_id ||
-      invoice.client_id ||
-      null,
-    invoice_date: invoice.invoice_date,
-    due_date: invoice.due_date,
-    items: invoice.items || [],
-    taxes: invoice.taxes || [],
-    discount: invoice.discount || { type: 'flat', value: 0 },
-    notes: invoice.notes || '',
-    layout_id: invoice.layout_id || 'minimal',
-    payment: {
-      razorpay_enabled:
-        !!invoice.payment?.razorpay_enabled ||
-        !!invoice.payment_payload?.razorpay_enabled,
-    },
-  };
-}
+      <div id="itemsContainer"></div>
 
-/* ================= DROPDOWN ================= */
-function renderDropdown(list) {
-  dropdown.innerHTML = '';
-  activeIndex = -1;
+      <button id="addItemBtn" class="secondary-btn">
+        + Add Item
+      </button>
+      <!-- ============================================================ -->
 
-  if (!list.length) {
-    dropdown.style.display = 'none';
-    return;
-  }
+      <!-- TAX -->
+      <h3>Tax (optional)</h3>
 
-  list.forEach((c) => {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <div class="name">${c.company || c.name}</div>
-      <div class="email">${c.email || ''}</div>
-    `;
-    li.onclick = () => selectClient(c);
-    dropdown.appendChild(li);
-  });
+      <div class="items-header invoice-items-grid">
+        <span>Tax Name</span>
+        <span>Rate (%)</span>
+        <span></span>
+      </div>
 
-  dropdown.style.display = 'block';
-}
+      <div id="taxesContainer"></div>
 
-function closeDropdown() {
-  dropdown.style.display = 'none';
-  activeIndex = -1;
-}
+      <!-- DISCOUNT -->
+      <h3>Discount (optional)</h3>
 
-function selectClient(client) {
-  selectedClient = client;
-  searchInput.value = client.company || client.name || '';
-  searchInput.readOnly = true;
-  changeBtn.style.display = 'inline-block';
-  closeDropdown();
-}
+      <div class="row">
+        <div>
+          <label>Discount Type</label>
+          <select id="discountType">
+            <option value="flat">Flat Amount (₹)</option>
+            <option value="percentage">Percentage (%)</option>
+          </select>
+        </div>
 
-/* ================= SEARCH + KEYBOARD ================= */
-searchInput.addEventListener('focus', () => {
-  if (!selectedClient) renderDropdown(clients);
-});
+        <div>
+          <label>Discount Value</label>
+          <input
+            type="number"
+            id="discountValue"
+            step="0.01"
+            placeholder="0"
+          />
+        </div>
+      </div>
 
-searchInput.addEventListener('input', () => {
-  const val = searchInput.value.toLowerCase();
-  renderDropdown(
-    clients.filter((c) =>
-      (c.company || c.name || '').toLowerCase().includes(val)
-    )
-  );
-});
+      <!-- PAYMENT OPTIONS (MATCH ADD-INVOICE) -->
+      <h3>Payment Options</h3>
 
-searchInput.addEventListener('keydown', (e) => {
-  const listItems = dropdown.querySelectorAll('li');
-  if (!listItems.length) return;
+      <label class="checkbox-row">
+        <input type="checkbox" id="pay_upi" />
+        <span>UPI</span>
+      </label>
 
-  if (e.key === 'ArrowDown') activeIndex = (activeIndex + 1) % listItems.length;
-  if (e.key === 'ArrowUp')
-    activeIndex = (activeIndex - 1 + listItems.length) % listItems.length;
+      <label class="checkbox-row">
+        <input type="checkbox" id="pay_bank" />
+        <span>Bank Transfer</span>
+      </label>
 
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    listItems[activeIndex]?.click();
-  }
+      <label class="checkbox-row">
+        <input type="checkbox" id="pay_cash" />
+        <span>Cash</span>
+      </label>
 
-  if (e.key === 'Escape') {
-    closeDropdown();
-    searchInput.blur();
-  }
+      <p class="hint">
+        Selected payment options will be shown on the invoice.
+      </p>
 
-  listItems.forEach((li, i) =>
-    li.classList.toggle('active', i === activeIndex)
-  );
-});
+      <!-- Template -->
+      <label>Invoice Template *</label>
+      <select id="layoutSelect" required>
+        <option value="">Select template</option>
+        <option value="minimal">Minimal</option>
+        <option value="professional">Professional</option>
+        <option value="modern">Modern</option>
+      </select>
 
-document.addEventListener('click', (e) => {
-  if (
-    !searchInput.contains(e.target) &&
-    !dropdown.contains(e.target) &&
-    !changeBtn.contains(e.target)
-  ) {
-    closeDropdown();
-  }
-});
+      <!-- Notes -->
+      <label>Notes (optional)</label>
+      <textarea id="notes"></textarea>
 
-/* ================= CHANGE CLIENT ================= */
-changeBtn.onclick = () => {
-  selectedClient = null;
-  draft.client_id = null;
+      <!-- CTA -->
+      <button class="primary-btn" id="saveBtn">
+        Continue → Preview
+      </button>
+    </div>
 
-  searchInput.value = '';
-  searchInput.readOnly = false;
-  changeBtn.style.display = 'none';
-  renderDropdown(clients);
-  searchInput.focus();
-};
+    <!-- Auth Guard -->
+    <script type="module">
+      import { requireAuth } from "/js/guard.js";
+      requireAuth();
+    </script>
 
-/* ================= ITEMS ================= */
-function renderItems() {
-  itemsContainer.innerHTML = '';
-
-  draft.items.forEach((item, index) => {
-    const row = document.createElement('div');
-    row.className = 'invoice-items-grid';
-
-    row.innerHTML = `
-      <input class="item-desc" value="${item.description}" />
-      <input class="item-qty" type="number" value="${item.quantity}" />
-      <input class="item-rate" type="number" value="${item.rate}" />
-      <button class="item-delete" data-index="${index}">🗑</button>
-    `;
-
-    itemsContainer.appendChild(row);
-  });
-}
-
-addItemBtn.addEventListener('click', () => {
-  draft.items.push({ description: '', quantity: 1, rate: 0 });
-  renderItems();
-});
-
-itemsContainer.addEventListener('click', (e) => {
-  if (!e.target.classList.contains('item-delete')) return;
-  draft.items.splice(Number(e.target.dataset.index), 1);
-  renderItems();
-});
-
-function collectItems() {
-  return [...itemsContainer.querySelectorAll('.invoice-items-grid')]
-    .map((row) => ({
-      description: row.querySelector('.item-desc').value.trim(),
-      quantity: Number(row.querySelector('.item-qty').value),
-      rate: Number(row.querySelector('.item-rate').value),
-    }))
-    .filter((i) => i.description && i.quantity > 0 && i.rate > 0);
-}
-
-/* ================= TAXES ================= */
-function renderTaxes() {
-  taxesContainer.innerHTML = '';
-
-  draft.taxes.forEach((t, index) => {
-    const row = document.createElement('div');
-    row.className = 'invoice-items-grid';
-
-    row.innerHTML = `
-      <input value="${t.name}" readonly />
-      <input type="number" value="${t.rate}" />
-      <button class="item-delete">🗑</button>
-    `;
-
-    row.querySelector('input[type="number"]').oninput = (e) => {
-      draft.taxes[index].rate = Number(e.target.value);
-    };
-
-    row.querySelector('.item-delete').onclick = () => {
-      draft.taxes.splice(index, 1);
-      renderTaxes();
-    };
-
-    taxesContainer.appendChild(row);
-  });
-}
-
-/* ================= PREFILL ================= */
-async function prefillFromDraft(draft) {
-  if (draft.invoice_id) invoiceIdInput.value = draft.invoice_id;
-
-  if (draft.client_id) {
-    const matched = clients.find((c) => c.client_id === draft.client_id);
-    if (matched) {
-      selectedClient = matched;
-      searchInput.value = matched.company || matched.name || '';
-      searchInput.readOnly = true;
-      changeBtn.style.display = 'inline-block';
-    }
-  }
-
-  invoiceDate.value = draft.invoice_date?.split('T')[0] || '';
-  dueDate.value = draft.due_date?.split('T')[0] || '';
-  notesInput.value = draft.notes || '';
-  layoutSelect.value = draft.layout_id || 'minimal';
-  enableRazorpay.checked = !!draft.payment?.razorpay_enabled;
-
-  discountTypeSelect.value =
-    draft.discount?.type === 'percent'
-      ? 'percentage'
-      : 'flat';
-  discountValueInput.value = draft.discount?.value || 0;
-
-  renderItems();
-
-  if (!Array.isArray(draft.taxes) || !draft.taxes.length) {
-    const res = await fetch(`${API_BASE}/api/settings/taxes`, {
-      headers: getAuthHeaders(),
-    });
-    const data = await res.json();
-    draft.taxes = (data.taxes || []).map((t) => ({
-      name: t.name,
-      rate: Number(t.rate),
-    }));
-  }
-
-  renderTaxes();
-}
-
-/* ================= SAVE → PREVIEW ================= */
-saveBtn.addEventListener('click', () => {
-  const items = collectItems();
-
-  const clientId =
-    selectedClient?.client_id ||
-    selectedClient?.id;
-
-  if (!clientId) {
-    alert('Client missing');
-    return;
-  }
-
-  if (!items.length) {
-    alert('Add at least one invoice item');
-    return;
-  }
-
-  const finalDraft = {
-    invoice_id: draft.invoice_id || null,
-    client_id: clientId,
-    invoice_date: invoiceDate.value,
-    due_date: dueDate.value,
-    items,
-    taxes: draft.taxes,
-    discount: {
-      type:
-        discountTypeSelect.value === 'percentage'
-          ? 'percent'
-          : 'flat',
-      value: Number(discountValueInput.value || 0),
-    },
-    notes: notesInput.value || '',
-    layout_id: layoutSelect.value || 'minimal',
-    payment: { razorpay_enabled: enableRazorpay.checked },
-  };
-
-  sessionStorage.setItem('invoiceDraft', JSON.stringify(finalDraft));
-  window.location.href = `/invoice-preview.html?id=${invoiceDbId}`;
-});
-
-/* ================= INIT ================= */
-(async () => {
-  await loadClients();
-
-  // 🔥 EDIT PAGE MUST ALWAYS LOAD FROM DB FIRST
-  await loadInvoiceFromDB();
-
-  // Optional: clear old draft to avoid poisoning state
-  sessionStorage.removeItem('invoiceDraft');
-
-  await prefillFromDraft(draft);
-})();
+    <!-- Page Logic -->
+    <script type="module" src="/js/invoice-edit.js?v=2026-01-29"></script>
+  </body>
+</html>

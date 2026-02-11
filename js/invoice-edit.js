@@ -30,7 +30,6 @@ const discountValueInput = document.getElementById('discountValue');
 
 const notesInput = document.getElementById('notes');
 const layoutSelect = document.getElementById('layoutSelect');
-const enableRazorpay = document.getElementById('enableRazorpay');
 const invoiceIdInput = document.getElementById('invoiceIdInput');
 
 const itemsContainer = document.getElementById('itemsContainer');
@@ -41,6 +40,23 @@ let clients = [];
 let selectedClient = null;
 let activeIndex = -1;
 let draft = null;
+
+/* ================= HELPERS ================= */
+async function isInvoiceIdUniqueForEdit(invoiceId) {
+  const headers = getAuthHeaders();
+  if (!headers) return false;
+
+  const res = await fetch(
+    `${API_BASE}/api/invoices/code/${encodeURIComponent(invoiceId)}`,
+    { headers }
+  );
+
+  if (res.status === 404) return true;
+  if (!res.ok) return false;
+
+  const { invoice } = await res.json();
+  return invoice.id === Number(invoiceDbId);
+}
 
 /* ================= FETCH CLIENTS ================= */
 async function loadClients() {
@@ -62,25 +78,24 @@ async function loadInvoiceFromDB() {
 
   draft = {
     invoice_id: invoice.invoice_id || null,
-    client_id:
-      invoice.client?.client_id ||
-      invoice.client_id ||
-      null,
+    client_id: invoice.client_id,
     invoice_date: invoice.invoice_date,
     due_date: invoice.due_date,
     items: invoice.items || [],
     taxes: invoice.taxes || [],
-    discount: invoice.discount || { type: 'flat', value: 0 },
+    discount: {
+      type: invoice.discount_type || 'flat',
+      value: Number(invoice.discount_value || 0),
+    },
     notes: invoice.notes || '',
     layout_id: invoice.layout_id || 'minimal',
-    payment: {
-      razorpay_enabled:
-        !!invoice.payment?.razorpay_enabled ||
-        !!invoice.payment_payload?.razorpay_enabled,
-    },
+    payment_methods:
+      invoice.payment_payload?.payment_methods || {
+        upi: false,
+        bank: false,
+        cash: false,
+      },
   };
-
-  sessionStorage.setItem('invoiceDraft', JSON.stringify(draft));
 }
 
 /* ================= DROPDOWN ================= */
@@ -119,7 +134,7 @@ function selectClient(client) {
   closeDropdown();
 }
 
-/* ================= SEARCH + KEYBOARD ================= */
+/* ================= SEARCH ================= */
 searchInput.addEventListener('focus', () => {
   if (!selectedClient) renderDropdown(clients);
 });
@@ -133,44 +148,10 @@ searchInput.addEventListener('input', () => {
   );
 });
 
-searchInput.addEventListener('keydown', (e) => {
-  const listItems = dropdown.querySelectorAll('li');
-  if (!listItems.length) return;
-
-  if (e.key === 'ArrowDown') activeIndex = (activeIndex + 1) % listItems.length;
-  if (e.key === 'ArrowUp')
-    activeIndex = (activeIndex - 1 + listItems.length) % listItems.length;
-
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    listItems[activeIndex]?.click();
-  }
-
-  if (e.key === 'Escape') {
-    closeDropdown();
-    searchInput.blur();
-  }
-
-  listItems.forEach((li, i) =>
-    li.classList.toggle('active', i === activeIndex)
-  );
-});
-
-document.addEventListener('click', (e) => {
-  if (
-    !searchInput.contains(e.target) &&
-    !dropdown.contains(e.target) &&
-    !changeBtn.contains(e.target)
-  ) {
-    closeDropdown();
-  }
-});
-
 /* ================= CHANGE CLIENT ================= */
 changeBtn.onclick = () => {
   selectedClient = null;
   draft.client_id = null;
-  sessionStorage.setItem('invoiceDraft', JSON.stringify(draft));
 
   searchInput.value = '';
   searchInput.readOnly = false;
@@ -264,17 +245,14 @@ async function prefillFromDraft(draft) {
   dueDate.value = draft.due_date?.split('T')[0] || '';
   notesInput.value = draft.notes || '';
   layoutSelect.value = draft.layout_id || 'minimal';
-  enableRazorpay.checked = !!draft.payment?.razorpay_enabled;
 
   discountTypeSelect.value =
-    draft.discount?.type === 'percent'
-      ? 'percentage'
-      : 'flat';
-  discountValueInput.value = draft.discount?.value || 0;
+    draft.discount.type === 'percent' ? 'percentage' : 'flat';
+  discountValueInput.value = draft.discount.value || 0;
 
   renderItems();
 
-  if (!Array.isArray(draft.taxes) || !draft.taxes.length) {
+  if (!draft.taxes.length) {
     const res = await fetch(`${API_BASE}/api/settings/taxes`, {
       headers: getAuthHeaders(),
     });
@@ -286,28 +264,42 @@ async function prefillFromDraft(draft) {
   }
 
   renderTaxes();
+
+  // ✅ PAYMENT OPTIONS PREFILL
+  if (draft.payment_methods) {
+    const { upi, bank, cash } = draft.payment_methods;
+
+    const payUpi = document.getElementById('pay_upi');
+    const payBank = document.getElementById('pay_bank');
+    const payCash = document.getElementById('pay_cash');
+
+    if (payUpi) payUpi.checked = !!upi;
+    if (payBank) payBank.checked = !!bank;
+    if (payCash) payCash.checked = !!cash;
+  }
 }
 
 /* ================= SAVE → PREVIEW ================= */
-saveBtn.addEventListener('click', () => {
-  const items = collectItems();
-
-  const clientId =
-    selectedClient?.client_id ||
-    selectedClient?.id;
-
-  if (!clientId) {
-    alert('Client missing');
-    return;
+saveBtn.addEventListener('click', async () => {
+  const enteredInvoiceId = invoiceIdInput.value?.trim();
+  if (enteredInvoiceId) {
+    const ok = await isInvoiceIdUniqueForEdit(enteredInvoiceId);
+    if (!ok) {
+      return alert(
+        `Invoice ID "${enteredInvoiceId}" already exists.\nPlease use a different one.`
+      );
+    }
   }
 
-  if (!items.length) {
-    alert('Add at least one invoice item');
-    return;
-  }
+  draft.items = collectItems();
+  const items = draft.items;
+
+  const clientId = selectedClient?.client_id;
+  if (!clientId) return alert('Client missing');
+  if (!items.length) return alert('Add at least one invoice item');
 
   const finalDraft = {
-    invoice_id: draft.invoice_id || null,
+    invoice_id: enteredInvoiceId || null,
     client_id: clientId,
     invoice_date: invoiceDate.value,
     due_date: dueDate.value,
@@ -322,30 +314,23 @@ saveBtn.addEventListener('click', () => {
     },
     notes: notesInput.value || '',
     layout_id: layoutSelect.value || 'minimal',
-    payment: { razorpay_enabled: enableRazorpay.checked },
+    payment_methods: draft.payment_methods || {
+      upi: false,
+      bank: false,
+      cash: false,
+    },
   };
 
   sessionStorage.setItem('invoiceDraft', JSON.stringify(finalDraft));
   window.location.href = `/invoice-preview.html?id=${invoiceDbId}`;
 });
 
-/* ================= INIT (FINAL, CORRECT) ================= */
+/* ================= INIT (FINAL, SAFE) ================= */
 (async () => {
   await loadClients();
 
-  // 🔥 ALWAYS load fresh invoice from DB for edit
+  // 🔥 ALWAYS trust DB on edit
   await loadInvoiceFromDB();
-
-  // Optional: allow preview → edit roundtrip override
-  const stored = sessionStorage.getItem('invoiceDraft');
-  if (stored) {
-    const tempDraft = JSON.parse(stored);
-
-    // Only merge if same invoice
-    if (tempDraft.invoice_id === draft.invoice_id) {
-      draft = tempDraft;
-    }
-  }
 
   await prefillFromDraft(draft);
 })();

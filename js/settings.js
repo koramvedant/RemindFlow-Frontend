@@ -33,6 +33,13 @@ function cacheSellerInfo(data) {
   const seller = {
     name: data.company_name || data.name || '—',
     email: data.email || '',
+
+    address_line1: data.address_line1 || '',
+    address_line2: data.address_line2 || '',
+    city: data.city || '',
+    state: data.state || '',
+    postal_code: data.postal_code || '',
+    country: data.country || 'India',
   };
 
   localStorage.setItem('sellerInfo', JSON.stringify(seller));
@@ -57,8 +64,9 @@ async function loadSettings() {
     document.getElementById('timezone').value =
       data.timezone || 'Asia/Kolkata';
 
+    // ✅ FIX 1: aligned with backend
     document.getElementById('disable_whatsapp').checked =
-      data.whatsapp_enabled === false;
+      data.reminder_preferences?.whatsapp === false;
 
     // 🏢 Business Address (Structured)
     document.getElementById('address_line1').value =
@@ -87,7 +95,6 @@ document.getElementById('saveAccount')?.addEventListener('click', async () => {
   const payload = {
     // User / Account
     name: document.getElementById('name').value.trim(),
-    email: document.getElementById('email').value.trim(),
     company_name: document
       .getElementById('company_name')
       .value.trim(),
@@ -140,8 +147,12 @@ document
     const disableWhatsapp =
       document.getElementById('disable_whatsapp').checked;
 
+    // ✅ FIX 3: correct backend payload
     const payload = {
-      whatsapp_enabled: !disableWhatsapp,
+      reminder_preferences: {
+        email: true,
+        whatsapp: !disableWhatsapp,
+      },
     };
 
     try {

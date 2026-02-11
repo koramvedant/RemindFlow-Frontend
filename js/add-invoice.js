@@ -277,14 +277,17 @@ function loadDraftFromSession() {
 
   const draft = JSON.parse(stored);
 
-  if (draft.client) {
-    selectedClient = draft.client;
-  }
+  if (draft.client_id) {
+    const matched = clients.find(
+      (c) => c.client_id === draft.client_id
+    );
 
-  if (selectedClient) {
-    searchInput.value = selectedClient.name;
-    searchInput.setAttribute('readonly', true);
-    changeBtn.style.display = 'inline-block';
+    if (matched) {
+      selectedClient = matched;
+      searchInput.value = matched.name;
+      searchInput.setAttribute('readonly', true);
+      changeBtn.style.display = 'inline-block';
+    }
   }
 
   invoiceDate.value = draft.invoice_date || '';
@@ -316,12 +319,39 @@ function loadDraftFromSession() {
   }
 }
 
+/* ================= INVOICE ID UNIQUENESS CHECK ================= */
+async function isInvoiceIdUnique(invoiceId) {
+  const headers = getAuthHeaders();
+  if (!headers) return false;
+
+  const res = await fetch(
+    `${API_BASE}/api/invoices/code/${encodeURIComponent(invoiceId)}`,
+    { headers }
+  );
+
+  if (res.status === 404) return true;
+  if (res.ok) return false;
+
+  return false;
+}
+
 /* ================= CONTINUE ================= */
-continueBtn.onclick = () => {
+continueBtn.onclick = async () => {
   if (!selectedClient) return alert('Please select a client');
 
   syncItemsFromDOM();
   if (!items.length) return alert('Add at least one invoice item');
+
+  const enteredInvoiceId = invoiceIdInput.value?.trim();
+
+  if (enteredInvoiceId) {
+    const isUnique = await isInvoiceIdUnique(enteredInvoiceId);
+    if (!isUnique) {
+      return alert(
+        `Invoice ID "${enteredInvoiceId}" already exists.\nPlease use a different invoice ID.`
+      );
+    }
+  }
 
   if (
     !payUpiCheckbox.checked &&
@@ -354,10 +384,10 @@ continueBtn.onclick = () => {
   };
 
   const payload = {
-    invoice_id: invoiceIdInput.value || null,
+    invoice_id: enteredInvoiceId || null,
     invoice_date: invoiceDate.value,
     due_date: dueDate.value,
-    client: selectedClient,
+    client_id: selectedClient.client_id,
     items,
     taxes: taxes.map((t) => ({ ...t })),
     discount,

@@ -417,9 +417,115 @@ saveTaxesBtn?.addEventListener('click', async () => {
   }
 });
 
+/* =====================================================
+   BILLING SECTION
+===================================================== */
+
+async function loadBilling() {
+  try {
+    const res = await fetch(`${API_BASE}/api/dashboard/info`, {
+      headers: getAuthHeaders(),
+    });
+
+    if (!res.ok) throw new Error('Failed to load billing info');
+
+    const { user, queuedPlan } = await res.json();
+
+    const currentPlanEl = document.getElementById('currentPlan');
+    const expiryEl = document.getElementById('planExpiry');
+    const statusEl = document.getElementById('planStatus');
+
+    const queuedSection = document.getElementById('queuedPlanSection');
+    const nextPlanNameEl = document.getElementById('nextPlanName');
+    const nextActivationDateEl = document.getElementById('nextActivationDate');
+    const activateNowBtn = document.getElementById('activateNowBtn');
+
+    if (!currentPlanEl || !expiryEl || !statusEl) return;
+
+    const now = new Date();
+    const planEnd = user.plan_end ? new Date(user.plan_end) : null;
+
+    const isExpired =
+      !user.subscription_active ||
+      !planEnd ||
+      planEnd <= now;
+
+    // Current Plan
+    currentPlanEl.textContent =
+      user.plan_code
+        ? user.plan_code.charAt(0).toUpperCase() + user.plan_code.slice(1)
+        : 'Free';
+
+    // Expiry Date
+    expiryEl.textContent = planEnd
+      ? planEnd.toLocaleDateString()
+      : '—';
+
+    // Status
+    statusEl.textContent = isExpired ? 'Expired' : 'Active';
+    statusEl.style.color = isExpired ? 'red' : 'green';
+
+    /* -------------------------
+       Queued Plan Display
+    ------------------------- */
+    if (queuedPlan && queuedSection) {
+      queuedSection.style.display = 'block';
+
+      nextPlanNameEl.textContent =
+        queuedPlan.name || '—';
+
+      const activationDate = planEnd
+        ? planEnd.toLocaleDateString()
+        : '—';
+
+      nextActivationDateEl.textContent = activationDate;
+
+      /* Activate Now */
+      activateNowBtn?.addEventListener('click', async () => {
+        const confirmAction = confirm(
+          "Activating now will end your current plan immediately and reset your slots. Continue?"
+        );
+
+        if (!confirmAction) return;
+
+        try {
+          const activateRes = await fetch(
+            `${API_BASE}/api/billing/activate-now`,
+            {
+              method: 'POST',
+              headers: getAuthHeaders(),
+            }
+          );
+
+          if (!activateRes.ok) throw new Error('Activation failed');
+
+          alert('✅ Plan activated successfully');
+          location.reload();
+        } catch (err) {
+          console.error('Activation error:', err);
+          alert('❌ Failed to activate plan');
+        }
+      });
+    } else if (queuedSection) {
+      queuedSection.style.display = 'none';
+    }
+  } catch (err) {
+    console.warn('Billing not loaded:', err);
+  }
+}
+
+/* -------------------------
+   Renew Button
+------------------------- */
+
+document.getElementById('renewPlan')?.addEventListener('click', () => {
+  window.location.href = '/plans.html';
+});
+
 /* -------------------------
    Init (FINAL)
 ------------------------- */
 loadSettings();
 loadTaxes();
 loadPayments();
+loadBilling();

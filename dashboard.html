@@ -58,13 +58,23 @@
 
       <!-- Actions -->
       <div class="dashboard-actions">
-        <a href="/add-client.html" class="action-btn">+ Add Client</a>
-        <a href="/add-invoice.html" class="action-btn subtle">+ Add Invoice</a>
+        <a href="/add-client.html" data-requires-plan class="action-btn">+ Add Client</a>
+        <a href="/add-invoice.html" data-requires-plan class="action-btn subtle">+ Add Invoice</a>
       </div>
     </section>
 
     <!-- ================= STATS ================= -->
     <section class="stats-section">
+      <!-- 🔥 Period Filter -->
+      <div class="stats-filter">
+       <label for="periodFilter">View:</label>
+       <select id="periodFilter">
+         <option value="this_month">This Month</option>
+         <option value="last_month">Last Month</option>
+         <option value="this_year">This Year</option>
+         <option value="custom">Custom Range</option>
+       </select>
+      </div>
       <div class="stats-grid">
         <div class="stat-card">
           <h4>Amount Due</h4>

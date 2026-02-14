@@ -71,6 +71,24 @@ let filtered = [];
 let page = 1;
 const perPage = 5;
 
+function statusBadge(status) {
+  switch (status) {
+    case 'draft':
+      return `<span class="status draft">Draft</span>`;
+    case 'sent':
+    case 'issued':
+      return `<span class="status sent">Issued</span>`;
+    case 'paid':
+      return `<span class="status paid">Paid</span>`;
+    case 'overdue':
+      return `<span class="status overdue">Overdue</span>`;
+    case 'partially_paid':
+      return `<span class="status partial">Partially Paid</span>`;
+    default:
+      return `<span class="status">${status}</span>`;
+  }
+}
+
 /* ------------------ Render Table ------------------ */
 function render() {
   const tbody = document.getElementById('invoiceTable');
@@ -89,19 +107,60 @@ function render() {
 
   rows.forEach((inv) => {
     const tr = document.createElement('tr');
+  
     tr.innerHTML = `
-      <td>#${inv.id}</td>
-      <td>₹${Number(inv.amount).toLocaleString()}</td>
-      <td>${inv.status}</td>
-      <td>${inv.date}</td>
-      <td class="actions">
-        <a href="/invoice-detail.html?id=${encodeURIComponent(inv.id)}">View</a>
-        <a href="/invoice-preview.html?id=${encodeURIComponent(inv.id)}">PDF</a>
-        <a href="/reminders.html?invoice_id=${encodeURIComponent(inv.id)}">Reminder</a>
+      <td>${inv.invoice_id}</td>
+  
+      <td>
+        ₹${Number(inv.amount).toLocaleString('en-IN')}
+        ${
+          inv.status !== 'paid' && Number(inv.payment_due) > 0
+            ? `<span class="due-amount">
+                (₹${Number(inv.payment_due).toLocaleString('en-IN')} due)
+              </span>`
+            : ''
+        }
+      </td>
+  
+      <td>${statusBadge(inv.status)}</td>
+  
+      <td>${inv.due_date ? new Date(inv.due_date).toLocaleDateString('en-IN') : '—'}</td>
+  
+      <td>
+        <span class="action download" data-id="${inv.id}">
+          Download
+        </span>
+  
+        ${
+          inv.status !== 'paid'
+            ? `<span class="action record-payment" data-id="${inv.id}">
+                Record Payment
+              </span>`
+            : ''
+        }
+  
+        ${
+          inv.status !== 'paid'
+            ? inv.reminders_paused
+              ? `<span class="action resume-reminders" data-id="${inv.id}">
+                  Resume
+                </span>`
+              : `<span class="action pause-reminders" data-id="${inv.id}">
+                  Pause
+                </span>`
+            : ''
+        }
+  
+        <span class="action delete" data-id="${inv.id}">
+          Delete
+        </span>
       </td>
     `;
+  
     tbody.appendChild(tr);
   });
+
+
 
   const nextBtn = document.getElementById('nextBtn');
   const prevBtn = document.getElementById('prevBtn');
@@ -110,22 +169,102 @@ function render() {
   if (prevBtn) prevBtn.disabled = page === 1;
 }
 
-/* ------------------ Filters ------------------ */
-const filterBtn = document.getElementById('filterBtn');
-if (filterBtn) {
-  filterBtn.addEventListener('click', () => {
-    const search = document.getElementById('searchInput')?.value.trim() || '';
-    const status = document.getElementById('statusFilter')?.value || '';
+const table = document.getElementById('invoiceTable');
 
-    filtered = invoices.filter((i) => {
-      if (search && !i.id.toString().includes(search)) return false;
-      if (status && i.status !== status) return false;
-      return true;
+table.addEventListener('click', async (e) => {
+  if (
+    !e.target.classList.contains('action') ||
+    e.target.classList.contains('disabled')
+  )
+    return;
+
+
+  const id = e.target.dataset.id;
+  if (!id) return;
+
+  const headers = getAuthHeaders();
+  if (!headers) return;
+
+  if (e.target.classList.contains('download')) {
+    window.open(`${API_BASE}/api/invoices/${id}/pdf`, '_blank');
+  }
+
+  if (e.target.classList.contains('record-payment')) {
+    alert('Use main Invoices page to record payment.');
+  }
+
+  if (e.target.classList.contains('pause-reminders')) {
+    await fetch(`${API_BASE}/api/invoices/${id}/pause-reminders`, {
+      method: 'PUT',
+      headers,
+    });
+    loadInvoices();
+  }
+
+  if (e.target.classList.contains('resume-reminders')) {
+    await fetch(`${API_BASE}/api/invoices/${id}/resume-reminders`, {
+      method: 'PUT',
+      headers,
+    });
+    loadInvoices();
+  }
+
+  if (e.target.classList.contains('delete')) {
+    if (!confirm('Delete this invoice?')) return;
+
+    await fetch(`${API_BASE}/api/invoices/${id}`, {
+      method: 'DELETE',
+      headers,
     });
 
-    page = 1;
-    render();
+    loadInvoices();
+  }
+});
+
+/* ------------------ Filters ------------------ */
+function applyFilters() {
+  const search =
+    document.getElementById('searchInput')?.value.trim() || '';
+
+  const status =
+    document.getElementById('statusFilter')?.value || '';
+
+  const q = search.toLowerCase();
+
+  filtered = invoices.filter((i) => {
+
+    const matchesSearch =
+      !q ||
+
+      // Invoice ID
+      i.invoice_id.toString().toLowerCase().includes(q) ||
+
+      // Amount
+      i.amount.toString().includes(q) ||
+
+      // Created date
+      (i.created_at &&
+        new Date(i.created_at)
+          .toLocaleDateString('en-IN')
+          .toLowerCase()
+          .includes(q)) ||
+
+      // Due date
+      (i.due_date &&
+        new Date(i.due_date)
+          .toLocaleDateString('en-IN')
+          .toLowerCase()
+          .includes(q));
+
+    const matchesStatus =
+      !status ||
+      i.status.toLowerCase() === status.toLowerCase();
+
+    return matchesSearch && matchesStatus;
   });
+
+  page = 1;
+  render();
 }
 
 /* ------------------ Pagination ------------------ */
@@ -149,6 +288,18 @@ if (prevBtn) {
     }
   };
 }
+
+const searchInput = document.getElementById('searchInput');
+const statusFilter = document.getElementById('statusFilter');
+
+if (searchInput) {
+  searchInput.addEventListener('input', applyFilters);
+}
+
+if (statusFilter) {
+  statusFilter.addEventListener('change', applyFilters);
+}
+
 
 /* ------------------ Sidebar Toggle ------------------ */
 const sidebar = document.getElementById('sidebar');
@@ -192,13 +343,17 @@ async function loadInvoices() {
     // ✅ IMPORTANT: backend returns { success, invoices }
     invoices = (data.invoices || []).map((i) => ({
       id: i.id,
-      amount: i.grand_total || 0,
+      invoice_id: i.invoice_id || i.id,
+      amount: Number(i.grand_total || 0),
       status: i.invoice_status,
-      date: i.invoice_date || i.created_at?.split('T')[0] || '—',
+      created_at: i.created_at || null,
+      due_date: i.due_date || null,
+      payment_due: Number(i.payment_due || 0),
+      reminders_paused: i.reminders_paused || false,
     }));
 
-    filtered = [...invoices];
-    render();
+
+    applyFilters();
   } catch (err) {
     console.error(err);
     alert('Failed to load invoices');

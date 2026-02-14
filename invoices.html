@@ -41,7 +41,7 @@
           <h1>Invoices</h1>
           <p>Total Invoices: <span id="totalInvoices">0</span></p>
         </div>
-        <a href="/add-invoice.html" class="btn">+ Add Invoice</a>
+        <a href="/add-invoice.html" data-requires-plan class="btn">+ Add Invoice</a>
       </div>
 
       <!-- Filters -->
@@ -49,19 +49,22 @@
         <input
           type="text"
           id="searchInput"
-          placeholder="Search invoice or client..."
+          placeholder="Search by invoice, client, amount or date..."
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
         />
 
-        <select id="clientFilter">
-          <option value="">All Clients</option>
+        <select id="statusFilter">
+          <option value="all">All</option>
+          <option value="draft">Draft</option>
+          <option value="issued">Issued</option>
+          <option value="overdue">Overdue</option>
+          <option value="paid">Paid</option>
+          <option value="partially_paid">Partially Paid</option>
         </select>
 
-        <select id="statusFilter">
-          <option value="">All Status</option>
-          <option value="Paid">Paid</option>
-          <option value="Pending">Pending</option>
-          <option value="Overdue">Overdue</option>
-        </select>
       </div>
 
       <!-- Table -->
@@ -72,7 +75,7 @@
             <th>Client</th>
             <th>Amount</th>
             <th>Status</th>
-            <th>Date</th>
+            <th>Due Date</th>
             <th>Actions</th>
           </tr>
         </thead>

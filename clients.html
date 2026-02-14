@@ -40,7 +40,7 @@
           <h1>Clients</h1>
           <p>Total Clients: <span id="totalClients">0</span></p>
         </div>
-        <a href="/add-client.html" class="btn">+ Add Client</a>
+        <a href="/add-client.html" data-requires-plan class="btn">+ Add Client</a>
       </div>
 
       <!-- Filters -->
@@ -49,6 +49,10 @@
           type="text"
           id="searchInput"
           placeholder="Search clients..."
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
         />
         <select id="trustFilter">
           <option value="">Trust Grade</option>

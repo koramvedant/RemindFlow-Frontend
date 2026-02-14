@@ -24,7 +24,7 @@
       </a>
       <a href="/reminders.html">⏰ Reminders</a>
       <a href="/settings.html">⚙️ Settings</a>
-      <a href="/logout">🔒 Logout</a>
+      <a href="/index.html">🔒 Logout</a>
 
       <!-- Hamburger -->
       <div id="hamburger">
@@ -56,19 +56,21 @@
       <!-- Filters -->
       <section class="filters">
         <input
-          id="searchInput"
-          type="text"
-          placeholder="Search invoice ID…"
-        />
+        id="searchInput"
+        type="text"
+        placeholder="Search invoice ID..."
+        autocomplete="off"
+      />
+
 
         <select id="statusFilter">
           <option value="">All Status</option>
-          <option value="Paid">Paid</option>
-          <option value="Pending">Pending</option>
-          <option value="Overdue">Overdue</option>
+          <option value="draft">Draft</option>
+          <option value="sent">Sent</option>
+          <option value="paid">Paid</option>
+          <option value="overdue">Overdue</option>
+          <option value="partially_paid">Partially Paid</option>
         </select>
-
-        <button id="filterBtn">Apply</button>
       </section>
 
       <!-- Invoice Logs Table -->

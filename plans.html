@@ -11,7 +11,7 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <!-- Auth Guard (MUST LOAD FIRST) -->
-  <script src="/js/guard.js"></script>
+  <script type="module" src="/js/guard.js"></script>
 </head>
 
 <body>
@@ -115,6 +115,10 @@
   </main>
 
   <!-- Plan Selection Logic -->
-  <script type="module" src="/js/plans.js"></script>
+  <script type="module">
+  import { requireAuth } from "/js/guard.js";
+  requireAuth();
+</script>
+<script type="module" src="/js/plans.js"></script>
 </body>
 </html>

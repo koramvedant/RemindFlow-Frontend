@@ -20,6 +20,46 @@ let filtered = [];
 let page = 1;
 const perPage = 5;
 
+/* ------------------ Plan UI Helpers ------------------ */
+function disableCreateButtons() {
+  document
+    .querySelectorAll('[data-requires-plan]')
+    .forEach((btn) => {
+      btn.style.pointerEvents = 'none';   // disable anchor click
+      btn.style.opacity = '0.5';
+      btn.title = 'Upgrade to create new invoices';
+      btn.classList.add('disabled-by-plan');
+    });
+}
+
+function showUpgradeBanner() {
+  if (document.getElementById('upgradeBanner')) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'upgradeBanner';
+  banner.style.background = '#ffe9e9';
+  banner.style.color = '#b00020';
+  banner.style.padding = '12px';
+  banner.style.marginBottom = '16px';
+  banner.style.borderRadius = '6px';
+  banner.style.fontWeight = '500';
+  banner.style.textAlign = 'center';
+  banner.textContent = 'Your plan has expired. Please upgrade to continue.';
+
+  const container =
+    document.querySelector('.main') ||
+    document.body;
+
+  container.prepend(banner);
+}
+
+function applyPlanUIState(principal, expired) {
+  if (expired) {
+    disableCreateButtons();
+    showUpgradeBanner();
+  }
+}
+
 /* ------------------ Auth Fetch Helper ------------------ */
 function authFetch(url, options = {}) {
   const token = localStorage.getItem('accessToken');
@@ -127,18 +167,17 @@ async function submitPayment(invoiceId, amount) {
 }
 
 /* ------------------ PDF Download ------------------ */
-async function downloadPdf(invoiceId) {
-  try {
-    const res = await authFetch(`${API_BASE}/api/invoices/${invoiceId}/pdf`);
-    if (!res.ok) throw new Error('PDF not available');
+function downloadPdf(invoiceId) {
+  const invoice = invoices.find(i => i.id === Number(invoiceId));
 
-    const { pdf_signed_url } = await res.json();
-    window.open(pdf_signed_url, '_blank');
-  } catch (err) {
-    console.error(err);
-    showToast('Failed to download PDF', 'error');
+  if (!invoice || !invoice.pdf_signed_url) {
+    showToast('PDF not available', 'error');
+    return;
   }
-}
+
+  window.open(invoice.pdf_signed_url, '_blank');
+} 
+
 
 /* ------------------ Render ------------------ */
 function render() {
@@ -165,62 +204,57 @@ function render() {
         <td>${inv.invoice_id || '—'}</td>
         <td>${clientName(inv)}</td>
         <td>
-          ₹${(inv.grand_total || 0).toLocaleString()}
+          ₹${Number(inv.grand_total || 0).toLocaleString('en-IN')}
           ${
             inv.invoice_status !== 'paid' && Number(inv.payment_due) > 0
               ? `<span class="due-amount">
-                  (₹${Number(inv.payment_due).toLocaleString()} due)
+                  (₹${Number(inv.payment_due).toLocaleString('en-IN')} due)
                 </span>`
               : ''
           }
         </td>
         <td>${statusBadge(inv.invoice_status)}</td>
-        <td>${new Date(inv.created_at).toLocaleDateString()}</td>
+        <td>${inv.formatted_due_date || '—'}</td>
         <td>
           ${
             isDraft
               ? `
-                <a href="/invoice-edit.html?id=${inv.id}" class="action">Edit</a>
-                <button class="action finalize" data-id="${inv.id}">Finalize</button>
+                <a href="/invoice-edit.html?id=${inv.id}" class="action view">Edit</a>
+                <span class="action finalize" data-id="${inv.id}">Finalize</span>
               `
               : `
-                <button class="action download" data-id="${inv.id}">
-                  Download PDF
-                </button>
-
+                <span class="action download" data-id="${inv.id}">
+                  Download
+                </span>
+          
                 ${
                   inv.invoice_status !== 'paid'
-                    ? `<button class="action record-payment" data-id="${inv.id}">
+                    ? `<span class="action record-payment" data-id="${inv.id}">
                         Record Payment
-                      </button>`
+                      </span>`
                     : ''
                 }
-
+          
                 ${
                   inv.invoice_status !== 'paid'
                     ? inv.reminders_paused
-                      ? `<button class="action resume-reminders" data-id="${inv.id}">
+                      ? `<span class="action resume-reminders" data-id="${inv.id}">
                           Resume
-                        </button>`
-                      : `<button class="action pause-reminders" data-id="${inv.id}">
+                        </span>`
+                      : `<span class="action pause-reminders" data-id="${inv.id}">
                           Pause
-                        </button>`
+                        </span>`
                     : ''
                 }
               `
           }
 
-          ${
-            canDeleteInvoice(inv)
-              ? `<button class="action delete" data-id="${inv.id}">Delete</button>`
-              : `<button
-                   class="action delete disabled"
-                   data-id="${inv.id}"
-                   disabled
-                   title="Deletion not allowed">
-                   Delete
-                 </button>`
-          }
+${
+  canDeleteInvoice(inv)
+    ? `<span class="action delete" data-id="${inv.id}">Delete</span>`
+    : `<span class="action delete disabled">Delete</span>`
+}
+
         </td>
       </tr>
     `;
@@ -233,16 +267,61 @@ function render() {
 
 /* ------------------ Filters ------------------ */
 function applyFilters() {
-  const q = (searchInput.value || '').toLowerCase();
-  const status = statusFilter.value;
+  const q = (searchInput.value || '').trim().toLowerCase();
+  const status = (statusFilter.value || '').toLowerCase();
 
   filtered = invoices.filter((inv) => {
+    /* ---------- SEARCH MATCH ---------- */
+
+    if (!q) return true;
+
+    // Invoice ID
+    const invoiceMatch =
+      (inv.invoice_id || '').toLowerCase().includes(q);
+
+    // Client
+    const clientMatch =
+      clientName(inv).toLowerCase().includes(q);
+
+    // Amount (remove ₹ and commas)
+    const amountRaw = String(inv.grand_total || '')
+      .replace(/[,₹]/g, '')
+      .toLowerCase();
+
+    const searchAmount = q.replace(/[,₹]/g, '');
+    const amountMatch = amountRaw.includes(searchAmount);
+
+    // Due Date
+    const dueDateMatch =
+      inv.due_date
+        ? new Date(inv.due_date)
+            .toLocaleDateString()
+            .toLowerCase()
+            .includes(q)
+        : false;
+
+    // Created Date
+    const createdMatch =
+      inv.created_at
+        ? new Date(inv.created_at)
+            .toLocaleDateString()
+            .toLowerCase()
+            .includes(q)
+        : false;
+
     const matchesSearch =
-      ((inv.invoice_id || '').toLowerCase().includes(q) ||
-        clientName(inv).toLowerCase().includes(q));
+      invoiceMatch ||
+      clientMatch ||
+      amountMatch ||
+      dueDateMatch ||
+      createdMatch;
+
+    /* ---------- STATUS MATCH ---------- */
 
     const matchesStatus =
-      status === 'all' || !status || inv.invoice_status === status;
+      !status ||
+      status === 'all' ||
+      inv.invoice_status?.toLowerCase() === status;
 
     return matchesSearch && matchesStatus;
   });
@@ -253,6 +332,7 @@ function applyFilters() {
 
 /* ------------------ Actions ------------------ */
 table.addEventListener('click', async (e) => {
+  if (!e.target.classList.contains('action')) return;
   if (e.target.disabled) return; // 🔒 HARD BLOCK
 
   const id = e.target.dataset.id;
@@ -365,5 +445,21 @@ statusFilter.addEventListener('change', applyFilters);
 prevBtn.onclick = () => page > 1 && (page--, render());
 nextBtn.onclick = () => page * perPage < filtered.length && (page++, render());
 
+/* ------------------ Plan Status Listener ------------------ */
+window.addEventListener('planStatusReady', (e) => {
+  applyPlanUIState(
+    e.detail?.principal,
+    e.detail?.expired
+  );
+});
+
 /* ------------------ Init ------------------ */
 loadInvoices();
+
+// 🔥 Handle race condition
+if (window.__USER_PLAN__) {
+  applyPlanUIState(
+    window.__USER_PLAN__,
+    window.__PLAN_EXPIRED__
+  );
+}

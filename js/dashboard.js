@@ -17,7 +17,10 @@ const capitalize = (str) =>
 
 /* ✅ Money formatter (NUMBER ONLY) */
 const formatMoney = (value) =>
-  typeof value === 'number' ? value.toLocaleString() : '0';
+  typeof value === 'number'
+    ? value.toLocaleString('en-IN')
+    : '0';
+
 
 /* ------------------ Auth Helper ------------------ */
 function getAuthHeaders() {
@@ -43,14 +46,12 @@ async function fetchJSON(path) {
   try {
     const res = await fetch(`${API_BASE}${path}`, { headers });
 
-    // 🔐 401 → unauthenticated → logout
     if (res.status === 401) {
       localStorage.clear();
       window.location.replace('/login.html');
       return null;
     }
 
-    // 🔒 403 → authenticated but blocked (plan)
     if (res.status === 403) {
       console.warn('Access blocked by plan');
       return null;
@@ -67,9 +68,77 @@ async function fetchJSON(path) {
   }
 }
 
+/* ------------------ Plan Expiry Handling ------------------ */
+function disableCreateButtons() {
+  document.querySelectorAll('[data-requires-plan]').forEach((btn) => {
+    btn.classList.add('disabled-by-plan');
+    btn.style.pointerEvents = 'none';   // 🔥 important for <a>
+    btn.style.opacity = '0.5';
+    btn.title = 'Upgrade to continue';
+  });
+}
+
+function showUpgradeBanner(message = 'Your plan has expired. Please upgrade to continue.') {
+  const existing = document.getElementById('upgradeBanner');
+  if (existing) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'upgradeBanner';
+  banner.style.background = '#ffe9e9';
+  banner.style.color = '#b00020';
+  banner.style.padding = '12px';
+  banner.style.marginBottom = '16px';
+  banner.style.borderRadius = '6px';
+  banner.style.fontWeight = '500';
+  banner.style.textAlign = 'center';
+  banner.textContent = message;
+
+  const container = document.querySelector('.container') || document.body;
+  container.prepend(banner);
+}
+
+function applyPlanUIState(principal, expired) {
+  if (expired) {
+    disableCreateButtons();
+    showUpgradeBanner();
+    return;
+  }
+
+  const now = new Date();
+
+  // 🔥 Trial countdown
+  if (principal?.plan === 'trial' && principal?.trial_end) {
+    const daysLeft = Math.ceil(
+      (new Date(principal.trial_end) - now) /
+      (1000 * 60 * 60 * 24)
+    );
+
+    if (daysLeft > 0) {
+      showUpgradeBanner(
+        `${daysLeft} day${daysLeft === 1 ? '' : 's'} left in trial`
+      );
+    }
+  }
+}
+
+/* 🔔 Listen for global plan status event */
+window.addEventListener('planStatusReady', (e) => {
+  applyPlanUIState(
+    e.detail?.principal,
+    e.detail?.expired
+  );
+});
+
 /* ------------------ Load Dashboard ------------------ */
-async function loadDashboard() {
-  const data = await fetchJSON('/api/dashboard');
+async function loadDashboard(period = 'this_month', start = null, end = null) {
+  let url = `/api/dashboard?period=${period}`;
+
+  if (period === 'custom' && start && end) {
+    url += `&start=${start}&end=${end}`;
+  }
+
+  const data = await fetchJSON(url);
+
 
   if (!data || !data.user || !data.stats) {
     console.error('Invalid dashboard payload:', data);
@@ -78,7 +147,21 @@ async function loadDashboard() {
 
   const { user, stats } = data;
 
-  /* ------------------ User / Business ------------------ */
+  /* ------------------ Plan Expiry Calculation ------------------ */
+  const now = new Date();
+  let expired = false;
+
+  if (user.plan === 'trial' && user.trial_end) {
+    expired = new Date(user.trial_end) < now;
+  }
+
+  if (user.plan !== 'trial' && user.plan_end) {
+    expired = new Date(user.plan_end) < now;
+  }
+
+  applyPlanUIState(user, expired);
+
+  /* ------------------ User Info ------------------ */
   safeText(
     $('userName'),
     user.display_name || user.name || user.email
@@ -113,13 +196,56 @@ async function loadDashboard() {
 
   safeText($('pendingInvoices'), stats.pendingInvoices, '0');
 
-  safeText(
-    $('slotsLeft'),
-    stats.slotsLeft === null
-      ? 'Unlimited'
-      : `${stats.slotsLeft} remaining`
-  );
+  /* ------------------ Slots Logic (FIXED) ------------------ */
+
+  let slotsDisplay;
+
+  if (expired) {
+    slotsDisplay = '0';
+  } else {
+    slotsDisplay =
+      stats.slotsLeft === null
+        ? 'Unlimited'
+        : `${stats.slotsLeft} remaining`;
+  }
+
+  safeText($('slotsLeft'), slotsDisplay);
+}
+
+/* ------------------ Period Filter ------------------ */
+const periodFilter = document.getElementById('periodFilter');
+const customRangeDiv = document.getElementById('customRange');
+const startDateInput = document.getElementById('startDate');
+const endDateInput = document.getElementById('endDate');
+const applyCustomBtn = document.getElementById('applyCustomRange');
+
+if (periodFilter) {
+  periodFilter.addEventListener('change', () => {
+    const selected = periodFilter.value;
+
+    if (selected === 'custom') {
+      customRangeDiv.style.display = 'flex';
+    } else {
+      customRangeDiv.style.display = 'none';
+      loadDashboard(selected);
+    }
+  });
+}
+
+if (applyCustomBtn) {
+  applyCustomBtn.addEventListener('click', () => {
+    const start = startDateInput.value;
+    const end = endDateInput.value;
+
+    if (!start || !end) {
+      alert('Please select both dates');
+      return;
+    }
+
+    loadDashboard('custom', start, end);
+  });
 }
 
 /* ------------------ Boot ------------------ */
-loadDashboard();
+loadDashboard('this_month');
+

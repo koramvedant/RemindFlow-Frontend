@@ -1,5 +1,3 @@
-// /public/js/plans.js
-
 console.log('✅ plans.js loaded');
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,21 +8,50 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  const expired = window.__PLAN_EXPIRED__;
+  const currentPlan = window.__USER_PLAN__?.plan_code;
+  const planEnd = window.__USER_PLAN__?.plan_end;
+
+  const subtitle = document.querySelector('.subtitle');
+
+  /* -------------------------
+     Update Subtitle Messaging
+  ------------------------- */
+
+  if (expired) {
+    if (subtitle) {
+      subtitle.textContent =
+        'Your plan has expired. Renew now to restore access.';
+      subtitle.style.color = '#b00020';
+      subtitle.style.fontWeight = '600';
+    }
+  } else {
+    if (subtitle && planEnd) {
+      const date = new Date(planEnd).toLocaleDateString();
+      subtitle.textContent =
+        `Your current plan expires on ${date}. Renewing now will stack and activate after expiry.`;
+    }
+  }
+
+  /* -------------------------
+     Plan Selection
+  ------------------------- */
+
   buttons.forEach((btn) => {
+    const plan = btn.dataset.plan;
+
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-
-      const plan = btn.dataset.plan;
 
       if (!plan) {
         console.error('Plan type missing on button');
         return;
       }
 
-      // Store selected plan for payment page
+      // Store renewal plan
       localStorage.setItem('selectedPlan', plan);
 
-      // Redirect directly to payment page
+      // Always redirect to payment
       window.location.href = '/payment.html';
     });
   });

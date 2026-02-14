@@ -45,14 +45,22 @@ async function fetchReminders() {
    Helper: Prepare Display List
 ------------------------- */
 function prepareDisplayReminders() {
-  const now = new Date();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const sent = reminders.filter(r => r.status === 'sent');
 
   const upcoming = reminders
-    .filter(r => r.status === 'active' && new Date(r.date) >= now)
+    .filter(r => {
+      if (r.status !== 'active') return false;
+
+      const reminderDate = new Date(r.date);
+      reminderDate.setHours(0, 0, 0, 0);
+
+      return reminderDate >= today;
+    })
     .reduce((map, r) => {
-      // pick nearest upcoming per invoice
+      // Pick nearest upcoming per invoice
       if (
         !map[r.invoice_id] ||
         new Date(r.date) < new Date(map[r.invoice_id].date)
@@ -63,8 +71,12 @@ function prepareDisplayReminders() {
     }, {});
 
   return [
-    ...Object.values(upcoming).sort((a, b) => new Date(a.date) - new Date(b.date)),
-    ...sent.sort((a, b) => new Date(b.date) - new Date(a.date)),
+    ...Object.values(upcoming).sort(
+      (a, b) => new Date(a.date) - new Date(b.date)
+    ),
+    ...sent.sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
+    ),
   ];
 }
 

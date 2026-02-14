@@ -1,9 +1,5 @@
 import { API_BASE } from './api.js';
 
-/* ================= URL CONTROL ================= */
-const params = new URLSearchParams(window.location.search);
-const fromPreview = params.get('from') === 'preview';
-
 /* ================= AUTH ================= */
 function getAuthHeaders() {
   const token = localStorage.getItem('accessToken');
@@ -270,55 +266,6 @@ function renderTaxes() {
   });
 }
 
-/* ================= RESTORE DRAFT ================= */
-function loadDraftFromSession() {
-  const stored = sessionStorage.getItem('invoiceDraft');
-  if (!stored) return;
-
-  const draft = JSON.parse(stored);
-
-  if (draft.client_id) {
-    const matched = clients.find(
-      (c) => c.client_id === draft.client_id
-    );
-
-    if (matched) {
-      selectedClient = matched;
-      searchInput.value = matched.name;
-      searchInput.setAttribute('readonly', true);
-      changeBtn.style.display = 'inline-block';
-    }
-  }
-
-  invoiceDate.value = draft.invoice_date || '';
-  dueDate.value = draft.due_date || '';
-
-  items.length = 0;
-  (draft.items || []).forEach((i) => items.push(i));
-  renderItems();
-
-  taxes.length = 0;
-  (draft.taxes || []).forEach((t) => taxes.push(t));
-  renderTaxes();
-
-  if (draft.discount) {
-    discountTypeSelect.value =
-      draft.discount.type === 'percent'
-        ? 'percentage'
-        : 'flat';
-    discountValueInput.value = draft.discount.value;
-  }
-
-  notesInput.value = draft.notes || '';
-  layoutSelect.value = draft.layout_id || 'minimal';
-
-  if (draft.payment_methods) {
-    payUpiCheckbox.checked = !!draft.payment_methods.upi;
-    payBankCheckbox.checked = !!draft.payment_methods.bank;
-    payCashCheckbox.checked = !!draft.payment_methods.cash;
-  }
-}
-
 /* ================= INVOICE ID UNIQUENESS CHECK ================= */
 async function isInvoiceIdUnique(invoiceId) {
   const headers = getAuthHeaders();
@@ -397,8 +344,23 @@ continueBtn.onclick = async () => {
     status: 'draft',
   };
 
-  sessionStorage.setItem('invoiceDraft', JSON.stringify(payload));
-  window.location.href = '/invoice-preview.html';
+  const res = await fetch(`${API_BASE}/api/invoices`, {
+    method: 'POST',
+    headers: {
+      ...getAuthHeaders(),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    return alert(err.message || 'Failed to create draft');
+  }
+
+  const data = await res.json();
+
+  window.location.href = `/invoice-preview.html?id=${data.db_id}`;
 };
 
 /* ================= INIT ================= */
@@ -409,15 +371,9 @@ continueBtn.onclick = async () => {
   const paymentSettings = await loadPaymentSettings();
   window.__paymentSettings = paymentSettings;
 
-  if (fromPreview) {
-    loadDraftFromSession();
-  } else {
-    sessionStorage.removeItem('invoiceDraft');
-
-    if (paymentSettings?.default_payment_methods) {
-      payUpiCheckbox.checked = !!paymentSettings.default_payment_methods.upi;
-      payBankCheckbox.checked = !!paymentSettings.default_payment_methods.bank;
-      payCashCheckbox.checked = !!paymentSettings.default_payment_methods.cash;
-    }
+  if (paymentSettings?.default_payment_methods) {
+    payUpiCheckbox.checked = !!paymentSettings.default_payment_methods.upi;
+    payBankCheckbox.checked = !!paymentSettings.default_payment_methods.bank;
+    payCashCheckbox.checked = !!paymentSettings.default_payment_methods.cash;
   }
 })();

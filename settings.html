@@ -200,20 +200,52 @@
           Billing
           <span class="arrow">▶</span>
         </div>
-
+      
         <div class="section-body" id="billing">
-          <p><strong>Current Plan:</strong> Free</p>
-          <p><strong>Billing Cycle:</strong> Monthly</p>
-
-          <button class="secondary-btn" disabled>Upgrade / Downgrade</button>
-          <button class="secondary-btn" disabled>Change Billing Cycle</button>
-          <button class="danger-btn" disabled>Cancel Plan</button>
-
-          <p class="hint">
-            Billing actions will be enabled after payment gateway integration.
+          <p>
+            <strong>Current Plan:</strong>
+            <span id="currentPlan">—</span>
+          </p>
+      
+          <p>
+            <strong>Plan Expires On:</strong>
+            <span id="planExpiry">—</span>
+          </p>
+      
+          <p>
+            <strong>Status:</strong>
+            <span id="planStatus">—</span>
+          </p>
+      
+          <!-- QUEUED PLAN SECTION (Hidden by default) -->
+          <div id="queuedPlanSection" style="display:none; margin-top:14px;">
+            <p>
+              <strong>Next Plan:</strong>
+              <span id="nextPlanName">—</span>
+            </p>
+      
+            <p class="hint">
+              This plan will automatically activate on 
+              <span id="nextActivationDate">—</span>.
+            </p>
+      
+            <button class="secondary-btn" id="activateNowBtn">
+              Activate Now
+            </button>
+          </div>
+      
+          <div style="margin-top:16px;">
+            <button class="primary-btn" id="renewPlan">
+              Renew Plan
+            </button>
+          </div>
+      
+          <p class="hint" style="margin-top:12px;">
+            Plans do not auto-renew. If renewed before expiry, the new plan is stacked and will activate automatically when the current plan ends.
           </p>
         </div>
       </section>
+
 
       <!-- PAYMENT SETTINGS -->
       <section class="settings-section">

@@ -96,28 +96,38 @@
   
   .client-link {
     color: var(--accent);
-    font-weight: 600;
+    font-weight: 500;
     text-decoration: none;
   }
   
+  .client-link:hover {
+    text-decoration: underline;
+  }
+
+  
   /* Actions */
+  
   .action {
-    padding: 6px 10px;
-    border-radius: 6px;
+    margin-right: 10px;
     font-size: 13px;
+    font-weight: 500;
     text-decoration: none;
-    color: white;
-    margin-right: 6px;
+    cursor: pointer;
   }
   
   .action.edit {
-    background: var(--warn);
+    color: var(--warn);
   }
   
   .action.delete {
-    background: var(--danger);
+    color: var(--danger);
   }
   
+  .action.edit:hover,
+  .action.delete:hover {
+    opacity: 0.8;
+  }
+
   /* Pagination */
   .pagination {
     margin-top: 16px;

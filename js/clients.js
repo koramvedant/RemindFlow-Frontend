@@ -16,6 +16,47 @@ const nextBtn = document.getElementById('nextBtn');
 const searchInput = document.getElementById('searchInput');
 const trustFilter = document.getElementById('trustFilter');
 
+
+/* ------------------ Plan UI Helpers ------------------ */
+function disableCreateButtons() {
+  document
+    .querySelectorAll('[data-requires-plan]')
+    .forEach((btn) => {
+      btn.style.pointerEvents = 'none';
+      btn.style.opacity = '0.5';
+      btn.title = 'Upgrade to create new clients';
+      btn.classList.add('disabled-by-plan');
+    });
+}
+
+function showUpgradeBanner() {
+  if (document.getElementById('upgradeBanner')) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'upgradeBanner';
+  banner.style.background = '#ffe9e9';
+  banner.style.color = '#b00020';
+  banner.style.padding = '12px';
+  banner.style.marginBottom = '16px';
+  banner.style.borderRadius = '6px';
+  banner.style.fontWeight = '500';
+  banner.style.textAlign = 'center';
+  banner.textContent = 'Your plan has expired. Please upgrade to continue.';
+
+  const container =
+    document.querySelector('.main') ||
+    document.body;
+
+  container.prepend(banner);
+}
+
+function applyPlanUIState(principal, expired) {
+  if (expired) {
+    disableCreateButtons();
+    showUpgradeBanner();
+  }
+}
+
 // ---------------- Render ----------------
 function render() {
   if (!table) return;
@@ -145,5 +186,21 @@ if (nextBtn) nextBtn.onclick = () => {
 if (searchInput) searchInput.addEventListener('input', applyFilters);
 if (trustFilter) trustFilter.addEventListener('change', applyFilters);
 
+/* ------------------ Plan Status Listener ------------------ */
+window.addEventListener('planStatusReady', (e) => {
+  applyPlanUIState(
+    e.detail?.principal,
+    e.detail?.expired
+  );
+});
+
 // ---------------- Boot ----------------
 loadClients();
+
+// 🔥 Handle race condition
+if (window.__USER_PLAN__) {
+  applyPlanUIState(
+    window.__USER_PLAN__,
+    window.__PLAN_EXPIRED__
+  );
+}

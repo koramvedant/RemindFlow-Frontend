@@ -118,6 +118,27 @@
 }
 
 /* ===================================================
+   STATS FILTER (NEW)
+=================================================== */
+
+.stats-filter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.stats-filter select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-soft);
+  background: var(--card);
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* ===================================================
    DASHBOARD STATS — MAIN FIX
 =================================================== */
 

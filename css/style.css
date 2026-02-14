@@ -67,8 +67,22 @@ a:hover {
   height: 72px;
 }
 
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .logo-img {
   height: 40px;
+  width: auto;
+  display: block;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-light);
 }
 
 /* Nav */

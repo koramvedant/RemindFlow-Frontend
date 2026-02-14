@@ -66,14 +66,14 @@ if (!googleBtn) {
 
       if (!user.onboarding_completed) {
         window.location.href = '/onboarding.html';
-      } else if (!user.subscription_active) {
-        window.location.href = '/plans.html';
       } else {
+        // Redirect based on last plan type (NOT subscription state)
         window.location.href =
           user.plan_type === 'integrated'
             ? '/integration-dashboard.html'
             : '/dashboard.html';
       }
+
 
     } catch (err) {
       console.error('❌ Google login failed:', err);

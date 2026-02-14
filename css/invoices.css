@@ -125,41 +125,50 @@ tr:nth-child(even) {
 
 tr:hover {
   background: #f1f5f9;
-}
+} 
 
-/* -------------------- Actions -------------------- */
-.actions a {
+/* -------------------- Action System -------------------- */
+.action {
   margin-right: 10px;
-  text-decoration: none;
-  font-weight: 500;
   font-size: 13px;
   padding: 6px 10px;
   border-radius: 6px;
+  font-weight: 500;
   transition: opacity 0.2s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+  display: inline-block;
 }
 
-.actions a.view {
+.action.view {
   color: #2563eb;
 }
 
-.actions a.view:hover {
-  opacity: 0.85;
-}
-
-.actions a.download {
+.action.download {
   color: #059669;
 }
 
-.actions a.download:hover {
-  opacity: 0.85;
+.action.record-payment {
+  color: #9333ea;
 }
 
-.actions a.reminder {
-  color: var(--danger);
+.action.pause-reminders,
+.action.resume-reminders {
+  color: #b45309;
 }
 
-.actions a.reminder:hover {
-  opacity: 0.85;
+.action.finalize {
+  color: #4f46e5;
+}
+
+.action.delete {
+  color: #dc2626;
+}
+
+.action.disabled {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 /* -------------------- Status Colors (LEGACY – DO NOT REMOVE) -------------------- */

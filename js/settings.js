@@ -64,9 +64,9 @@ async function loadSettings() {
     document.getElementById('timezone').value =
       data.timezone || 'Asia/Kolkata';
 
-    // ✅ FIX 1: aligned with backend
+    /* ✅ FIX 1: aligned with backend
     document.getElementById('disable_whatsapp').checked =
-      data.reminder_preferences?.whatsapp === false;
+      data.reminder_preferences?.whatsapp === false; */
 
     // 🏢 Business Address (Structured)
     document.getElementById('address_line1').value =
@@ -90,7 +90,7 @@ async function loadSettings() {
 
 /* -------------------------
    Save Account Settings
-------------------------- */
+
 document.getElementById('saveAccount')?.addEventListener('click', async () => {
   const payload = {
     // User / Account
@@ -137,7 +137,7 @@ document.getElementById('saveAccount')?.addEventListener('click', async () => {
     alert('❌ Failed to save account settings');
   }
 });
-
+------------------------- */
 /* -------------------------
    Save Communication Settings
 ------------------------- */
@@ -521,6 +521,7 @@ async function loadBilling() {
 document.getElementById('renewPlan')?.addEventListener('click', () => {
   window.location.href = '/plans.html';
 });
+
 
 /* -------------------------
    Init (FINAL)

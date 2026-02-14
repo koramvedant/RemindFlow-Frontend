@@ -37,22 +37,35 @@ document.addEventListener('DOMContentLoaded', () => {
      Plan Selection
   ------------------------- */
 
-  buttons.forEach((btn) => {
-    const plan = btn.dataset.plan;
+  /* -------------------------
+   Plan Selection
+------------------------- */
 
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-
-      if (!plan) {
-        console.error('Plan type missing on button');
-        return;
-      }
-
-      // Store renewal plan
-      localStorage.setItem('selectedPlan', plan);
-
-      // Always redirect to payment
-      window.location.href = '/payment.html';
-    });
-  });
+buttons.forEach((btn) => {
+   const plan = btn.dataset.plan;
+ 
+   /* 🔒 Disable Integrated Plan (Not Ready Yet) */
+   if (plan === 'integrated') {
+     btn.disabled = true;
+     btn.style.opacity = '0.6';
+     btn.style.cursor = 'not-allowed';
+     btn.textContent = 'Launching Soon';
+     return; // 🚫 Prevent click binding
+   }
+ 
+   btn.addEventListener('click', (e) => {
+     e.preventDefault();
+ 
+     if (!plan) {
+       console.error('Plan type missing on button');
+       return;
+     }
+ 
+     // Store renewal plan
+     localStorage.setItem('selectedPlan', plan);
+ 
+     // Redirect to payment
+     window.location.href = '/payment.html';
+   });
+ });
 });

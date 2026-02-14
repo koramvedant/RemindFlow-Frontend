@@ -74,7 +74,12 @@ function render() {
             ${c.name}
           </a>
         </td>
-        <td><strong>${c.userTrust}</strong></td>
+        <td>
+          <span class="trust-badge trust-${c.userTrust}">
+            ${c.userTrust}
+          </span>
+        </td>
+
         <td>${c.lastPayment || '-'}</td>
         <td>
           <span class="action edit" data-id="${c.id}">Edit</span>
@@ -136,7 +141,9 @@ async function loadClients() {
         id: c.client_id || c.id, // ✅ normalized, safe
         name: c.name,
         userTrust,
-        lastPayment: c.last_payment || null,
+        lastPayment: c.last_payment
+          ? new Date(c.last_payment).toLocaleDateString('en-GB')
+          : null,
       };
     });
 

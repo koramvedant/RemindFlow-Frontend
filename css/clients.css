@@ -104,6 +104,38 @@
     text-decoration: underline;
   }
 
+  /* Trust Grade Badges */
+.trust-badge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-block;
+}
+
+/* A – Excellent */
+.trust-A {
+  background-color: #d4f5e2;
+  color: #0a7a45;
+}
+
+/* B – Good */
+.trust-B {
+  background-color: #dce8ff;
+  color: #1a5fd0;
+}
+
+/* C – Warning */
+.trust-C {
+  background-color: #ffe7c2;
+  color: #b06b00;
+}
+
+/* D – High Risk */
+.trust-D {
+  background-color: #ffe1e1;
+  color: #b00020;
+}
   
   /* Actions */
   

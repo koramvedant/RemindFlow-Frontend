@@ -6,32 +6,14 @@
     <title>Invoices – RemindFlow</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="/css/dashboard.css" />
     <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
     <link rel="stylesheet" href="/css/invoices.css" />
   </head>
 
   <body>
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <h2>RemindFlow</h2>
 
-      <a href="/dashboard.html">🏠 Dashboard</a>
-      <a href="/clients.html">👥 Clients</a>
-      <a href="/invoices.html" class="active">
-        🧾 Invoices <span class="badge" id="badge-invoice"></span>
-      </a>
-      <a href="/reminders.html">⏰ Reminders</a>
-      <a href="/settings.html">⚙️ Settings</a>
-      <a href="/index.html">🔒 Logout</a>
-
-      <!-- Hamburger INSIDE sidebar -->
-      <div id="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </aside>
+    <div id="sidebarContainer"></div>
 
     <!-- Main -->
     <main class="main">
@@ -98,10 +80,10 @@
       requireAuth();
     </script>
 
+    <script src="/js/loadSidebar.js"></script>
+
     <!-- Page Logic -->
     <script type="module" src="/js/invoices.js"></script>
 
-    <!-- Sidebar toggle -->
-    <script src="/js/sidebar.js"></script>
   </body>
 </html>

@@ -118,24 +118,106 @@
 }
 
 /* ===================================================
-   STATS FILTER (NEW)
+   MODERN FILTER BAR
 =================================================== */
 
 .stats-filter {
-  display: flex;
-  justify-content: flex-end;
+  display: inline-flex;
   align-items: center;
-  margin-bottom: 16px;
-  gap: 8px;
+  gap: 14px;
+  padding: 10px 16px;
+  background: var(--card);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+}
+
+.stats-filter label {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
 }
 
 .stats-filter select {
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
   border: 1px solid var(--border-soft);
-  background: var(--card);
+  background: var(--bg);
   font-size: 13px;
+  font-weight: 500;
   color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.stats-filter select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+
+/* ================= Custom Range Styling ================= */
+
+.custom-range {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.custom-range.active {
+  display: inline-flex;
+}
+
+.custom-range input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+
+  transition: all 0.15s ease;
+  min-width: 150px;
+}
+
+.custom-range input[type="date"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.custom-range input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+
+.custom-range {
+  background: var(--bg);
+  padding: 6px;
+  border-radius: 14px;
+}
+
+.custom-range button {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.custom-range button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
 }
 
 /* ===================================================

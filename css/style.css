@@ -33,7 +33,7 @@ body {
 
 a {
   text-decoration: none;
-  color: var(--accent-blue);
+  color: inherit;
 }
 
 a:hover {
@@ -55,14 +55,16 @@ a:hover {
   top: 0;
   left: 0;
   width: 100%;
-  background: var(--navy-dark);
+  backdrop-filter: blur(10px);
+  background: rgba(13, 27, 42, 0.85);
   z-index: 999;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .nav-container {
   display: flex;
   justify-content: space-between;
+  padding: 0 40px;
   align-items: center;
   height: 72px;
 }
@@ -80,40 +82,59 @@ a:hover {
 }
 
 .logo-text {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
-  color: var(--text-light);
+  letter-spacing: 0.3px;
 }
 
-/* Nav */
+/* ================= MODERN NAV ================= */
 
-.nav {
+.nav-links {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 28px;
 }
 
-.nav a {
-  color: var(--text-muted);
+.nav-links a {
+  color: rgba(255,255,255,0.75);
   font-weight: 500;
-  transition: 0.2s;
+  position: relative;
+  transition: color 0.25s ease;
 }
 
-.nav a:hover {
-  color: var(--accent-blue);
+.nav-links a:hover {
+  color: var(--accent-teal);
 }
 
-.nav a.btn {
-  padding: 8px 16px;
+/* Animated underline */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: var(--accent-teal);
+  transition: width 0.25s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* Login Button */
+.nav-links .btn {
+  padding: 8px 18px;
   background: var(--accent-teal);
   color: var(--navy-dark);
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 600;
+  transition: all 0.25s ease;
 }
 
-.nav a.btn:hover {
-  background: var(--accent-blue);
-  color: #fff;
+.nav-links .btn:hover {
+  background: #18b39c;
+  transform: translateY(-1px);
 }
 
 /* ================= HERO ================= */
@@ -286,9 +307,15 @@ a:hover {
 /* ================= GET STARTED ================= */
 
 .get-started {
-  background: var(--navy-dark);
-  padding: 80px 20px;
+  background: linear-gradient(
+    135deg,
+    var(--navy),
+    var(--navy-dark)
+  );
+  padding: 100px 20px;
   text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .get-started h2 {
@@ -313,32 +340,76 @@ a:hover {
 /* ================= FOUNDER ================= */
 
 .founder {
-  padding: 80px 20px;
+  background: linear-gradient(135deg, #ffffff, #f5f8ff);
+  padding: 100px 20px;
   text-align: center;
-  background: #ffffff;
   color: var(--text-dark);
 }
 
+.founder-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
 .founder-img {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 20px;
+  margin-bottom: 12px; /* slightly tighter */
+  border: 4px solid var(--accent-teal);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.founder-name {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 6px 0; /* REMOVE default top margin */
+}
+
+.founder-role {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 20px 0; /* remove top margin */
+  letter-spacing: 0.5px;
+}
+
+.founder-quote {
+  font-size: 18px;
+  line-height: 1.7;
+  color: #444;
+  font-style: italic;
+  position: relative;
+  padding: 0 20px;
+}
+
+.founder-quote::before {
+  content: "“";
+  font-size: 48px;
+  color: var(--accent-teal);
+  position: absolute;
+  left: -10px;
+  top: -20px;
+  opacity: 0.4;
 }
 
 /* ================= CONTACT / FOOTER ================= */
 
 .contact {
-  background: var(--navy-dark);
-  color: #ffffff;
-  padding: 40px 20px;
+  background: #081320; /* deeper than navy-dark */
+  color: rgba(255,255,255,0.85);
+  padding: 50px 20px;
   text-align: center;
 }
 
 .contact a {
-  color: var(--accent-blue);
+  color: rgba(255,255,255,0.6);
   margin: 0 8px;
+  transition: color 0.2s ease;
+}
+
+.contact a:hover {
+  color: var(--accent-teal);
 }
 
 .footer-nav {
@@ -359,9 +430,5 @@ a:hover {
 
   .hero p {
     font-size: 18px;
-  }
-
-  .nav {
-    gap: 12px;
   }
 }

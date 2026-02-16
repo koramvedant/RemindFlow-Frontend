@@ -213,29 +213,34 @@ async function loadDashboard(period = 'this_month', start = null, end = null) {
 }
 
 /* ------------------ Period Filter ------------------ */
-const periodFilter = document.getElementById('periodFilter');
-const customRangeDiv = document.getElementById('customRange');
-const startDateInput = document.getElementById('startDate');
-const endDateInput = document.getElementById('endDate');
-const applyCustomBtn = document.getElementById('applyCustomRange');
+document.addEventListener('DOMContentLoaded', () => {
 
-if (periodFilter) {
+  const periodFilter = document.getElementById('periodFilter');
+  const customRangeDiv = document.getElementById('customRange');
+  const startDateInput = document.getElementById('startDate');
+  const endDateInput = document.getElementById('endDate');
+  const applyCustomBtn = document.getElementById('applyCustomRange');
+
+  if (!periodFilter) return;
+
   periodFilter.addEventListener('change', () => {
     const selected = periodFilter.value;
 
     if (selected === 'custom') {
-      customRangeDiv.style.display = 'flex';
+      if (customRangeDiv) {
+        customRangeDiv.classList.add('active');
+      }
     } else {
-      customRangeDiv.style.display = 'none';
+      if (customRangeDiv) {
+        customRangeDiv.classList.remove('active');
+      }
       loadDashboard(selected);
     }
   });
-}
 
-if (applyCustomBtn) {
-  applyCustomBtn.addEventListener('click', () => {
-    const start = startDateInput.value;
-    const end = endDateInput.value;
+  applyCustomBtn?.addEventListener('click', () => {
+    const start = startDateInput?.value;
+    const end = endDateInput?.value;
 
     if (!start || !end) {
       alert('Please select both dates');
@@ -244,7 +249,8 @@ if (applyCustomBtn) {
 
     loadDashboard('custom', start, end);
   });
-}
+
+});
 
 /* ------------------ Boot ------------------ */
 loadDashboard('this_month');

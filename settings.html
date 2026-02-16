@@ -16,24 +16,7 @@
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <h2>RemindFlow</h2>
-
-    <a href="/dashboard.html">🏠 Dashboard</a>
-    <a href="/clients.html">👥 Clients</a>
-    <a href="/invoices.html">🧾 Invoices</a>
-    <a href="/reminders.html">⏰ Reminders</a>
-    <a href="/settings.html" class="active">⚙️ Settings</a>
-    <a href="/index.html">🔒 Logout</a>
-
-    <!-- Hamburger INSIDE sidebar -->
-    <div id="hamburger">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </aside>
+  <div id="sidebarContainer"></div>
 
   <div class="main">
     <div class="settings-container">
@@ -51,10 +34,14 @@
           <input type="text" id="name" />
 
           <label>Email (Login)</label>
-          <input type="email" id="email" required />
+          <input type="email" id="email" readonly />
+          <p class="hint">Login email cannot be changed.</p>
 
           <label>Company Name</label>
           <input type="text" id="company_name" />
+
+          <label>Business Contact Phone</label>
+          <input type="text" id="contact_phone" placeholder="+91 9XXXXXXXXX" />
 
           <label>Timezone</label>
           <select id="timezone">
@@ -287,10 +274,9 @@
     });
   </script>
 
+  <script src="/js/loadSidebar.js"></script>
+
   <!-- Page JS -->
   <script type="module" src="/js/settings.js"></script>
-
-  <!-- Sidebar toggle -->
-  <script src="/js/sidebar.js"></script>
 </body>
 </html>

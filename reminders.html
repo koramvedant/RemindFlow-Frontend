@@ -4,29 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reminders – RemindFlow</title>
-  <link rel="stylesheet" href="/css/reminders.css" />
   <link rel="stylesheet" href="/css/sidebar.css" />
+  <link rel="stylesheet" href="/css/dashboard.css" />
+  <link rel="stylesheet" href="/css/reminders.css" />
+
 </head>
 
 <body>
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <h2>RemindFlow</h2>
 
-    <a href="/dashboard.html">🏠 Dashboard</a>
-    <a href="/clients.html">👥 Clients</a>
-    <a href="/invoices.html">🧾 Invoices</a>
-    <a href="/reminders.html" class="active">⏰ Reminders</a>
-    <a href="/settings.html">⚙️ Settings</a>
-    <a href="/index.html">🔒 Logout</a>
-
-    <!-- Hamburger -->
-    <div id="hamburger">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </aside>
+  <div id="sidebarContainer"></div>
 
   <!-- Main -->
   <main class="main">
@@ -69,11 +55,11 @@
       </table>
     </section>
   </main>
+  
+  <script src="/js/loadSidebar.js"></script>
 
   <!-- JS -->
   <script type="module" src="/js/reminders.js"></script>
 
-  <!-- Sidebar toggle -->
-  <script src="/js/sidebar.js"></script>
 </body>
 </html>

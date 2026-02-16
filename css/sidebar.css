@@ -13,19 +13,137 @@
   left: 0;
   background: #111827;
   color: #ffffff;
-  padding: 24px 16px;
+  padding: 24px 0px;
   display: flex;
   flex-direction: column;
   gap: 14px;
   transition: width 0.3s ease, padding 0.3s ease;
+  z-index: 2000;
 }
 
-/* ✅ NAV WRAPPER (KEY FIX) */
+/* ================================
+   MAIN LAYOUT (DESKTOP DEFAULT)
+================================ */
+
+.main {
+  margin-left: 180px;
+  width: calc(100% - 180px);
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+/* ================================
+   MOBILE SIDEBAR (FULL SCREEN)
+================================ */
+
+@media (max-width: 1023px) {
+
+  .sidebar {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 3000;
+    padding-top: 24px;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  /* Remove desktop layout shift on mobile */
+  .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+    z-index: 2500;
+  }
+
+  .sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  body.sidebar-open {
+    overflow: hidden;
+  }
+}
+
+.sidebar-close {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.sidebar-header,
+.sidebar-nav,
+.sidebar-footer {
+  padding: 0 16px;
+}
+
+.sidebar-close:hover {
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+@media (max-width: 1023px) {
+  .sidebar-close {
+    display: block;
+  }
+}
+
+
+/* ================================
+   DESKTOP RESTORE (SAFETY)
+================================ */
+
+@media (min-width: 1024px) {
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: none !important;
+    width: 180px;
+  }
+
+  .main {
+    margin-left: 180px;
+    width: calc(100% - 180px);
+  }
+
+}
+
+/* ================================
+   NAV WRAPPER
+================================ */
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  flex-grow: 1; /* 🔥 THIS is the key */
+  flex-grow: 1;
 }
 
 /* Brand */
@@ -43,7 +161,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #ffffff; /* 🔒 ALWAYS WHITE */
+  color: #ffffff;
   text-decoration: none;
   font-weight: 600;
   white-space: nowrap;
@@ -59,63 +177,35 @@
 
 /* Active */
 .sidebar a.active {
-  background: rgba(79, 70, 229, 0.25);
+  background: rgba(249, 251, 251, 0.18);;
   color: #ffffff;
 }
 
-/* Hamburger (inside sidebar) */
-#hamburger {
-  margin-top: auto;
-  width: 26px;
-  height: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
+/* ================================
+   MOBILE TOGGLE BUTTON
+================================ */
+
+.mobile-toggle {
+  display: none;
 }
 
-#hamburger span {
-  height: 3px;
-  width: 100%;
-  background: #ffffff;
-  border-radius: 2px;
-  transition: all 0.3s ease;
-}
+@media (max-width: 1023px) {
 
-#hamburger.active span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
+  .mobile-toggle {
+    display: block;
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 3500;
+    background: none;
+    border: none;
+    font-size: 26px;
+    color: #111827;
+    cursor: pointer;
+  }
 
-#hamburger.active span:nth-child(2) {
-  opacity: 0;
-}
-
-#hamburger.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
-
-/* Collapsed sidebar */
-.sidebar.collapsed {
-  width: 56px;
-  min-width: 56px;
-  padding: 20px 12px;
-  align-items: center;
-}
-
-.sidebar.collapsed h2,
-.sidebar.collapsed a {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Main layout shift (GLOBAL) */
-.main {
-  margin-left: 180px;
-  width: calc(100% - 180px);
-  transition: margin-left 0.3s ease, width 0.3s ease;
-}
-
-.main.collapsed {
-  margin-left: 56px;
-  width: calc(100% - 56px);
+  /* Hide hamburger when sidebar open */
+  body.sidebar-open .mobile-toggle {
+    display: none;
+  }
 }

@@ -1,0 +1,278 @@
+/* =====================================================
+   REMINDFLOW RESPONSIVE SYSTEM (Mobile First)
+   ===================================================== */
+
+/* =========================
+   GLOBAL MOBILE FIXES
+========================= */
+
+html, body {
+  overflow-x: hidden;
+}
+
+@media (max-width: 1023px) {
+  .container {
+    width: 100%;
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 1023px) {
+  section {
+    padding: 60px 0;
+  }
+}
+
+/* =========================
+   NAVBAR (MOBILE FIRST)
+========================= */
+
+.header {
+  height: 60px;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  padding: 0 16px;
+  position: relative;
+}
+
+/* Hide desktop nav by default */
+.nav-links {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  height: 100vh;
+  background: var(--navy-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  transition: right 0.3s ease;
+  z-index: 1000;
+}
+
+/* Active slide-in state */
+.nav-links.active {
+  right: 0;
+}
+
+/* Links styling inside mobile menu */
+.nav-links a {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo img {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+/* Hamburger */
+.hamburger {
+  display: block;
+  font-size: 26px;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  z-index: 1100;
+}
+
+/* =========================
+   HERO SECTION
+========================= */
+
+@media (max-width: 1023px) {
+
+  .hero {
+    padding: 100px 20px 80px;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+
+  .hero p {
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .hero .btn {
+    width: 100%;
+    margin-top: 25px;
+  }
+
+}
+
+/* =========================
+   SERVICES / CARDS
+========================= */
+
+.services-grid,
+.card-grid,
+.features-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card,
+.service-card {
+  width: 100%;
+}
+
+/* =========================
+   TABLES
+========================= */
+
+table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+/* =========================
+   FORMS
+========================= */
+
+input,
+select,
+textarea {
+  width: 100%;
+  font-size: 16px;
+}
+
+.form-row {
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer-grid {
+  flex-direction: column;
+  gap: 30px;
+  text-align: center;
+}
+
+/* =====================================================
+   TABLET (768px+)
+   ===================================================== */
+
+@media (min-width: 768px) {
+
+  .logo-text {
+    display: inline;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+  }
+
+  .hero p {
+    font-size: 18px;
+    max-width: 600px;
+  }
+
+  .services-grid,
+  .card-grid,
+  .features-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .card,
+  .service-card {
+    flex: 1 1 calc(50% - 20px);
+  }
+}
+
+/* =====================================================
+   DESKTOP (1024px+)
+   ===================================================== */
+
+@media (min-width: 1024px) {
+
+  body {
+    padding-top: 72px;
+  }
+
+  .header {
+    height: 72px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 40px;
+  }
+
+  .nav-container {
+    padding: 0 40px;
+    height: 72px;
+  }
+
+  /* Restore desktop nav */
+  .nav-links {
+    position: static;
+    height: auto;
+    width: auto;
+    background: transparent;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 24px;
+    right: 0;
+    transition: none;
+  }
+
+  .hamburger {
+    display: none;
+  }
+
+  .hero {
+    padding: 160px 0 120px;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 56px;
+  }
+
+  .hero p {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+  .hero .btn {
+    width: auto;
+  }
+
+  .card,
+  .service-card {
+    flex: 1 1 calc(33.333% - 20px);
+  }
+}

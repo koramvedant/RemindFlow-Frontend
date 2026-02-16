@@ -3,10 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
     <title>RemindFlow - Client-Adaptive Payment Follow-ups</title>
+  
+    <meta name="description"
+          content="RemindFlow adapts to how your clients behave — starting polite, escalating when needed. Smart invoice follow-ups that protect relationships while ensuring you get paid." />
+  
+    <link rel="canonical" href="https://www.remindflow.in/" />
+  
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   </head>
+
 
   <body>
     <!-- Navigation -->
@@ -19,7 +28,11 @@
           </a>
         </div>
 
-        <nav class="nav">
+        <!-- Hamburger (Mobile) -->
+        <button class="hamburger" id="hamburger">☰</button>
+        
+        <!-- Navigation Links -->
+        <nav class="nav-links">
           <a href="#hero">Home</a>
           <a href="#services">Services</a>
           <a href="#pricing">Pricing</a>
@@ -168,6 +181,21 @@
       </div>
     </section>
 
+    <!-- Founder Section -->
+    <section id="founder" class="founder">
+      <div class="container founder-content">
+    
+        <img src="/founder.jpg" alt="Founder - Vedant Koram" class="founder-img" />
+    
+        <h3 class="founder-name">Vedant Koram</h3>
+        <p class="founder-role">Founder, RemindFlow</p>
+    
+        <blockquote class="founder-quote">
+          “RemindFlow is not about knowing when to follow up — its about never having to think about it again.”
+        </blockquote>
+      </div>
+    </section>
+
     <!-- Contact -->
     <section id="contact" class="contact">
       <div class="container contact-content">
@@ -209,6 +237,20 @@
       document.querySelectorAll(".planBtn").forEach((btn) => {
         btn.addEventListener("click", redirectToPlans);
       });
+
+      const hamburger = document.getElementById("hamburger");
+      const navLinks = document.querySelector(".nav-links");
+      
+      hamburger.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+      });
+
+      document.querySelectorAll(".nav-links a").forEach(link => {
+        link.addEventListener("click", () => {
+          navLinks.classList.remove("active");
+        });
+      });
+
     </script>
   </body>
 </html>

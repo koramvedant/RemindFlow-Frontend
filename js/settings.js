@@ -90,7 +90,7 @@ async function loadSettings() {
 
 /* -------------------------
    Save Account Settings
-
+  ------------------------- */
 document.getElementById('saveAccount')?.addEventListener('click', async () => {
   const payload = {
     // User / Account
@@ -137,39 +137,6 @@ document.getElementById('saveAccount')?.addEventListener('click', async () => {
     alert('❌ Failed to save account settings');
   }
 });
-------------------------- */
-/* -------------------------
-   Save Communication Settings
-------------------------- */
-document
-  .getElementById('saveCommunication')
-  ?.addEventListener('click', async () => {
-    const disableWhatsapp =
-      document.getElementById('disable_whatsapp').checked;
-
-    // ✅ FIX 3: correct backend payload
-    const payload = {
-      reminder_preferences: {
-        email: true,
-        whatsapp: !disableWhatsapp,
-      },
-    };
-
-    try {
-      const res = await fetch(`${API_BASE}/api/settings`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error('Failed');
-
-      alert('✅ Communication settings saved');
-    } catch (err) {
-      console.error('❌ Communication save error:', err);
-      alert('❌ Failed to save communication settings');
-    }
-  });
 
 /* =====================================================
    PAYMENTS (MANUAL METHODS ONLY)

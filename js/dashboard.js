@@ -107,7 +107,7 @@ function applyPlanUIState(principal, expired) {
   const now = new Date();
 
   // 🔥 Trial countdown
-  if (principal?.plan === 'trial' && principal?.trial_end) {
+  if (principal?.plan_code === 'trial' && principal?.trial_end){
     const daysLeft = Math.ceil(
       (new Date(principal.trial_end) - now) /
       (1000 * 60 * 60 * 24)
@@ -147,18 +147,9 @@ async function loadDashboard(period = 'this_month', start = null, end = null) {
 
   const { user, stats } = data;
 
-  /* ------------------ Plan Expiry Calculation ------------------ */
-  const now = new Date();
-  let expired = false;
+  /* ------------------ Plan Expiry (Backend Source of Truth) ------------------ */
 
-  if (user.plan === 'trial' && user.trial_end) {
-    expired = new Date(user.trial_end) < now;
-  }
-
-  if (user.plan !== 'trial' && user.plan_end) {
-    expired = new Date(user.plan_end) < now;
-  }
-
+  const expired = !user.subscription_active;
   applyPlanUIState(user, expired);
 
   /* ------------------ User Info ------------------ */

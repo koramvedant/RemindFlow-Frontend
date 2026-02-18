@@ -15,11 +15,30 @@ import { API_BASE } from './api.js';
   const submitBtn = document.getElementById('submitBtn');
 
   function authHeaders() {
-    return {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${authToken}`,
-    };
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${authToken}`,
+  };
+}
+
+  function checkRequiredFields() {
+    const name = document.getElementById('name').value.trim();
+    const company = document.getElementById('company_name').value.trim();
+  
+    submitBtn.disabled = !(name && company);
   }
+
+  // Attach listeners
+  document
+    .getElementById('name')
+    .addEventListener('input', checkRequiredFields);
+  
+  document
+    .getElementById('company_name')
+    .addEventListener('input', checkRequiredFields);
+
+  // Run once on load
+  checkRequiredFields();
 
   /* -----------------------
      Prefill user name (optional improvement)
@@ -37,6 +56,7 @@ import { API_BASE } from './api.js';
 
       if (user?.name) {
         document.getElementById('name').value = user.name;
+        checkRequiredFields();
       }
     } catch (err) {
       console.warn('Failed to load dashboard info');
@@ -52,16 +72,35 @@ import { API_BASE } from './api.js';
     submitBtn.disabled = true;
 
     const payload = {
-      name: document.getElementById('name').value.trim(),
-      businessName: document.getElementById('businessName').value.trim(),
-      address:
-        document.getElementById('businessAddress').value.trim() || null,
-      logoUrl: document.getElementById('logoUrl').value.trim() || null,
-      contactEmail:
-        document.getElementById('contactEmail').value.trim() || null,
-      contactPhone:
-        document.getElementById('contactPhone').value.trim() || null,
-    };
+    name: document.getElementById('name').value.trim(),
+    businessName: document.getElementById('company_name').value.trim(),
+  
+    contactPhone:
+      document.getElementById('contact_phone').value.trim() || null,
+  
+    timezone:
+      document.getElementById('timezone').value || 'Asia/Kolkata',
+  
+    address_line1:
+      document.getElementById('address_line1').value.trim() || null,
+  
+    address_line2:
+      document.getElementById('address_line2').value.trim() || null,
+  
+    city:
+      document.getElementById('city').value.trim() || null,
+  
+    state:
+      document.getElementById('state').value.trim() || null,
+  
+    postal_code:
+      document.getElementById('postal_code').value.trim() || null,
+  
+    country:
+      document.getElementById('country').value.trim() || null,
+  };
+
+
 
     try {
       const res = await fetch(`${API_BASE}/api/onboarding`, {
@@ -80,3 +119,4 @@ import { API_BASE } from './api.js';
     }
   });
 })();
+

@@ -20,9 +20,10 @@
     </p>
 
     <form id="onboardingForm" autocomplete="off">
-      <!-- ================= USER INFO ================= -->
-      <h3>About You</h3>
 
+      <!-- ================= IDENTITY ================= -->
+      <h3>Identity</h3>
+    
       <label for="name">Full Name *</label>
       <input
         type="text"
@@ -30,51 +31,80 @@
         placeholder="Your full name"
         required
       />
-
-      <!-- ================= BUSINESS INFO ================= -->
-      <h3>Business Details</h3>
-
-      <label for="businessName">Business / Freelancer Name *</label>
+    
+      <label for="company_name">Business / Freelancer Name *</label>
       <input
         type="text"
-        id="businessName"
+        id="company_name"
         placeholder="e.g. Rahul Design Studio"
         required
       />
-
-      <label for="businessAddress">Business Address (optional)</label>
-      <textarea
-        id="businessAddress"
-        placeholder="Used on invoices (optional)"
-      ></textarea>
-
-      <label for="logoUrl">Business Logo URL (optional)</label>
+    
+      <label for="contact_phone">Business Contact Phone *</label>
       <input
         type="text"
-        id="logoUrl"
-        placeholder="https://example.com/logo.png"
+        id="contact_phone"
       />
-
-      <label for="contactEmail">Contact Email (optional)</label>
-      <input
-        type="email"
-        id="contactEmail"
-        placeholder="billing@yourbusiness.com"
-      />
-
-      <label for="contactPhone">Contact Phone (optional)</label>
+    
+      <label for="timezone">Timezone *</label>
+      <select id="timezone">
+        <option value="Asia/Kolkata">Asia/Kolkata</option>
+        <option value="UTC">UTC</option>
+        <option value="Europe/London">Europe/London</option>
+        <option value="America/New_York">America/New_York</option>
+      </select>
+    
+      <!-- ================= ADDRESS ================= -->
+      <h3>Business Address</h3>
+    
+      <label>Address Line 1 *</label>
       <input
         type="text"
-        id="contactPhone"
-        maxlength="15"
-        placeholder="+91 9XXXXXXXXX"
+        id="address_line1"
+        placeholder="Building, Street name"
       />
-
+    
+      <label>Address Line 2 (Optional)</label>
+      <input
+        type="text"
+        id="address_line2"
+        placeholder="Area, Landmark"
+      />
+    
+      <div class="address-row">
+        <div>
+          <label>City *</label>
+          <input type="text" id="city" />
+        </div>
+    
+        <div>
+          <label>State / Province *</label>
+          <input type="text" id="state" />
+        </div>
+      </div>
+    
+      <div class="address-row">
+        <div>
+          <label>Postal Code *</label>
+          <input type="text" id="postal_code" />
+        </div>
+    
+        <div>
+          <label>Country *</label>
+          <input
+            type="text"
+            id="country"
+          />
+        </div>
+      </div>
+    
       <!-- ================= SUBMIT ================= -->
       <button type="submit" id="submitBtn" disabled>
         Continue
       </button>
+    
     </form>
+
   </main>
 
   <!-- Page Logic -->

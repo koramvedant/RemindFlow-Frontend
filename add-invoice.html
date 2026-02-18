@@ -16,7 +16,7 @@
 
       <!-- Invoice ID (Optional) -->
       <label>Invoice ID (optional)</label>
-      <input type="text" id="invoiceIdInput" placeholder="INV-XXXX" />
+      <input type="text" id="invoiceIdInput" placeholder="INV-XXXX" autocomplete="off" />
 
       <!-- Client Selection -->
       <label>Client *</label>
@@ -113,6 +113,7 @@
             id="discountValue"
             step="0.01"
             placeholder="0"
+            autocomplete="off"
           />
         </div>
       </div>
@@ -150,7 +151,7 @@
 
       <!-- Notes -->
       <label>Notes (optional)</label>
-      <textarea id="notes"></textarea>
+      <textarea id="notes" autocomplete="off"></textarea>
 
       <button class="primary-btn" id="continueBtn">
         Continue → Preview

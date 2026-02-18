@@ -61,6 +61,8 @@ async function loadSettings() {
     document.getElementById('email').value = data.email || '';
     document.getElementById('company_name').value =
       data.company_name || '';
+    document.getElementById('contact_phone').value =
+      data.contact_phone || '';
     document.getElementById('timezone').value =
       data.timezone || 'Asia/Kolkata';
 
@@ -97,6 +99,9 @@ document.getElementById('saveAccount')?.addEventListener('click', async () => {
     name: document.getElementById('name').value.trim(),
     company_name: document
       .getElementById('company_name')
+      .value.trim(),
+    contact_phone: document
+      .getElementById('contact_phone')
       .value.trim(),
     timezone: document.getElementById('timezone').value,
 

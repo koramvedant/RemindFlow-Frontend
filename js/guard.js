@@ -61,22 +61,7 @@ export function requireAuth() {
   }
 
   // 🔥 PLAN / TRIAL EXPIRY CHECK (UI LEVEL ONLY)
-  const now = new Date();
-  let expired = false;
-
-  if (principal.plan === 'trial') {
-    if (!principal.trial_end || new Date(principal.trial_end) <= now) {
-      expired = true;
-    }
-  } else {
-    if (
-      !principal.subscription_active ||
-      !principal.plan_end ||
-      new Date(principal.plan_end) <= now
-    ) {
-      expired = true;
-    }
-  }
+  const expired = !principal.subscription_active;
 
   // Store globally for other scripts
   window.__USER_PLAN__ = principal;

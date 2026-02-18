@@ -45,25 +45,16 @@ async function fetchReminders() {
    Helper: Prepare Display List
 ------------------------- */
 function prepareDisplayReminders() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
 
   const sent = reminders.filter(r => r.status === 'sent');
 
   const upcoming = reminders
-    .filter(r => {
-      if (r.status !== 'active') return false;
-
-      const reminderDate = new Date(r.date);
-      reminderDate.setHours(0, 0, 0, 0);
-
-      return reminderDate >= today;
-    })
+    .filter(r => r.status === 'active')
     .reduce((map, r) => {
-      // Pick nearest upcoming per invoice
+      // pick nearest upcoming per invoice
       if (
         !map[r.invoice_id] ||
-        new Date(r.date) < new Date(map[r.invoice_id].date)
+        new Date(r.scheduled_at) < new Date(map[r.invoice_id].scheduled_at)
       ) {
         map[r.invoice_id] = r;
       }
@@ -72,13 +63,14 @@ function prepareDisplayReminders() {
 
   return [
     ...Object.values(upcoming).sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
+      (a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at)
     ),
     ...sent.sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
+      (a, b) => new Date(b.scheduled_at) - new Date(a.scheduled_at)
     ),
   ];
 }
+
 
 /* -------------------------
    Render Table
@@ -122,7 +114,7 @@ function renderTable() {
     const statusText = r.status === 'active' ? 'Upcoming' : 'Sent';
 
     tr.innerHTML = `
-      <td>${new Date(r.date).toLocaleDateString()}</td>
+      <td>${new Date(r.scheduled_at).toLocaleDateString('en-GB')}</td>
       <td>${r.invoice_code}</td>
       <td>${r.client_name}</td>
       <td class="stage">${stageText}</td>

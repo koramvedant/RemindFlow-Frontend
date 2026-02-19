@@ -112,7 +112,7 @@ import { API_BASE } from './api.js';
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
-      window.location.replace('/plans.html');
+      window.location.replace('/dashboard.html');
     } catch (err) {
       submitBtn.disabled = false;
       alert(err.message || 'Failed to save profile');

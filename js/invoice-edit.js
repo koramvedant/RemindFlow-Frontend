@@ -281,7 +281,11 @@ async function prefillFromDraft(draft) {
 
 /* ================= SAVE → PREVIEW ================= */
 saveBtn.addEventListener('click', async () => {
+  const headers = getAuthHeaders();
+  if (!headers) return location.replace('/login.html');
+
   const enteredInvoiceId = invoiceIdInput.value?.trim();
+
   if (enteredInvoiceId) {
     const ok = await isInvoiceIdUniqueForEdit(enteredInvoiceId);
     if (!ok) {
@@ -321,8 +325,35 @@ saveBtn.addEventListener('click', async () => {
     },
   };
 
-  sessionStorage.setItem('invoiceDraft', JSON.stringify(finalDraft));
-  window.location.href = `/invoice-preview.html?id=${invoiceDbId}`;
+  try {
+    saveBtn.disabled = true;
+    saveBtn.innerText = 'Saving...';
+
+    const res = await fetch(
+      `${API_BASE}/api/invoices/id/${invoiceDbId}`,
+      {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(finalDraft),
+      }
+    );
+
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Failed to save invoice');
+    }
+
+    // ✅ Redirect only after DB update success
+    window.location.href = `/invoice-preview.html?id=${invoiceDbId}`;
+
+  } catch (err) {
+    console.error('Save error:', err);
+    alert(err.message || 'Failed to save invoice');
+    saveBtn.disabled = false;
+    saveBtn.innerText = 'Save';
+  }
 });
 
 /* ================= INIT (FINAL, SAFE) ================= */

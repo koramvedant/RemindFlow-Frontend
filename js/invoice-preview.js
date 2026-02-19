@@ -56,6 +56,9 @@ finalSaveBtn?.addEventListener('click', async () => {
   if (!confirmFinalize) return;
 
   try {
+    finalSaveBtn.disabled = true;
+    finalSaveBtn.innerText = 'Finalizing...';
+
     const res = await fetch(
       `${API_BASE}/api/invoices/${invoiceId}/finalize`,
       {
@@ -64,24 +67,32 @@ finalSaveBtn?.addEventListener('click', async () => {
       }
     );
 
-    const data = await res.json();
+    let data = {};
+    try {
+      data = await res.json();
+    } catch {
+      // If response isn't JSON, ignore
+    }
 
     if (!res.ok) {
-     if (res.status === 409) {
-       // already finalized → just redirect
-       window.location.href = '/invoices.html';
-       return;
-     }
+      if (res.status === 409) {
+        // Already finalized → safe redirect
+        window.location.href = '/invoices.html';
+        return;
+      }
 
-     return alert(data.message || 'Failed to finalize invoice');
-   }
+      throw new Error(data.message || 'Failed to finalize invoice');
+    }
 
-    alert('Invoice finalized successfully');
+    // ✅ Success
     window.location.href = '/invoices.html';
 
   } catch (err) {
-    console.error(err);
-    alert('Something went wrong');
+    console.error('Finalize error:', err);
+    alert(err.message || 'Something went wrong');
+
+    finalSaveBtn.disabled = false;
+    finalSaveBtn.innerText = 'Finalize';
   }
 });
 

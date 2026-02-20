@@ -75,8 +75,11 @@ function render() {
           </a>
         </td>
         <td>
-          <span class="trust-badge trust-${c.userTrust}">
-            ${c.userTrust}
+          <span 
+            class="trust-badge trust-${c.trust}"
+            title="Payment reliability score: ${c.reliabilityScore}/100"
+          >
+            ${c.trust}
           </span>
         </td>
 
@@ -102,7 +105,7 @@ function applyFilters() {
   filtered = clients.filter(
     (c) =>
       (c.id + c.name).toString().toLowerCase().includes(s) &&
-      (!t || c.userTrust === t)
+      (!t || c.trust === t)
   );
 
   page = 1;
@@ -131,16 +134,11 @@ async function loadClients() {
     }
 
     clients = (data.clients || []).map((c) => {
-      let userTrust = 'A'; // ✅ default for new client
-
-      if (c.status_flags && c.status_flags.user_trust_grade) {
-        userTrust = c.status_flags.user_trust_grade;
-      }
-
       return {
-        id: c.client_id || c.id, // ✅ normalized, safe
+        id: c.client_id,
         name: c.name,
-        userTrust,
+        trust: c.trust_grade || 'B',
+        reliabilityScore: c.payment_reliability_score || 50,
         lastPayment: c.last_payment
           ? new Date(c.last_payment).toLocaleDateString('en-GB')
           : null,
@@ -199,6 +197,41 @@ window.addEventListener('planStatusReady', (e) => {
     e.detail?.principal,
     e.detail?.expired
   );
+});
+
+window.addEventListener('trustUpdated', async (e) => {
+  const clientId = e.detail?.clientId;
+  if (!clientId) return;
+
+  try {
+    const token = localStorage.getItem('accessToken');
+
+    const res = await fetch(
+      `${API_BASE}/api/clients/${clientId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+
+    const data = await res.json();
+    if (!res.ok) return;
+
+    const updated = data.client;
+
+    const index = clients.findIndex(
+      (c) => c.id.toString() === clientId.toString()
+    );
+
+    if (index !== -1) {
+      clients[index].trust = updated.trust_grade || 'B';
+      clients[index].reliabilityScore =
+        updated.payment_reliability_score || 50;
+    }
+
+    applyFilters();
+  } catch (err) {
+    console.error('Trust live update failed:', err);
+  }
 });
 
 // ---------------- Boot ----------------

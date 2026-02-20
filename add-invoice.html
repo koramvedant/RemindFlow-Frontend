@@ -61,6 +61,22 @@
         </div>
       </div>
 
+      <!-- Invoice Type -->
+      <div class="row">
+        <div style="width:100%;">
+          <label>Invoice Type *</label>
+          <select id="invoiceType" required>
+            <option value="one_time">One-time Project</option>
+            <option value="retainer">Retainer</option>
+            <option value="milestone">Milestone</option>
+            <option value="recurring">Recurring Operational</option>
+            <option value="compliance">Compliance / Statutory</option>
+          </select>
+          <p class="hint">
+            Used to automatically adjust reminder tone and escalation style.
+          </p>
+        </div>
+      </div>
       <!-- Line Items -->
       <h3>Invoice Items</h3>
 

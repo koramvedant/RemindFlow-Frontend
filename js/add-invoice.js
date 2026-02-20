@@ -334,6 +334,7 @@ continueBtn.onclick = async () => {
     invoice_id: enteredInvoiceId || null,
     invoice_date: invoiceDate.value,
     due_date: dueDate.value,
+    invoice_type: invoiceTypeSelect?.value || 'one_time', // 🔥 NEW
     client_id: selectedClient.client_id,
     items,
     taxes: taxes.map((t) => ({ ...t })),

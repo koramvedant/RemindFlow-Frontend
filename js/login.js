@@ -13,8 +13,16 @@ const googleBtn = document.getElementById('googleLoginBtn');
 if (!googleBtn) {
   console.error('❌ Google login button not found');
 } else {
-  googleBtn.addEventListener('click', async () => {
-    console.log('🟢 Google login button clicked');
+    googleBtn.addEventListener('click', async () => {
+  
+    googleBtn.disabled = true;
+    googleBtn.style.opacity = "0.7";
+  
+    const loader = document.getElementById("loginLoader");
+    const loaderText = document.getElementById("loaderText");
+  
+    loader.classList.remove("hidden");
+    loaderText.innerText = "Authenticating with Google...";
 
     try {
       // Firebase popup login (COMPAT)
@@ -23,7 +31,7 @@ if (!googleBtn) {
         .signInWithPopup(window.googleProvider);
 
       console.log('✅ Firebase popup success');
-
+      loaderText.innerText = "Verifying your account...";
       const firebaseUser = result.user;
       if (!firebaseUser) throw new Error('No Firebase user');
 
@@ -68,16 +76,22 @@ if (!googleBtn) {
         window.location.href = '/onboarding.html';
       } else {
         // Redirect based on last plan type (NOT subscription state)
-        window.location.href =
-          user.plan_type === 'integrated'
-            ? '/integration-dashboard.html'
-            : '/dashboard.html';
+        loaderText.innerText = "Almost there...";
+
+        setTimeout(() => {
+          window.location.href =
+            user.plan_type === 'integrated'
+              ? '/integration-dashboard.html'
+              : '/dashboard.html';
+        }, 600);
       }
 
 
     } catch (err) {
       console.error('❌ Google login failed:', err);
       alert('Google login failed. Please try again.');
+      googleBtn.disabled = false;
+      loader.classList.add("hidden");
     }
   });
 }

@@ -97,15 +97,76 @@ finalSaveBtn?.addEventListener('click', async () => {
 });
 
 /* ---------------- SAVE DRAFT ---------------- */
-saveDraftBtn?.addEventListener('click', async () => {
+finalSaveBtn?.addEventListener('click', async () => {
   if (!invoiceId) return alert('Invoice not found');
 
+  const confirmFinalize = confirm('Finalize this invoice?');
+  if (!confirmFinalize) return;
+
+  const overlay = document.getElementById('processingOverlay');
+  const stepText = document.getElementById('processingStep');
+
+  const steps = [
+    "Generating secure PDF...",
+    "Uploading document...",
+    "Updating payment tracking...",
+    "Activating reminder workflow..."
+  ];
+
+  let stepIndex = 0;
+
+  function startStepRotation() {
+    return setInterval(() => {
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        stepText.innerText = steps[stepIndex];
+      }
+    }, 5000);
+  }
+
   try {
-    // Nothing to update because draft already exists.
-    // Just redirect user back to invoices list.
-    window.location.href = '/invoices.html';
+    // Lock UI
+    finalSaveBtn.disabled = true;
+    overlay.classList.remove('hidden');
+
+    const stepInterval = startStepRotation();
+
+    const res = await fetch(
+      `${API_BASE}/api/invoices/${invoiceId}/finalize`,
+      {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+      }
+    );
+
+    clearInterval(stepInterval);
+
+    let data = {};
+    try {
+      data = await res.json();
+    } catch {}
+
+    if (!res.ok) {
+      if (res.status === 409) {
+        window.location.href = '/invoices.html';
+        return;
+      }
+      throw new Error(data.message || 'Failed to finalize invoice');
+    }
+
+    // Smooth transition
+    stepText.innerText = "Finalization complete. Redirecting...";
+
+    setTimeout(() => {
+      window.location.href = '/invoices.html';
+    }, 800);
+
   } catch (err) {
-    console.error(err);
-    alert('Something went wrong');
+    console.error('Finalize error:', err);
+
+    overlay.classList.add('hidden');
+    finalSaveBtn.disabled = false;
+
+    alert(err.message || 'Something went wrong');
   }
 });

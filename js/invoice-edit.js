@@ -25,6 +25,8 @@ const addItemBtn = document.getElementById('addItemBtn');
 const invoiceDate = document.getElementById('invoiceDate');
 const dueDate = document.getElementById('dueDate');
 
+const invoiceTypeSelect = document.getElementById('invoiceType');
+
 const discountTypeSelect = document.getElementById('discountType');
 const discountValueInput = document.getElementById('discountValue');
 

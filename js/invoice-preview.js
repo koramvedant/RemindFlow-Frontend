@@ -97,20 +97,16 @@ finalSaveBtn?.addEventListener('click', async () => {
 });
 
 /* ---------------- SAVE DRAFT ---------------- */
-finalSaveBtn?.addEventListener('click', async () => {
+saveDraftBtn?.addEventListener('click', async () => {
   if (!invoiceId) return alert('Invoice not found');
-
-  const confirmFinalize = confirm('Finalize this invoice?');
-  if (!confirmFinalize) return;
 
   const overlay = document.getElementById('processingOverlay');
   const stepText = document.getElementById('processingStep');
 
   const steps = [
-    "Generating secure PDF...",
-    "Uploading document...",
-    "Updating payment tracking...",
-    "Activating reminder workflow..."
+    "Saving draft...",
+    "Securing invoice snapshot...",
+    "Redirecting..."
   ];
 
   let stepIndex = 0;
@@ -121,52 +117,29 @@ finalSaveBtn?.addEventListener('click', async () => {
         stepIndex++;
         stepText.innerText = steps[stepIndex];
       }
-    }, 5000);
+    }, 2000);
   }
 
   try {
-    // Lock UI
-    finalSaveBtn.disabled = true;
+    saveDraftBtn.disabled = true;
     overlay.classList.remove('hidden');
 
     const stepInterval = startStepRotation();
 
-    const res = await fetch(
-      `${API_BASE}/api/invoices/${invoiceId}/finalize`,
-      {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-      }
-    );
+    // Optional short delay for smoother UX
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     clearInterval(stepInterval);
 
-    let data = {};
-    try {
-      data = await res.json();
-    } catch {}
-
-    if (!res.ok) {
-      if (res.status === 409) {
-        window.location.href = '/invoices.html';
-        return;
-      }
-      throw new Error(data.message || 'Failed to finalize invoice');
-    }
-
-    // Smooth transition
-    stepText.innerText = "Finalization complete. Redirecting...";
+    stepText.innerText = "Draft saved. Redirecting...";
 
     setTimeout(() => {
       window.location.href = '/invoices.html';
-    }, 800);
+    }, 600);
 
   } catch (err) {
-    console.error('Finalize error:', err);
-
     overlay.classList.add('hidden');
-    finalSaveBtn.disabled = false;
-
-    alert(err.message || 'Something went wrong');
+    saveDraftBtn.disabled = false;
+    alert('Something went wrong');
   }
 });

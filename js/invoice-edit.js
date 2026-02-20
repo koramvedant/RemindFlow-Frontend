@@ -329,8 +329,26 @@ saveBtn.addEventListener('click', async () => {
 
   try {
     saveBtn.disabled = true;
-    saveBtn.innerText = 'Saving...';
 
+    const overlay = document.getElementById('editSavingOverlay');
+    const msg = document.getElementById('editSavingText');
+    
+    overlay.classList.remove('hidden');
+    
+    const steps = [
+      "Validating invoice...",
+      "Updating invoice details...",
+      "Preparing preview..."
+    ];
+    
+    let i = 0;
+    
+    const interval = setInterval(() => {
+      if (i < steps.length - 1) {
+        i++;
+        msg.innerText = steps[i];
+      }
+    }, 4000);
     const res = await fetch(
       `${API_BASE}/api/invoices/id/${invoiceDbId}`,
       {
@@ -348,22 +366,33 @@ saveBtn.addEventListener('click', async () => {
     }
 
     // ✅ Redirect only after DB update success
-    window.location.href = `/invoice-preview.html?id=${invoiceDbId}`;
+    clearInterval(interval);
+    msg.innerText = "Redirecting to preview...";
+    
+    setTimeout(() => {
+      window.location.href = `/invoice-preview.html?id=${invoiceDbId}`;
+    }, 600);
 
   } catch (err) {
     console.error('Save error:', err);
     alert(err.message || 'Failed to save invoice');
     saveBtn.disabled = false;
     saveBtn.innerText = 'Save';
+    overlay.classList.add('hidden');
+    clearInterval(interval);
+    saveBtn.disabled = false;
   }
 });
 
 /* ================= INIT (FINAL, SAFE) ================= */
 (async () => {
-  await loadClients();
+  const loader = document.getElementById('editLoader');
 
-  // 🔥 ALWAYS trust DB on edit
-  await loadInvoiceFromDB();
-
-  await prefillFromDraft(draft);
+  try {
+    await loadClients();
+    await loadInvoiceFromDB();
+    await prefillFromDraft(draft);
+  } finally {
+    loader?.classList.add('hidden');
+  }
 })();

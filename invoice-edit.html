@@ -71,6 +71,23 @@
         </div>
       </div>
 
+      <!-- Invoice Type -->
+      <div class="row">
+        <div style="width:100%;">
+          <label>Invoice Type *</label>
+          <select id="invoiceType" required>
+            <option value="one_time">One-time Project</option>
+            <option value="retainer">Retainer</option>
+            <option value="milestone">Milestone</option>
+            <option value="recurring">Recurring Operational</option>
+            <option value="compliance">Compliance / Statutory</option>
+          </select>
+          <p class="hint">
+            Used to automatically adjust reminder tone and escalation style.
+          </p>
+        </div>
+      </div>
+
       <!-- ================= INVOICE ITEMS (CANONICAL) ================= -->
       <h3>Invoice Items</h3>
 
@@ -171,5 +188,17 @@
 
     <!-- Page Logic -->
     <script type="module" src="/js/invoice-edit.js?v=2026-01-29"></script>
+    <div id="pageLoader" class="page-loader hidden">
+      <div class="loader-box">
+        <div class="spinner"></div>
+        <p id="loaderMessage">Loading invoice details...</p>
+      </div>
+    </div>
+    <div id="editSavingOverlay" class="page-loader hidden">
+      <div class="loader-box">
+        <div class="spinner"></div>
+        <p id="editSavingText">Saving invoice...</p>
+      </div>
+    </div>
   </body>
 </html>

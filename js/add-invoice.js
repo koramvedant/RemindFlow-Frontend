@@ -17,6 +17,7 @@ const addItemBtn = document.getElementById('addItemBtn');
 const invoiceDate = document.getElementById('invoiceDate');
 const dueDate = document.getElementById('dueDate');
 
+const invoiceTypeSelect = document.getElementById('invoiceType');
 /* ✅ DISCOUNT (CANONICAL) */
 const discountTypeSelect = document.getElementById('discountType');
 const discountValueInput = document.getElementById('discountValue');
@@ -284,6 +285,7 @@ async function isInvoiceIdUnique(invoiceId) {
 
 /* ================= CONTINUE ================= */
 continueBtn.onclick = async () => {
+
   if (!selectedClient) return alert('Please select a client');
 
   syncItemsFromDOM();
@@ -316,52 +318,90 @@ continueBtn.onclick = async () => {
     return alert('Bank transfer selected but bank details are missing in settings.');
   }
 
-  const discount = {
-    type:
-      discountTypeSelect.value === 'percentage'
-        ? 'percent'
-        : 'flat',
-    value: Number(discountValueInput.value || 0),
-  };
+  // 🔥 START PROCESSING UI (ONLY AFTER VALIDATION)
 
-  const payment_methods = {
-    upi: payUpiCheckbox.checked,
-    bank: payBankCheckbox.checked,
-    cash: payCashCheckbox.checked,
-  };
+  continueBtn.disabled = true;
 
-  const payload = {
-    invoice_id: enteredInvoiceId || null,
-    invoice_date: invoiceDate.value,
-    due_date: dueDate.value,
-    invoice_type: invoiceTypeSelect?.value || 'one_time', // 🔥 NEW
-    client_id: selectedClient.client_id,
-    items,
-    taxes: taxes.map((t) => ({ ...t })),
-    discount,
-    notes: notesInput.value || '',
-    payment_methods,
-    layout_id: layoutSelect.value || 'minimal',
-    status: 'draft',
-  };
+  const overlay = document.getElementById('addInvoiceOverlay');
+  const msg = document.getElementById('addInvoiceText');
 
-  const res = await fetch(`${API_BASE}/api/invoices`, {
-    method: 'POST',
-    headers: {
-      ...getAuthHeaders(),
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+  overlay.classList.remove('hidden');
 
-  if (!res.ok) {
-    const err = await res.json();
-    return alert(err.message || 'Failed to create draft');
+  const steps = [
+    "Validating invoice data...",
+    "Saving draft...",
+    "Preparing preview..."
+  ];
+
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i < steps.length - 1) {
+      i++;
+      msg.innerText = steps[i];
+    }
+  }, 4000);
+
+  try {
+
+    const discount = {
+      type:
+        discountTypeSelect.value === 'percentage'
+          ? 'percent'
+          : 'flat',
+      value: Number(discountValueInput.value || 0),
+    };
+
+    const payment_methods = {
+      upi: payUpiCheckbox.checked,
+      bank: payBankCheckbox.checked,
+      cash: payCashCheckbox.checked,
+    };
+
+    const payload = {
+      invoice_id: enteredInvoiceId || null,
+      invoice_date: invoiceDate.value,
+      due_date: dueDate.value,
+      invoice_type: invoiceTypeSelect?.value || 'one_time',
+      client_id: selectedClient.client_id,
+      items,
+      taxes: taxes.map((t) => ({ ...t })),
+      discount,
+      notes: notesInput.value || '',
+      payment_methods,
+      layout_id: layoutSelect.value || 'minimal',
+      status: 'draft',
+    };
+
+    const res = await fetch(`${API_BASE}/api/invoices`, {
+      method: 'POST',
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Failed to create draft');
+    }
+
+    const data = await res.json();
+
+    clearInterval(interval);
+    msg.innerText = "Redirecting to preview...";
+
+    setTimeout(() => {
+      window.location.href = `/invoice-preview.html?id=${data.db_id}`;
+    }, 600);
+
+  } catch (err) {
+    clearInterval(interval);
+    overlay.classList.add('hidden');
+    continueBtn.disabled = false;
+
+    alert(err.message || 'Something went wrong');
   }
-
-  const data = await res.json();
-
-  window.location.href = `/invoice-preview.html?id=${data.db_id}`;
 };
 
 /* ================= INIT ================= */

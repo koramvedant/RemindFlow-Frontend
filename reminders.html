@@ -33,7 +33,7 @@
       <select id="statusFilter">
         <option value="">All Status</option>
         <option value="sent">Sent</option>
-        <option value="queued">Upcoming</option>
+        <option value="upcoming">Upcoming</option>
         <option value="failed">Failed</option>
       </select>
     </section>
@@ -60,6 +60,24 @@
 
   <!-- JS -->
   <script type="module" src="/js/reminders.js"></script>
+
+  <!-- Reminder View Modal -->
+<div id="reminderModal" class="reminder-modal">
+  <div class="reminder-modal-content">
+    <div class="reminder-modal-header">
+      <h3 id="modalSubject"></h3>
+      <button id="closeReminderModal">✕</button>
+    </div>
+
+    <div class="reminder-meta">
+      <span id="modalMeta"></span>
+    </div>
+
+    <div id="modalBody" class="reminder-email-preview"></div>
+
+    <div class="reminder-attachment" id="modalAttachment"></div>
+  </div>
+</div>
 
 </body>
 </html>

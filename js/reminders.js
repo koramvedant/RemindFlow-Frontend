@@ -46,7 +46,7 @@ async function fetchReminders() {
 ------------------------- */
 function prepareDisplayReminders() {
 
-  const sent = reminders.filter(r => r.status === 'sent');
+  const history = reminders.filter(r => r.is_history);
 
   const upcoming = reminders
     .filter(r => r.status === 'active')
@@ -65,7 +65,7 @@ function prepareDisplayReminders() {
     ...Object.values(upcoming).sort(
       (a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at)
     ),
-    ...sent.sort(
+    ...history.sort(
       (a, b) => new Date(b.scheduled_at) - new Date(a.scheduled_at)
     ),
   ];
@@ -123,15 +123,15 @@ function renderTable() {
       </td>
       <td>
         ${
-          r.status === 'active' 
-            ? r.reminders_paused
-              ? `<button class="resume-invoice" data-invoice="${r.invoice_id}">
-                   Resume
-                 </button>`
-              : `<button class="pause-invoice" data-invoice="${r.invoice_id}">
+          r.is_history && r.log_id
+            ? `<button class="viewReminderBtn" data-id="${r.log_id}">
+                 View
+               </button>`
+            : r.status === 'active'
+              ? `<button class="pause-invoice" data-invoice="${r.invoice_id}">
                    Pause
                  </button>`
-            : '-'
+              : '-'
         }
       </td>
     `;
@@ -190,6 +190,48 @@ tableBody.addEventListener('click', async (e) => {
 
     fetchReminders();
   }
+});
+
+document.addEventListener('click', async (e) => {
+  if (!e.target.classList.contains('viewReminderBtn')) return;
+
+  const logId = e.target.dataset.id;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/reminders/logs/${logId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+
+    const data = await res.json();
+    if (!data.success) return;
+
+    const reminder = data.reminder;
+
+    document.getElementById('modalSubject').innerText = reminder.subject;
+
+    document.getElementById('modalMeta').innerText =
+      `Sent: ${new Date(reminder.sent_at).toLocaleString('en-GB')} | Mode: ${reminder.escalation_mode || 'standard'} | Status: ${reminder.status}`;
+
+    document.getElementById('modalBody').innerHTML = reminder.body_html;
+
+    document.getElementById('modalAttachment').innerHTML =
+      reminder.attachment_key
+        ? `📎 Attachment included`
+        : '';
+
+    document.getElementById('reminderModal').classList.add('open');
+
+  } catch (err) {
+    console.error('Failed to load reminder details', err);
+  }
+});
+
+document.getElementById('closeReminderModal')
+  ?.addEventListener('click', () => {
+    document.getElementById('reminderModal')
+      .classList.remove('open');
 });
 
 /* -------------------------

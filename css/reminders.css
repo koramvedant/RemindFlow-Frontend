@@ -42,3 +42,57 @@
   margin-right: 6px;
   color: #111827;
 }
+
+/* Modal */
+.reminder-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+}
+
+.reminder-modal.open {
+  display: flex;
+}
+
+.reminder-modal-content {
+  background: #fff;
+  width: 800px;
+  max-width: 95%;
+  max-height: 90vh;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.reminder-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.reminder-email-preview {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  background: #fafafa;
+}
+
+.reminder-meta {
+  padding: 10px 20px;
+  font-size: 13px;
+  color: #666;
+  border-bottom: 1px solid #eee;
+}
+
+.reminder-attachment {
+  padding: 12px 20px;
+  border-top: 1px solid #eee;
+  font-size: 13px;
+}

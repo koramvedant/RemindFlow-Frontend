@@ -87,6 +87,31 @@ a:hover {
   letter-spacing: 0.3px;
 }
 
+.hero-buttons {
+  margin-top: 24px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+ .hero-trust{
+  margin-top: 42px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+}
+
+.btn-primary{
+  padding: 10px 22px;
+  background: var(--accent-blue);
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+  display: inline-block;
+
+  box-shadow: 0 4px 16px rgba(31,119,255,0.35);
+}
+
 /* ================= MODERN NAV ================= */
 
 .nav-links {
@@ -146,20 +171,31 @@ a:hover {
 }
 
 .hero-content {
-  max-width: 720px;
+  max-width: 820px;
   margin: 0 auto;
 }
 
-.hero h1 {
-  font-size: 38px;
-  font-weight: 700;
-  color: var(--accent-teal);
-  margin-bottom: 16px;
+.hero h1{
+  font-size: 42px;
+  line-height: 1.2;
+  margin-bottom: 22px;
+
+  background: linear-gradient(
+    90deg,
+    #ffffff,
+    #cfefff,
+    #1cc7ae
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.hero p {
-  font-size: 20px;
-  color: #ffffff;
+.hero p{
+  max-width: 640px;
+  margin: 0 auto;
+  font-size: 19px;
+  color: rgba(255,255,255,0.85);
 }
 
 /* ================= SERVICES ================= */
@@ -319,8 +355,17 @@ a:hover {
 }
 
 .get-started h2 {
-  color: var(--accent-teal);
   margin-bottom: 16px;
+
+  background: linear-gradient(
+    90deg,
+    #ffffff,
+    #cfefff,
+    #1cc7ae
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .get-started p {
@@ -421,6 +466,58 @@ a:hover {
   margin: 0 8px;
 }
 
+/* ================= WORKFLOW ================= */
+
+.workflow {
+  background: var(--navy);
+  padding: 0 20px;
+  text-align: center;
+
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+
+  transition: all 0.6s ease;
+}
+
+.workflow.active {
+  padding: 100px 20px;
+  max-height: 500px;
+  opacity: 1;
+}
+
+.workflow h2 {
+  margin-bottom: 30px;
+}
+
+.workflow-flow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.flow-step {
+  background: var(--navy-light);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.flow-arrow {
+  font-size: 20px;
+  opacity: 0.6;
+}
+
+.workflow-note {
+  margin-top: 24px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
 /* ================= RESPONSIVE ================= */
 
 @media (max-width: 768px) {
@@ -431,4 +528,19 @@ a:hover {
   .hero p {
     font-size: 18px;
   }
+
+  .hero-buttons {
+  flex-direction: column;
+  align-items: center;
 }
+
+.workflow-flow {
+  flex-direction: column;
+}
+
+.flow-arrow {
+  transform: rotate(90deg);
+}
+}
+
+

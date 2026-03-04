@@ -46,10 +46,42 @@
     <!-- Hero Section -->
     <section id="hero" class="hero">
       <div class="container hero-content">
-        <h1>Get paid effortlessly</h1>
-        <p>
-          RemindFlow automates payment management and escalates overdue invoices
-          intelligently — so you can focus on what you do best.
+        <h1>Structure your entire payment process</h1>
+
+        <p class="hero-sub">
+          Create invoices, track payments, and run structured follow-ups from one
+          centralized system — so collections stay consistent without awkward client chasing.
+        </p>
+
+        <div class="hero-buttons">
+          <button class="btn-primary" id="getStartedBtn">Start Free Trial</button>
+          <button class="btn-secondary" id="showWorkflow">See How It Works</button>
+        </div>
+      <div>
+    </section>
+
+    <section id="workflow" class="workflow">
+      <div class="container">
+        <h2>How RemindFlow Works</h2>
+    
+        <div class="workflow-flow">
+          <div class="flow-step">Create Invoice</div>
+          <div class="flow-arrow">→</div>
+    
+          <div class="flow-step">Track Status</div>
+          <div class="flow-arrow">→</div>
+    
+          <div class="flow-step">Automated Reminders</div>
+          <div class="flow-arrow">→</div>
+    
+          <div class="flow-step">Structured Escalation</div>
+          <div class="flow-arrow">→</div>
+    
+          <div class="flow-step">Payment Recorded</div>
+        </div>
+    
+        <p class="workflow-note">
+          RemindFlow structures the entire payment lifecycle so delayed invoices never fall through the cracks.
         </p>
       </div>
     </section>
@@ -57,7 +89,7 @@
     <!-- Services Section -->
     <section id="services" class="services">
       <div class="container">
-        <h2>Our Services</h2>
+        <h2>Core Features</h2>
         <div class="service-grid">
           <div class="service-item">
             <div class="service-icon">🤖</div>
@@ -171,16 +203,6 @@
       </div>
     </section>
 
-    <!-- Get Started -->
-    <section id="get-started" class="get-started">
-      <div class="container">
-        <h2>Try RemindFlow Free for 14 Days</h2>
-        <button class="btn-primary" id="getStartedBtn">
-          Get Started
-        </button>
-      </div>
-    </section>
-
     <!-- Founder Section -->
     <section id="founder" class="founder">
       <div class="container founder-content">
@@ -191,7 +213,7 @@
         <p class="founder-role">Founder, RemindFlow</p>
     
         <blockquote class="founder-quote">
-          “RemindFlow is not about knowing when to follow up — its about never having to think about it again.”
+        “RemindFlow isn&rsquo;t about knowing when to follow up — it&rsquo;s about never having to think about it again.”
         </blockquote>
       </div>
     </section>
@@ -251,6 +273,21 @@
         });
       });
 
+      const showWorkflowBtn = document.getElementById("showWorkflow");
+      const workflowSection = document.querySelector(".workflow");
+      
+      showWorkflowBtn.addEventListener("click", () => {
+
+        workflowSection.classList.toggle("active");
+      
+        if (workflowSection.classList.contains("active")) {
+          showWorkflowBtn.innerText = "Hide How It Works";
+          workflowSection.scrollIntoView({ behavior: "smooth" });
+        } else {
+          showWorkflowBtn.innerText = "See How It Works";
+        }
+      
+      });
     </script>
   </body>
 </html>

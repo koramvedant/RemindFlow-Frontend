@@ -271,19 +271,15 @@ function applyFilters() {
   const status = (statusFilter.value || '').toLowerCase();
 
   filtered = invoices.filter((inv) => {
-    /* ---------- SEARCH MATCH ---------- */
 
-    if (!q) return true;
+    /* ---------- SEARCH ---------- */
 
-    // Invoice ID
     const invoiceMatch =
       (inv.invoice_id || '').toLowerCase().includes(q);
 
-    // Client
     const clientMatch =
       clientName(inv).toLowerCase().includes(q);
 
-    // Amount (remove ₹ and commas)
     const amountRaw = String(inv.grand_total || '')
       .replace(/[,₹]/g, '')
       .toLowerCase();
@@ -291,7 +287,6 @@ function applyFilters() {
     const searchAmount = q.replace(/[,₹]/g, '');
     const amountMatch = amountRaw.includes(searchAmount);
 
-    // Due Date
     const dueDateMatch =
       inv.due_date
         ? new Date(inv.due_date)
@@ -300,7 +295,6 @@ function applyFilters() {
             .includes(q)
         : false;
 
-    // Created Date
     const createdMatch =
       inv.created_at
         ? new Date(inv.created_at)
@@ -310,16 +304,16 @@ function applyFilters() {
         : false;
 
     const matchesSearch =
+      !q ||
       invoiceMatch ||
       clientMatch ||
       amountMatch ||
       dueDateMatch ||
       createdMatch;
 
-    /* ---------- STATUS MATCH ---------- */
+    /* ---------- STATUS ---------- */
 
     const matchesStatus =
-      !status ||
       status === 'all' ||
       inv.invoice_status?.toLowerCase() === status;
 
@@ -328,6 +322,17 @@ function applyFilters() {
 
   page = 1;
   render();
+}
+
+/* ------------------ Debounce ------------------ */
+
+let searchTimer;
+
+function debounceSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    applyFilters();
+  }, 250);
 }
 
 /* ------------------ Actions ------------------ */
@@ -440,10 +445,32 @@ async function loadInvoices() {
 }
 
 /* ------------------ Events ------------------ */
-searchInput.addEventListener('input', applyFilters);
-statusFilter.addEventListener('change', applyFilters);
-prevBtn.onclick = () => page > 1 && (page--, render());
-nextBtn.onclick = () => page * perPage < filtered.length && (page++, render());
+
+searchInput.addEventListener('input', debounceSearch);
+
+statusFilter.addEventListener('change', () => {
+  applyFilters();
+});
+
+searchInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    clearTimeout(searchTimer);
+    applyFilters();
+  }
+});
+prevBtn.onclick = () => {
+  if (page > 1) {
+    page--;
+    render();
+  }
+};
+
+nextBtn.onclick = () => {
+  if (page * perPage < filtered.length) {
+    page++;
+    render();
+  }
+};
 
 /* ------------------ Plan Status Listener ------------------ */
 window.addEventListener('planStatusReady', (e) => {

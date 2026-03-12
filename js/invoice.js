@@ -76,12 +76,25 @@ function renderTimeline(events) {
     let icon = "🔔";
     let text = "";
 
-    if (e.type === "reminder") {
-      text = `${e.stage} reminder sent`;
+    if (e.type === "invoice_created") {
+      icon = "📄";
+      text = "Invoice created";
     }
 
-    if (e.type === "payment") {
-      icon = "✅";
+    if (e.type === "reminder_sent") {
+
+      const stageNames = {
+        friendly: "Friendly",
+        firm: "Firm",
+        formal: "Formal",
+        final: "Final"
+      };
+
+      text = `${stageNames[e.stage] || e.stage || ""} reminder sent`;
+    }
+
+    if (e.type === "payment_recorded") {
+      icon = "💰";
       text = "Payment recorded";
     }
 
@@ -91,7 +104,7 @@ function renderTimeline(events) {
 
         <div class="activity-content">
           <strong>${text}</strong>
-          <span>${formatDate(e.created_at)}</span>
+          <span>${formatDate(e.event_time)}</span>
         </div>
       </div>
     `;
@@ -100,7 +113,6 @@ function renderTimeline(events) {
 }
 
 /* ------------------ Load Page ------------------ */
-
 async function loadInvoice() {
 
   const id = getInvoiceId();
@@ -112,26 +124,27 @@ async function loadInvoice() {
 
   try {
 
-    const res = await authFetch(`${API_BASE}/api/invoices/${id}`);
+    /* ------------------ LOAD INVOICE ------------------ */
 
-    if (!res.ok) throw new Error("Failed");
+    const invoiceRes = await authFetch(`${API_BASE}/api/invoices/id/${id}`);
 
-    const data = await res.json();
+    if (!invoiceRes.ok) throw new Error("Invoice fetch failed");
 
-    renderInvoice(data.invoice);
+    const invoiceData = await invoiceRes.json();
 
-    /* temporary timeline until backend endpoint exists */
+    const invoice = invoiceData.invoice;
 
-    const events = [];
+    renderInvoice(invoice);
 
-    if (data.invoice.created_at) {
-      events.push({
-        type: "created",
-        created_at: data.invoice.created_at
-      });
-    }
+    /* ------------------ LOAD ACTIVITY ------------------ */
 
-    renderTimeline(events);
+    const activityRes = await authFetch(`${API_BASE}/api/invoices/${id}/activity`);
+
+    if (!activityRes.ok) throw new Error("Activity fetch failed");
+
+    const activityData = await activityRes.json();
+
+    renderTimeline(activityData.activity || []);
 
   } catch (err) {
 
@@ -142,7 +155,6 @@ async function loadInvoice() {
   }
 
 }
-
 /* ------------------ Init ------------------ */
 
 loadInvoice();

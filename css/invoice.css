@@ -1,0 +1,38 @@
+.invoice-layout {
+display: grid;
+grid-template-columns: 1fr 380px;
+gap: 28px;
+}
+
+.invoice-details {
+background: white;
+padding: 24px;
+border-radius: 12px;
+box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.invoice-activity {
+background: white;
+padding: 24px;
+border-radius: 12px;
+box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.activity-item {
+display: flex;
+gap: 12px;
+margin-bottom: 18px;
+}
+
+.activity-icon {
+font-size: 18px;
+}
+
+.activity-content strong {
+display: block;
+}
+
+.activity-content span {
+font-size: 13px;
+color: #6b7280;
+}

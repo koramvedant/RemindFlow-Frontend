@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice – RemindFlow</title>
+
+<link rel="stylesheet" href="/css/sidebar.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<link rel="stylesheet" href="/css/invoice.css">
+</head>
+
+<body>
+
+<div id="sidebarContainer"></div>
+
+<main class="main">
+
+<div class="invoice-layout">
+
+<div class="invoice-details">
+<h2 id="invoiceTitle">Invoice</h2>
+
+<div class="invoice-meta">
+<p><strong>Client:</strong> <span id="clientName"></span></p>
+<p><strong>Amount:</strong> ₹<span id="invoiceAmount"></span></p>
+<p><strong>Status:</strong> <span id="invoiceStatus"></span></p>
+<p><strong>Due Date:</strong> <span id="invoiceDue"></span></p>
+</div>
+
+</div>
+
+<div class="invoice-activity">
+
+<h3>Activity</h3>
+
+<div id="activityTimeline"></div>
+
+</div>
+
+</div>
+
+</main>
+
+<script src="/js/loadSidebar.js"></script>
+<script type="module" src="/js/invoice.js"></script>
+
+</body>
+</html>

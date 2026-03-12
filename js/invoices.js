@@ -201,7 +201,11 @@ function render() {
 
     table.innerHTML += `
       <tr class="${isDraft ? 'draft-row' : ''}">
-        <td>${inv.invoice_id || '—'}</td>
+        <td>
+          <a href="/invoice.html?id=${inv.id}" class="invoice-link">
+            ${inv.invoice_id || '—'}
+          </a>
+        </td>
         <td>${clientName(inv)}</td>
         <td>
           ₹${Number(inv.grand_total || 0).toLocaleString('en-IN')}

@@ -127,6 +127,16 @@ tr:hover {
   background: #f1f5f9;
 } 
 
+.invoice-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.invoice-link:hover {
+  text-decoration: underline;
+}
+
 /* -------------------- Action System -------------------- */
 .action {
   margin-right: 10px;

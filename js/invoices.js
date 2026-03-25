@@ -75,6 +75,28 @@ function authFetch(url, options = {}) {
 }
 
 /* ------------------ Helpers ------------------ */
+function renderSyncInfo(inv) {
+  if (!inv.last_synced_at || inv.source === 'manual') return '';
+
+  const last = new Date(inv.last_synced_at);
+  const now = new Date();
+
+  const diffHours = Math.floor((now - last) / (1000 * 60 * 60));
+
+  let text = '';
+
+  if (diffHours < 1) {
+    text = 'Just synced';
+  } else if (diffHours < 24) {
+    text = `${diffHours}h ago`;
+  } else {
+    const days = Math.floor(diffHours / 24);
+    text = `${days}d ago`;
+  }
+
+  return `<div class="sync-info">Synced ${text}</div>`;
+}
+
 function showToast(msg, type = 'success') {
   toast.textContent = msg;
   toast.className = `toast ${type}`;
@@ -96,6 +118,18 @@ function statusBadge(status) {
     default:
       return `<span class="status">${status}</span>`;
   }
+}
+
+function sourceBadge(inv) {
+  const type =
+    inv.source_type ||
+    (inv.source === 'manual' ? 'manual' : 'imported');
+
+  if (type === 'imported') {
+    return `<span class="badge imported" title="Imported from external system">Imported</span>`;
+  }
+
+  return ''; // 🔥 keep manual invisible (premium UX)
 }
 
 /* ------------------ Client Name (AUTHORITATIVE) ------------------ */
@@ -204,6 +238,7 @@ function render() {
         <td>
           <a href="/invoice.html?id=${inv.id}" class="invoice-link">
             ${inv.invoice_id || '—'}
+            ${renderSyncInfo(inv)}
           </a>
         </td>
         <td>${clientName(inv)}</td>

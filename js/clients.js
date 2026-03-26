@@ -29,31 +29,71 @@ function disableCreateButtons() {
     });
 }
 
-function showUpgradeBanner() {
-  if (document.getElementById('upgradeBanner')) return;
+function disableAllCreationButtons(reason = 'limit') {
+  document.querySelectorAll('[data-requires-plan]').forEach((btn) => {
+    btn.classList.add('disabled-by-plan');
+    btn.style.opacity = '0.6';
+
+    // 🔥 Instead of blocking → redirect
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = '/plans.html';
+    });
+
+    if (reason === 'limit') {
+      btn.title = 'Upgrade to continue';
+    } else {
+      btn.title = 'Upgrade your plan';
+    }
+  });
+}
+
+function showUpgradeBanner(message, cta = true) {
+  const existing = document.getElementById('upgradeBanner');
+  if (existing) return;
 
   const banner = document.createElement('div');
   banner.id = 'upgradeBanner';
-  banner.style.background = '#ffe9e9';
-  banner.style.color = '#b00020';
-  banner.style.padding = '12px';
+
+  banner.style.background = '#fff4e5';
+  banner.style.color = '#8a4b00';
+  banner.style.padding = '14px';
   banner.style.marginBottom = '16px';
-  banner.style.borderRadius = '6px';
-  banner.style.fontWeight = '500';
-  banner.style.textAlign = 'center';
-  banner.textContent = 'Your plan has expired. Please upgrade to continue.';
+  banner.style.borderRadius = '8px';
+  banner.style.display = 'flex';
+  banner.style.justifyContent = 'space-between';
+  banner.style.alignItems = 'center';
+  banner.style.gap = '12px';
 
-  const container =
-    document.querySelector('.main') ||
-    document.body;
+  const text = document.createElement('div');
+  text.textContent = message;
 
+  banner.appendChild(text);
+
+  if (cta) {
+    const btn = document.createElement('a');
+    btn.href = '/plans.html';
+    btn.textContent = 'Upgrade Plan';
+    btn.style.background = '#0f766e';
+    btn.style.color = '#fff';
+    btn.style.padding = '8px 14px';
+    btn.style.borderRadius = '6px';
+    btn.style.textDecoration = 'none';
+    btn.style.fontWeight = '500';
+    btn.style.whiteSpace = 'nowrap';
+
+    banner.appendChild(btn);
+  }
+
+  const container = document.querySelector('.main') || document.body;
   container.prepend(banner);
 }
 
 function applyPlanUIState(principal, expired) {
   if (expired) {
-    disableCreateButtons();
-    showUpgradeBanner();
+    disableAllCreationButtons('plan');
+    showUpgradeBanner('Your plan has expired. Upgrade to continue.', true);
+    return;
   }
 }
 

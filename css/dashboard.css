@@ -290,6 +290,16 @@
   font-size: 15px;
 }
 
+.action-block {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-block:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
 .action-list {
   display: flex;
   flex-direction: column;

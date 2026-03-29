@@ -1,6 +1,7 @@
 // /js/dashboard.js
 import { API_BASE } from './api.js';
 
+
 /* ------------------ Utils ------------------ */
 const $ = (id) => document.getElementById(id);
 
@@ -54,6 +55,14 @@ async function fetchJSON(path) {
 
     if (res.status === 403) {
       console.warn('Access blocked by plan');
+    
+      // 🔥 FORCE UI LOCK
+      disableAllCreationButtons('plan');
+      showUpgradeBanner(
+        'Your plan has expired. Upgrade to continue.',
+        true
+      );
+    
       return null;
     }
 
@@ -66,6 +75,18 @@ async function fetchJSON(path) {
     console.error('Dashboard fetch failed:', err);
     return null;
   }
+}
+
+function enableCreateButtons() {
+  document.querySelectorAll('[data-requires-plan]').forEach((btn) => {
+    btn.classList.remove('disabled-by-plan');
+    btn.style.pointerEvents = 'auto';
+    btn.style.opacity = '1';
+    btn.title = '';
+
+    // remove redirect override
+    btn.onclick = null;
+  });
 }
 
 /* ------------------ Plan Expiry Handling ------------------ */
@@ -145,9 +166,12 @@ function applyPlanUIState(principal, expired) {
     return;
   }
 
+  // ✅ THIS WAS MISSING
+  enableCreateButtons();
+
   const now = new Date();
 
-  // 🔥 Trial countdown
+  // Trial banner (keep this)
   if (principal?.plan_code === 'trial' && principal?.trial_end){
     const daysLeft = Math.ceil(
       (new Date(principal.trial_end) - now) /
@@ -290,6 +314,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadDashboard('custom', start, end);
+  });
+
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // 🔥 Only click guard (no forced disable here)
+  document.querySelectorAll('[data-requires-plan]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      if (btn.classList.contains('disabled-by-plan')) {
+        e.preventDefault();
+        window.location.href = '/plans.html';
+      }
+    });
+  });
+
+});
+
+/* ------------------ Action Center Clicks ------------------ */
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.querySelector('.needs-attention-card')?.addEventListener('click', () => {
+    window.location.href = '/invoices.html?filter=needs_attention';
+  });
+
+  document.querySelector('.high-risk-card')?.addEventListener('click', () => {
+    window.location.href = '/invoices.html?filter=high_risk';
+  });
+
+  document.querySelector('.high-value-card')?.addEventListener('click', () => {
+    window.location.href = '/invoices.html?filter=high_value';
   });
 
 });

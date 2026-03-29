@@ -20,6 +20,10 @@ let filtered = [];
 let page = 1;
 const perPage = 5;
 
+// 🔥 Dashboard filter support
+const params = new URLSearchParams(window.location.search);
+const dashboardFilter = params.get('filter');
+
 /* ------------------ Plan UI Helpers ------------------ */
 function disableCreateButtons() {
   document
@@ -351,53 +355,81 @@ function applyFilters() {
 
   filtered = invoices.filter((inv) => {
 
-    /* ---------- SEARCH ---------- */
+  /* ---------- DASHBOARD FILTER ---------- */
 
-    const invoiceMatch =
-      (inv.invoice_id || '').toLowerCase().includes(q);
+  let matchesDashboardFilter = true;
 
-    const clientMatch =
-      clientName(inv).toLowerCase().includes(q);
+  const today = new Date();
+  const due = inv.due_date ? new Date(inv.due_date) : null;
+  const amount = Number(inv.payment_due || inv.grand_total || 0);
 
-    const amountRaw = String(inv.grand_total || '')
-      .replace(/[,₹]/g, '')
-      .toLowerCase();
+  if (dashboardFilter === 'needs_attention') {
+    matchesDashboardFilter =
+      due && due <= today &&
+      inv.invoice_status !== 'paid';
+  }
 
-    const searchAmount = q.replace(/[,₹]/g, '');
-    const amountMatch = amountRaw.includes(searchAmount);
+  if (dashboardFilter === 'high_risk') {
+    matchesDashboardFilter =
+      inv.escalation_score >= 70 ||
+      (due && due < today && amount > 10000);
+  }
 
-    const dueDateMatch =
-      inv.due_date
-        ? new Date(inv.due_date)
-            .toLocaleDateString()
-            .toLowerCase()
-            .includes(q)
-        : false;
+  if (dashboardFilter === 'high_value') {
+    matchesDashboardFilter =
+      amount >= 20000;
+  }
 
-    const createdMatch =
-      inv.created_at
-        ? new Date(inv.created_at)
-            .toLocaleDateString()
-            .toLowerCase()
-            .includes(q)
-        : false;
+  /* ---------- SEARCH ---------- */
 
-    const matchesSearch =
-      !q ||
-      invoiceMatch ||
-      clientMatch ||
-      amountMatch ||
-      dueDateMatch ||
-      createdMatch;
+  const q = (searchInput.value || '').trim().toLowerCase();
+  const status = (statusFilter.value || '').toLowerCase();
 
-    /* ---------- STATUS ---------- */
+  const invoiceMatch =
+    (inv.invoice_id || '').toLowerCase().includes(q);
 
-    const matchesStatus =
-      status === 'all' ||
-      inv.invoice_status?.toLowerCase() === status;
+  const clientMatch =
+    clientName(inv).toLowerCase().includes(q);
 
-    return matchesSearch && matchesStatus;
-  });
+  const amountRaw = String(inv.grand_total || '')
+    .replace(/[,₹]/g, '')
+    .toLowerCase();
+
+  const searchAmount = q.replace(/[,₹]/g, '');
+  const amountMatch = amountRaw.includes(searchAmount);
+
+  const dueDateMatch =
+    inv.due_date
+      ? new Date(inv.due_date)
+          .toLocaleDateString()
+          .toLowerCase()
+          .includes(q)
+      : false;
+
+  const createdMatch =
+    inv.created_at
+      ? new Date(inv.created_at)
+          .toLocaleDateString()
+          .toLowerCase()
+          .includes(q)
+      : false;
+
+  const matchesSearch =
+    !q ||
+    invoiceMatch ||
+    clientMatch ||
+    amountMatch ||
+    dueDateMatch ||
+    createdMatch;
+
+  /* ---------- STATUS ---------- */
+
+  const matchesStatus =
+    status === 'all' ||
+    inv.invoice_status?.toLowerCase() === status;
+
+  return matchesDashboardFilter && matchesSearch && matchesStatus;
+});
 
   page = 1;
   render();
@@ -521,6 +553,9 @@ async function loadInvoices() {
     console.error(err);
     showToast('Failed to load invoices', 'error');
   }
+  if (dashboardFilter) {
+  showToast(`Filtered: ${dashboardFilter.replace('_', ' ')}`);
+}
 }
 
 /* ------------------ Events ------------------ */

@@ -126,7 +126,7 @@ function setButtonLoading(btn, loading) {
 
 /* ── API calls ────────────────────────────────────────── */
 async function sendNow() {
-  const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken") || "";
+  const token = localStorage.getItem("accessToken") || "";
   const res = await fetch(`${API_BASE}/api/invoices/${_invoiceId}/send`, {
     method: "POST",
     headers: {
@@ -143,7 +143,7 @@ async function sendNow() {
 }
 
 async function scheduleInvoice(isoDateTime) {
-  const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken") || "";
+  const token = localStorage.getItem("accessToken") || "";
   const res = await fetch(`${API_BASE}/api/invoices/${_invoiceId}/send`, {
     method: "POST",
     headers: {
@@ -177,7 +177,7 @@ scheduleBtn.addEventListener("click", () => {
 skipBtn.addEventListener("click", () => {
   closeModal();
   if (_invoiceId) {
-    window.location.href = `/invoice-detail.html?id=${_invoiceId}`;
+    window.location.href = `/invoice.html?id=${_invoiceId}`;
   }
 });
 
@@ -245,7 +245,7 @@ confirmSched.addEventListener("click", async () => {
 doneBtn.addEventListener("click", () => {
   closeModal();
   if (_invoiceId) {
-    window.location.href = `/invoice-detail.html?id=${_invoiceId}`;
+    window.location.href = `/invoice.html?id=${_invoiceId}`;
   }
 });
 
@@ -260,7 +260,7 @@ modal.addEventListener("click", (e) => {
     if (!step1.classList.contains("hidden") || !stepSuccess.classList.contains("hidden")) {
       closeModal();
       if (_invoiceId && !stepSuccess.classList.contains("hidden")) {
-        window.location.href = `/invoice-detail.html?id=${_invoiceId}`;
+        window.location.href = `/invoice.html?id=${_invoiceId}`;
       }
     }
   }

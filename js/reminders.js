@@ -45,13 +45,11 @@ async function fetchReminders() {
    Helper: Prepare Display List
 ------------------------- */
 function prepareDisplayReminders() {
-
   const history = reminders.filter(r => r.is_history);
 
   const upcoming = reminders
     .filter(r => r.status === 'active')
     .reduce((map, r) => {
-      // pick nearest upcoming per invoice
       if (
         !map[r.invoice_id] ||
         new Date(r.scheduled_at) < new Date(map[r.invoice_id].scheduled_at)
@@ -71,6 +69,30 @@ function prepareDisplayReminders() {
   ];
 }
 
+/* -------------------------
+   Build status cell
+------------------------- */
+function statusCell(r) {
+  if (r.status === 'active') {
+    return `<span class="badge active">Upcoming</span>`;
+  }
+
+  if (r.status === 'sent') {
+    if (r.email_opened) {
+      return `
+        <span class="badge sent">Sent</span>
+        <span class="badge opened">✓ Opened</span>
+      `;
+    }
+    return `<span class="badge sent">Sent</span>`;
+  }
+
+  if (r.status === 'failed') {
+    return `<span class="badge failed">Failed</span>`;
+  }
+
+  return `<span class="badge">${r.status}</span>`;
+}
 
 /* -------------------------
    Render Table
@@ -83,17 +105,17 @@ function renderTable() {
 
   let displayReminders = prepareDisplayReminders();
 
-  // Search filter
   displayReminders = displayReminders.filter(r =>
     r.client_name.toLowerCase().includes(search) ||
     r.invoice_code.toLowerCase().includes(search)
   );
 
-  // Status filter
   if (filter === 'upcoming') {
     displayReminders = displayReminders.filter(r => r.status === 'active');
   } else if (filter === 'sent') {
     displayReminders = displayReminders.filter(r => r.status === 'sent');
+  } else if (filter === 'opened') {
+    displayReminders = displayReminders.filter(r => r.email_opened);
   }
 
   if (displayReminders.length === 0) {
@@ -111,26 +133,18 @@ function renderTable() {
       .replace(/_/g, ' ')
       .replace(/\b\w/g, c => c.toUpperCase());
 
-    const statusText = r.status === 'active' ? 'Upcoming' : 'Sent';
-
     tr.innerHTML = `
       <td>${new Date(r.scheduled_at).toLocaleDateString('en-GB')}</td>
       <td>${r.invoice_code}</td>
       <td>${r.client_name}</td>
       <td class="stage">${stageText}</td>
-      <td>
-        <span class="badge ${r.status}">${statusText}</span>
-      </td>
+      <td>${statusCell(r)}</td>
       <td>
         ${
           r.is_history && r.log_id
-            ? `<button class="viewReminderBtn" data-id="${r.log_id}">
-                 View
-               </button>`
+            ? `<button class="viewReminderBtn" data-id="${r.log_id}">View</button>`
             : r.status === 'active'
-              ? `<button class="pause-invoice" data-invoice="${r.invoice_id}">
-                   Pause
-                 </button>`
+              ? `<button class="pause-invoice" data-invoice="${r.invoice_id}">Pause</button>`
               : '-'
         }
       </td>
@@ -141,57 +155,40 @@ function renderTable() {
 }
 
 /* -------------------------
-   Invoice-level Pause / Resume (Delegated)
+   Invoice-level Pause / Resume
 ------------------------- */
 tableBody.addEventListener('click', async (e) => {
   const invoiceId = e.target.dataset.invoice;
   if (!invoiceId) return;
 
-  // ⏸ Pause reminders
   if (e.target.classList.contains('pause-invoice')) {
     if (!confirm('Pause all reminders for this invoice?')) return;
 
     const res = await fetch(
       `${API_BASE}/api/invoices/${invoiceId}/pause-reminders`,
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      }
+      { method: 'PUT', headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` } }
     );
 
-    if (!res.ok) {
-      alert('Failed to pause reminders');
-      return;
-    }
-
+    if (!res.ok) { alert('Failed to pause reminders'); return; }
     fetchReminders();
   }
 
-  // ▶ Resume reminders
   if (e.target.classList.contains('resume-invoice')) {
     if (!confirm('Resume reminders for this invoice?')) return;
 
     const res = await fetch(
       `${API_BASE}/api/invoices/${invoiceId}/resume-reminders`,
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      }
+      { method: 'PUT', headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` } }
     );
 
-    if (!res.ok) {
-      alert('Failed to resume reminders');
-      return;
-    }
-
+    if (!res.ok) { alert('Failed to resume reminders'); return; }
     fetchReminders();
   }
 });
 
+/* -------------------------
+   View Reminder Modal
+------------------------- */
 document.addEventListener('click', async (e) => {
   if (!e.target.classList.contains('viewReminderBtn')) return;
 
@@ -199,9 +196,7 @@ document.addEventListener('click', async (e) => {
 
   try {
     const res = await fetch(`${API_BASE}/api/reminders/logs/${logId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
+      headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
     });
 
     const data = await res.json();
@@ -209,17 +204,21 @@ document.addEventListener('click', async (e) => {
 
     const reminder = data.reminder;
 
-    document.getElementById('modalSubject').innerText = reminder.subject;
+    const openedInfo = reminder.email_opened
+      ? ` | <span style="color:#16a34a; font-weight:600;">✓ Opened ${
+          reminder.email_opened_at
+            ? new Date(reminder.email_opened_at).toLocaleString('en-GB')
+            : ''
+        }</span>`
+      : ' | <span style="color:#6b7280;">Not opened yet</span>';
 
-    document.getElementById('modalMeta').innerText =
-      `Sent: ${new Date(reminder.sent_at).toLocaleString('en-GB')} | Mode: ${reminder.escalation_mode || 'standard'} | Status: ${reminder.status}`;
+    document.getElementById('modalSubject').innerText = reminder.subject;
+    document.getElementById('modalMeta').innerHTML =
+      `Sent: ${new Date(reminder.sent_at).toLocaleString('en-GB')} | Mode: ${reminder.escalation_mode || 'standard'} | Status: ${reminder.status}${openedInfo}`;
 
     document.getElementById('modalBody').innerHTML = reminder.body_html;
-
     document.getElementById('modalAttachment').innerHTML =
-      reminder.attachment_key
-        ? `📎 Attachment included`
-        : '';
+      reminder.attachment_key ? `📎 Attachment included` : '';
 
     document.getElementById('reminderModal').classList.add('open');
 
@@ -230,9 +229,8 @@ document.addEventListener('click', async (e) => {
 
 document.getElementById('closeReminderModal')
   ?.addEventListener('click', () => {
-    document.getElementById('reminderModal')
-      .classList.remove('open');
-});
+    document.getElementById('reminderModal').classList.remove('open');
+  });
 
 /* -------------------------
    Event Listeners

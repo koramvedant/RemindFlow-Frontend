@@ -315,3 +315,8 @@ tr:hover {
   color: #6b7280;
   margin-top: 2px;
 }
+
+.status.opened {
+  background: #dcfce7;
+  color: #166534;
+}

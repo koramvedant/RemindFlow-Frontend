@@ -96,3 +96,15 @@
   border-top: 1px solid #eee;
   font-size: 13px;
 }
+
+/* Upcoming */
+.badge.active {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+ 
+/* Opened */
+.badge.opened {
+  background: #dcfce7;
+  color: #166534;
+}

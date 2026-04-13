@@ -4,82 +4,71 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Clients – RemindFlow</title>
-
-    <!-- Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/css/sidebar.css" />
-    <link rel="stylesheet" href="/css/dashboard.css" />
-    <link rel="stylesheet" href="/css/clients.css" />
+    <link rel="stylesheet" href="/css/app.css" />
   </head>
-
   <body>
-   <div id="sidebarContainer"></div>
+    <div id="sidebarContainer"></div>
 
-    <!-- Main -->
     <main class="main">
-      <div class="header">
-        <div>
+
+      <div class="page-header">
+        <div class="page-header-left">
           <h1>Clients</h1>
-          <p>Total Clients: <span id="totalClients">0</span></p>
+          <p>Total: <span id="totalClients">0</span> clients</p>
         </div>
-        <a href="/add-client.html" data-requires-plan class="btn">+ Add Client</a>
+        <div class="page-header-actions">
+          <a href="/add-client.html" data-requires-plan class="btn-primary">+ Add Client</a>
+        </div>
       </div>
 
-      <!-- Filters -->
-      <div class="filters">
+      <div class="filters-bar">
         <input
           type="text"
           id="searchInput"
-          placeholder="Search clients..."
+          placeholder="Search by name or ID…"
           autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
         />
         <select id="trustFilter">
-          <option value="">Trust Grade</option>
-          <option value="A">A – Excellent</option>
-          <option value="B">B – Reliable</option>
-          <option value="C">C – Delayed</option>
-          <option value="D">D – Risky</option>
+          <option value="">All trust grades</option>
+          <option value="A">A — Excellent</option>
+          <option value="B">B — Reliable</option>
+          <option value="C">C — Delayed</option>
+          <option value="D">D — High Risk</option>
         </select>
-
       </div>
 
-      <!-- Table -->
-      <table>
-        <thead>
-          <tr>
-            <th>Client ID</th>
-            <th>Client Name</th>
-            <th>Your Experience</th>
-            <th>Last Payment</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="clientTable"></tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Trust Grade</th>
+              <th>Last Payment</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="clientTable"></tbody>
+        </table>
+      </div>
 
-      <!-- Pagination -->
       <div class="pagination">
-        <button id="prevBtn">Prev</button>
-        <button id="nextBtn">Next</button>
+        <button id="prevBtn">← Prev</button>
+        <button id="nextBtn">Next →</button>
       </div>
+
     </main>
 
-    <!-- Toast -->
     <div id="toast"></div>
 
-    <!-- Auth Guard -->
     <script type="module">
       import { requireAuth } from "/js/guard.js";
       requireAuth();
     </script>
-
-    <!-- Sidebar toggle -->
     <script src="/js/loadSidebar.js"></script>
-
-    <!-- Page Logic -->
     <script type="module" src="/js/clients.js"></script>
-
   </body>
 </html>

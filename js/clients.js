@@ -108,22 +108,19 @@ function render() {
     .forEach((c) => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${c.id}</td>
         <td>
-          <a href="/invoice-logs.html?client_id=${c.id}" class="client-link">
+          <a href="/invoice-logs.html?client_id=${c.id}" class="table-link">
             ${c.name}
           </a>
+          ${c.company ? `<div class="sync-info">${c.company}</div>` : ''}
         </td>
         <td>
-          <span 
-            class="trust-badge trust-${c.trust}"
-            title="Payment reliability score: ${c.reliabilityScore}/100"
-          >
+          <span class="trust-badge trust-${c.trust}"
+                title="Payment reliability score: ${c.reliabilityScore}/100">
             ${c.trust}
           </span>
         </td>
-
-        <td>${c.lastPayment || '-'}</td>
+        <td>${c.lastPayment || '—'}</td>
         <td>
           <span class="action edit" data-id="${c.id}">Edit</span>
           <span class="action delete" data-id="${c.id}">Delete</span>

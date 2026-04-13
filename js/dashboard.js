@@ -1,7 +1,6 @@
 // /js/dashboard.js
 import { API_BASE } from './api.js';
 
-
 /* ------------------ Utils ------------------ */
 const $ = (id) => document.getElementById(id);
 
@@ -16,25 +15,22 @@ const safeText = (el, text, fallback = '—') => {
 const capitalize = (str) =>
   str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
 
-/* ✅ Money formatter (NUMBER ONLY) */
 const formatMoney = (value) =>
   typeof value === 'number'
     ? value.toLocaleString('en-IN')
     : '0';
 
-
 /* ------------------ Auth Helper ------------------ */
 function getAuthHeaders() {
   const token = localStorage.getItem('accessToken');
   if (!token) return null;
-
   return {
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
   };
 }
 
-/* ------------------ Fetch Helper (JWT AUTH) ------------------ */
+/* ------------------ Fetch Helper ------------------ */
 async function fetchJSON(path) {
   const headers = getAuthHeaders();
 
@@ -54,21 +50,12 @@ async function fetchJSON(path) {
     }
 
     if (res.status === 403) {
-      console.warn('Access blocked by plan');
-    
-      // 🔥 FORCE UI LOCK
       disableAllCreationButtons('plan');
-      showUpgradeBanner(
-        'Your plan has expired. Upgrade to continue.',
-        true
-      );
-    
+      showUpgradeBanner('Your plan has expired. Upgrade to continue.', true);
       return null;
     }
 
-    if (!res.ok) {
-      throw new Error(`Request failed: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
 
     return await res.json();
   } catch (err) {
@@ -77,23 +64,21 @@ async function fetchJSON(path) {
   }
 }
 
+/* ------------------ Plan UI Helpers ------------------ */
 function enableCreateButtons() {
   document.querySelectorAll('[data-requires-plan]').forEach((btn) => {
     btn.classList.remove('disabled-by-plan');
     btn.style.pointerEvents = 'auto';
     btn.style.opacity = '1';
     btn.title = '';
-
-    // remove redirect override
     btn.onclick = null;
   });
 }
 
-/* ------------------ Plan Expiry Handling ------------------ */
 function disableCreateButtons() {
   document.querySelectorAll('[data-requires-plan]').forEach((btn) => {
     btn.classList.add('disabled-by-plan');
-    btn.style.pointerEvents = 'none';   // 🔥 important for <a>
+    btn.style.pointerEvents = 'none';
     btn.style.opacity = '0.5';
     btn.title = 'Upgrade to continue';
   });
@@ -103,18 +88,11 @@ function disableAllCreationButtons(reason = 'limit') {
   document.querySelectorAll('[data-requires-plan]').forEach((btn) => {
     btn.classList.add('disabled-by-plan');
     btn.style.opacity = '0.6';
-
-    // 🔥 Instead of blocking → redirect
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       window.location.href = '/plans.html';
     });
-
-    if (reason === 'limit') {
-      btn.title = 'Upgrade to continue';
-    } else {
-      btn.title = 'Upgrade your plan';
-    }
+    btn.title = reason === 'limit' ? 'Upgrade to continue' : 'Upgrade your plan';
   });
 }
 
@@ -125,33 +103,15 @@ function showUpgradeBanner(message, cta = true) {
   const banner = document.createElement('div');
   banner.id = 'upgradeBanner';
 
-  banner.style.background = '#fff4e5';
-  banner.style.color = '#8a4b00';
-  banner.style.padding = '14px';
-  banner.style.marginBottom = '16px';
-  banner.style.borderRadius = '8px';
-  banner.style.display = 'flex';
-  banner.style.justifyContent = 'space-between';
-  banner.style.alignItems = 'center';
-  banner.style.gap = '12px';
-
   const text = document.createElement('div');
   text.textContent = message;
-
   banner.appendChild(text);
 
   if (cta) {
     const btn = document.createElement('a');
     btn.href = '/plans.html';
     btn.textContent = 'Upgrade Plan';
-    btn.style.background = '#0f766e';
-    btn.style.color = '#fff';
-    btn.style.padding = '8px 14px';
-    btn.style.borderRadius = '6px';
-    btn.style.textDecoration = 'none';
-    btn.style.fontWeight = '500';
-    btn.style.whiteSpace = 'nowrap';
-
+    btn.style.cssText = 'background:#1cc7ae;color:#0a0f1a;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:600;white-space:nowrap;font-size:13px;';
     banner.appendChild(btn);
   }
 
@@ -166,44 +126,31 @@ function applyPlanUIState(principal, expired) {
     return;
   }
 
-  // ✅ THIS WAS MISSING
   enableCreateButtons();
 
   const now = new Date();
-
-  // Trial banner (keep this)
-  if (principal?.plan_code === 'trial' && principal?.trial_end){
+  if (principal?.plan_code === 'trial' && principal?.trial_end) {
     const daysLeft = Math.ceil(
-      (new Date(principal.trial_end) - now) /
-      (1000 * 60 * 60 * 24)
+      (new Date(principal.trial_end) - now) / (1000 * 60 * 60 * 24)
     );
-
     if (daysLeft > 0) {
-      showUpgradeBanner(
-        `${daysLeft} day${daysLeft === 1 ? '' : 's'} left in trial`
-      );
+      showUpgradeBanner(`${daysLeft} day${daysLeft === 1 ? '' : 's'} left in your trial — upgrade to continue.`);
     }
   }
 }
 
-/* 🔔 Listen for global plan status event */
 window.addEventListener('planStatusReady', (e) => {
-  applyPlanUIState(
-    e.detail?.principal,
-    e.detail?.expired
-  );
+  applyPlanUIState(e.detail?.principal, e.detail?.expired);
 });
 
 /* ------------------ Load Dashboard ------------------ */
 async function loadDashboard(period = 'this_month', start = null, end = null) {
   let url = `/api/dashboard?period=${period}`;
-
   if (period === 'custom' && start && end) {
     url += `&start=${start}&end=${end}`;
   }
 
   const data = await fetchJSON(url);
-
 
   if (!data || !data.user || !data.stats) {
     console.error('Invalid dashboard payload:', data);
@@ -212,115 +159,74 @@ async function loadDashboard(period = 'this_month', start = null, end = null) {
 
   const { user, stats } = data;
 
-  /* ------------------ Plan Expiry (Backend Source of Truth) ------------------ */
-
+  /* Plan expiry */
   const expired = !user.subscription_active;
   applyPlanUIState(user, expired);
 
-  /* ------------------ User Info ------------------ */
-  safeText(
-    $('userName'),
-    user.display_name || user.name || user.email
-  );
+  /* User info — greet by first name */
+  const firstName = (user.display_name || user.name || '').split(' ')[0];
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  safeText($('userName'), firstName ? `${greeting}, ${firstName}` : greeting);
+  safeText($('userEmail'), user.display_email || user.email || '');
 
-  safeText(
-    $('userEmail'),
-    user.display_email || user.email || ''
-  );
+  /* Plan info */
+  safeText($('planType'), user.plan_type ? capitalize(user.plan_type) : 'Free');
+  safeText($('userPlan'), user.plan_code ? capitalize(user.plan_code) : 'Trial');
 
-  /* ------------------ Plan Info ------------------ */
-  safeText(
-    $('planType'),
-    user.plan_type ? capitalize(user.plan_type) : 'Free'
-  );
-
-  safeText(
-    $('userPlan'),
-    user.plan_code ? capitalize(user.plan_code) : 'Trial'
-  );
-
-  /* ------------------ Stats ------------------ */
-  safeText(
-    $('amountDue'),
-    `₹${formatMoney(stats.amountDue)}`
-  );
-
-  safeText(
-    $('amountRecovered'),
-    `₹${formatMoney(stats.amountRecovered)}`
-  );
-
+  /* Stats */
+  safeText($('amountDue'),       `₹${formatMoney(stats.amountDue)}`);
+  safeText($('amountRecovered'), `₹${formatMoney(stats.amountRecovered)}`);
   safeText($('pendingInvoices'), stats.pendingInvoices, '0');
 
-  /* ------------------ Slots Logic (FIXED) ------------------ */
-
+  /* Slots */
   let slotsDisplay;
-
   if (expired) {
     slotsDisplay = '0';
   } else {
-    slotsDisplay =
-      stats.slotsLeft === null
-        ? 'Unlimited'
-        : `${stats.slotsLeft} remaining`;
+    slotsDisplay = stats.slotsLeft === null ? 'Unlimited' : `${stats.slotsLeft} remaining`;
   }
 
-  // 🔥 SLOT-BASED UI CONTROL
   if (!expired && stats.slotsLeft !== null && stats.slotsLeft <= 0) {
     disableAllCreationButtons('limit');
-  
-    showUpgradeBanner(
-      'You’ve reached your invoice limit. Upgrade to continue adding or importing invoices.',
-      true
-    );
+    showUpgradeBanner("You've reached your invoice limit. Upgrade to keep going.", true);
   }
 
   safeText($('slotsLeft'), slotsDisplay);
 }
 
-/* ------------------ Period Filter ------------------ */
+/* ------------------ Period Pills (NEW) ------------------ */
 document.addEventListener('DOMContentLoaded', () => {
-
-  const periodFilter = document.getElementById('periodFilter');
+  const pills = document.querySelectorAll('.period-pill');
   const customRangeDiv = document.getElementById('customRange');
   const startDateInput = document.getElementById('startDate');
   const endDateInput = document.getElementById('endDate');
   const applyCustomBtn = document.getElementById('applyCustomRange');
 
-  if (!periodFilter) return;
+  pills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      pills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
 
-  periodFilter.addEventListener('change', () => {
-    const selected = periodFilter.value;
+      const period = pill.dataset.period;
 
-    if (selected === 'custom') {
-      if (customRangeDiv) {
-        customRangeDiv.classList.add('active');
+      if (period === 'custom') {
+        customRangeDiv?.classList.remove('hidden');
+      } else {
+        customRangeDiv?.classList.add('hidden');
+        loadDashboard(period);
       }
-    } else {
-      if (customRangeDiv) {
-        customRangeDiv.classList.remove('active');
-      }
-      loadDashboard(selected);
-    }
+    });
   });
 
   applyCustomBtn?.addEventListener('click', () => {
     const start = startDateInput?.value;
     const end = endDateInput?.value;
-
-    if (!start || !end) {
-      alert('Please select both dates');
-      return;
-    }
-
+    if (!start || !end) { alert('Please select both dates'); return; }
     loadDashboard('custom', start, end);
   });
 
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-
-  // 🔥 Only click guard (no forced disable here)
+  /* Plan-guarded links */
   document.querySelectorAll('[data-requires-plan]').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       if (btn.classList.contains('disabled-by-plan')) {
@@ -329,26 +235,24 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-
 });
 
 /* ------------------ Action Center Clicks ------------------ */
 document.addEventListener('DOMContentLoaded', () => {
-
   document.querySelector('.needs-attention-card')?.addEventListener('click', () => {
     window.location.href = '/invoices.html?filter=needs_attention';
   });
-
   document.querySelector('.high-risk-card')?.addEventListener('click', () => {
     window.location.href = '/invoices.html?filter=high_risk';
   });
-
   document.querySelector('.high-value-card')?.addEventListener('click', () => {
     window.location.href = '/invoices.html?filter=high_value';
   });
-
 });
 
 /* ------------------ Boot ------------------ */
 loadDashboard('this_month');
 
+if (window.__USER_PLAN__) {
+  applyPlanUIState(window.__USER_PLAN__, window.__PLAN_EXPIRED__);
+}

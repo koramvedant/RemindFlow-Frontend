@@ -4,121 +4,123 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard – RemindFlow</title>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/sidebar.css" />
+  <link rel="stylesheet" href="/css/app.css" />
   <link rel="stylesheet" href="/css/dashboard.css" />
-
-  <!-- ✅ Auth Guard (MODULE SAFE) -->
   <script type="module">
     import { requireAuth } from "/js/guard.js";
     requireAuth();
   </script>
 </head>
-
-<body class="light">
+<body>
   <div id="sidebarContainer"></div>
 
   <main class="main">
 
-    <!-- ================= USER HEADER ================= -->
-    <section class="user-info card">
-      <!-- Profile -->
-      <div class="profile">
-        <div class="meta">
-          <h3 id="userName">—</h3>
-          <p id="userEmail">—</p>
+    <!-- Page header -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1 id="userName">Good morning</h1>
+        <p id="userEmail">—</p>
+      </div>
+      <div class="page-header-actions">
+        <a href="/add-client.html" data-requires-plan class="btn-secondary">+ Add Client</a>
+        <a href="/add-invoice.html" data-requires-plan class="btn-primary">+ Add Invoice</a>
+        <a href="/import.html" data-requires-plan class="btn-secondary">Import</a>
+      </div>
+    </div>
+
+    <!-- Plan strip -->
+    <div class="plan-strip">
+      <span class="plan-strip-label">Plan</span>
+      <span id="planType">—</span>
+      <span class="plan-strip-sep">·</span>
+      <span id="userPlan">—</span>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Amount Due</div>
+        <div class="stat-value" id="amountDue">₹0</div>
+        <div class="stat-sub">outstanding across all invoices</div>
+      </div>
+      <div class="stat-card stat-card--teal">
+        <div class="stat-label">Amount Recovered</div>
+        <div class="stat-value" id="amountRecovered">₹0</div>
+        <div class="stat-sub">collected this period</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Invoices</div>
+        <div class="stat-value" id="pendingInvoices">0</div>
+        <div class="stat-sub">awaiting payment</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Invoice Slots Left</div>
+        <div class="stat-value" id="slotsLeft">—</div>
+        <div class="stat-sub">on your current plan</div>
+      </div>
+    </div>
+
+    <!-- Period filter -->
+    <div class="period-bar">
+      <span class="period-label">Period</span>
+      <div class="period-pills">
+        <button class="period-pill active" data-period="this_month">This month</button>
+        <button class="period-pill" data-period="last_month">Last month</button>
+        <button class="period-pill" data-period="this_year">This year</button>
+        <button class="period-pill" data-period="custom">Custom</button>
+      </div>
+      <div id="customRange" class="custom-range hidden">
+        <input type="date" id="startDate" />
+        <span>to</span>
+        <input type="date" id="endDate" />
+        <button id="applyCustomRange" class="btn-primary" style="padding:8px 14px; font-size:12px;">Apply</button>
+      </div>
+    </div>
+
+    <!-- Action center -->
+    <div class="action-center">
+      <div class="action-block needs-attention-card">
+        <div class="action-block-header">
+          <div class="action-block-icon icon-warn">⚠</div>
+          <div>
+            <div class="action-block-title">Needs Attention</div>
+            <div class="action-block-sub">Overdue invoices requiring follow-up</div>
+          </div>
         </div>
+        <div id="needsActionList" class="action-list"></div>
       </div>
 
-      <!-- Plan Info -->
-      <div class="plan-info">
-        <div>
-          Plan Type:
-          <strong id="planType">—</strong>
+      <div class="action-block high-risk-card">
+        <div class="action-block-header">
+          <div class="action-block-icon icon-danger">!</div>
+          <div>
+            <div class="action-block-title">High Risk</div>
+            <div class="action-block-sub">Clients with poor payment history</div>
+          </div>
         </div>
-        <div>
-          Plan:
-          <strong id="userPlan">—</strong>
-        </div>
+        <div id="highRiskList" class="action-list"></div>
       </div>
 
-      <!-- Actions -->
-      <div class="dashboard-actions">
-        <a href="/add-client.html" data-requires-plan class="action-btn">+ Add Client</a>
-        <a href="/add-invoice.html" data-requires-plan class="action-btn subtle">+ Add Invoice</a>
-        <a href="/import.html" data-requires-plan class="action-btn subtle">Import</a>
+      <div class="action-block high-value-card">
+        <div class="action-block-header">
+          <div class="action-block-icon icon-teal">₹</div>
+          <div>
+            <div class="action-block-title">High Value</div>
+            <div class="action-block-sub">Invoices above ₹20,000</div>
+          </div>
+        </div>
+        <div id="highValueList" class="action-list"></div>
       </div>
-    </section>
+    </div>
 
-    <!-- ================= STATS ================= -->
-    <section class="stats-section">
-      <!-- 🔥 Period Filter -->
-      <div class="stats-filter modern-filter">
-       <label for="periodFilter">View:</label>
-     
-       <select id="periodFilter">
-         <option value="this_month">This Month</option>
-         <option value="last_month">Last Month</option>
-         <option value="this_year">This Year</option>
-         <option value="custom">Custom Range</option>
-       </select>
-
-       <!-- ================= ACTION CENTER ================= -->
-       <section class="action-center">
-       
-         <div class="action-block needs-attention-card">
-          <h3>⚠ Needs Attention</h3>
-          <div id="needsActionList" class="action-list"></div>
-        </div>
-        
-        <div class="action-block high-risk-card">
-          <h3>🔥 High Risk</h3>
-          <div id="highRiskList" class="action-list"></div>
-        </div>
-        
-        <div class="action-block high-value-card">
-          <h3>💰 High Value</h3>
-          <div id="highValueList" class="action-list"></div>
-        </div>
-       
-       </section>
-     
-       <!-- Custom Date Range (Hidden Initially) -->
-       <div id="customRange" class="custom-range">
-         <input type="date" id="startDate">
-         <input type="date" id="endDate">
-         <button id="applyCustomRange">Apply</button>
-       </div>
-     </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h4>Amount Due</h4>
-          <div id="amountDue">₹0</div>
-        </div>
-
-        <div class="stat-card">
-          <h4>Amount Recovered</h4>
-          <div id="amountRecovered">₹0</div>
-        </div>
-
-        <div class="stat-card">
-          <h4>Pending Invoices</h4>
-          <div id="pendingInvoices">0</div>
-        </div>
-
-        <div class="stat-card">
-          <h4>Slots Left</h4>
-          <div id="slotsLeft">0</div>
-        </div>
-      </div>
-    </section>
   </main>
 
-  <!-- Load Sidebar FIRST -->
   <script src="/js/loadSidebar.js"></script>
-
-  <!-- Dashboard Logic -->
   <script type="module" src="/js/dashboard.js"></script>
 </body>
 </html>

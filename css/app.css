@@ -1,0 +1,388 @@
+/* =====================================================
+   RemindFlow — app.css
+   Shared design system for all inner (authenticated) pages.
+   Import this alongside sidebar.css on every app page.
+   Replace: dashboard.css, invoices.css, clients.css,
+            invoice-logs.css — they all merge here.
+===================================================== */
+
+/* ── Reset ────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Design tokens ────────────────────────────────── */
+:root {
+  --bg:          #0a0f1a;
+  --bg-2:        #0d1420;
+  --bg-3:        #111827;
+  --bg-4:        #151e2e;
+  --border:      rgba(255,255,255,0.07);
+  --border-2:    rgba(255,255,255,0.12);
+  --teal:        #1cc7ae;
+  --teal-dim:    rgba(28,199,174,0.12);
+  --blue-dim:    rgba(59,130,246,0.12);
+  --amber-dim:   rgba(250,204,21,0.10);
+  --red-dim:     rgba(239,68,68,0.12);
+  --purple-dim:  rgba(99,102,241,0.12);
+  --text-1:      #f0f2f5;
+  --text-2:      rgba(255,255,255,0.55);
+  --text-3:      rgba(255,255,255,0.28);
+  --danger:      #ef4444;
+  --warn:        #f59e0b;
+  --success:     #22c55e;
+}
+
+/* ── Base ─────────────────────────────────────────── */
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  display: flex;
+  min-height: 100vh;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* ── Main content area ────────────────────────────── */
+.main {
+  margin-left: 200px;
+  padding: 32px 36px;
+  width: calc(100% - 200px);
+  min-height: 100vh;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.main.collapsed {
+  margin-left: 60px;
+  width: calc(100% - 60px);
+}
+
+/* ── Page header ──────────────────────────────────── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-header-left h1 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.4px;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+
+.page-header-left p {
+  font-size: 13px;
+  color: var(--text-3);
+  font-weight: 300;
+}
+
+.page-header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+.btn-primary {
+  background: var(--teal);
+  color: #0a0f1a;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-secondary {
+  background: none;
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+  padding: 10px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255,255,255,0.22);
+  color: var(--text-1);
+  background: rgba(255,255,255,0.04);
+}
+
+/* ── Filters bar ──────────────────────────────────── */
+.filters-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.filters-bar input,
+.filters-bar select {
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  border-radius: 9px;
+  color: var(--text-1);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  padding: 9px 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.filters-bar input { min-width: 240px; }
+.filters-bar select { min-width: 160px; cursor: pointer; }
+
+.filters-bar input::placeholder { color: var(--text-3); }
+
+.filters-bar input:focus,
+.filters-bar select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(28,199,174,0.1);
+}
+
+/* ── Table ────────────────────────────────────────── */
+.table-wrap {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead tr {
+  border-bottom: 1px solid var(--border);
+}
+
+thead th {
+  padding: 13px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  background: var(--bg-3);
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+td {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--text-2);
+  vertical-align: middle;
+}
+
+td:first-child { color: var(--text-1); font-weight: 500; }
+
+/* ── Table links ──────────────────────────────────── */
+.table-link {
+  color: var(--teal);
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.table-link:hover { opacity: 0.8; }
+
+/* ── Status badges ────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.badge-paid     { background: rgba(34,197,94,0.12);  color: #4ade80; }
+.badge-issued   { background: var(--blue-dim);        color: #60a5fa; }
+.badge-overdue  { background: var(--red-dim);         color: #f87171; }
+.badge-draft    { background: rgba(255,255,255,0.06); color: var(--text-3); }
+.badge-partial  { background: var(--amber-dim);       color: #fbbf24; }
+.badge-opened   { background: var(--teal-dim);        color: var(--teal); }
+
+/* Trust grade badges */
+.trust-badge { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; font-size: 13px; font-weight: 700; }
+.trust-A { background: rgba(28,199,174,0.12);  color: var(--teal); }
+.trust-B { background: var(--blue-dim);        color: #60a5fa; }
+.trust-C { background: var(--amber-dim);       color: #fbbf24; }
+.trust-D { background: var(--red-dim);         color: #f87171; }
+
+/* ── Table action buttons ─────────────────────────── */
+.action {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s, color 0.15s;
+  color: var(--text-2);
+  margin-right: 4px;
+}
+
+.action:hover { background: rgba(255,255,255,0.06); color: var(--text-1); }
+.action.download  { color: var(--teal); }
+.action.download:hover { background: var(--teal-dim); }
+.action.record-payment { color: #a78bfa; }
+.action.record-payment:hover { background: var(--purple-dim); }
+.action.pause-reminders,
+.action.resume-reminders { color: #fbbf24; }
+.action.pause-reminders:hover,
+.action.resume-reminders:hover { background: var(--amber-dim); }
+.action.delete { color: #f87171; }
+.action.delete:hover { background: var(--red-dim); }
+.action.edit { color: #fbbf24; }
+.action.edit:hover { background: var(--amber-dim); }
+.action.finalize { color: #a78bfa; }
+.action.finalize:hover { background: var(--purple-dim); }
+.action.view { color: #60a5fa; }
+.action.view:hover { background: var(--blue-dim); }
+.action.disabled { opacity: 0.3; pointer-events: none; }
+
+/* Due amount inline */
+.due-amount {
+  font-size: 11px;
+  color: #fbbf24;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+/* Imported badge */
+.source-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--blue-dim);
+  color: #60a5fa;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* Sync info */
+.sync-info {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+  font-weight: 300;
+}
+
+/* ── Pagination ───────────────────────────────────── */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 8px 18px;
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  background: none;
+  color: var(--text-2);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: var(--teal-dim);
+}
+
+.pagination button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ── Toast ────────────────────────────────────────── */
+#toast {
+  visibility: hidden;
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  color: var(--text-1);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  z-index: 9999;
+  transition: opacity 0.25s;
+  white-space: nowrap;
+}
+
+#toast.show { visibility: visible; }
+
+/* ── Upgrade banner ───────────────────────────────── */
+#upgradeBanner {
+  background: rgba(250,204,21,0.08) !important;
+  border: 1px solid rgba(250,204,21,0.2) !important;
+  color: #fbbf24 !important;
+  border-radius: 10px !important;
+  padding: 13px 18px !important;
+  margin-bottom: 20px !important;
+}
+
+/* ── Empty state ──────────────────────────────────── */
+.empty-row td {
+  text-align: center;
+  color: var(--text-3);
+  padding: 40px 16px !important;
+  font-size: 14px;
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 900px) {
+  .main { margin-left: 0; width: 100%; padding: 20px; }
+}

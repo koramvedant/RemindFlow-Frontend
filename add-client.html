@@ -2,97 +2,111 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Add Client – RemindFlow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="/css/add-client.css" />
+    <title>Add Client – RemindFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/app.css" />
+    <link rel="stylesheet" href="/css/app-extras.css" />
   </head>
-  <body>
-    <main class="container">
-      <h1>Add New Client</h1>
+  <body style="display:block; background:var(--bg);">
+
+    <div class="form-page">
+
+      <div class="form-page-header">
+        <button class="back-btn" onclick="history.back()">← Back</button>
+        <h1 class="form-page-title">Add New Client</h1>
+      </div>
 
       <form id="addClientForm">
-        <!-- BASIC SECTION -->
-        <section class="section">
-          <h2>Basic Details</h2>
 
-          <label for="clientName">
-            Client Name <span class="required">*</span>
-          </label>
-          <input type="text" id="clientName" autocomplete="off" required />
+        <!-- Basic details -->
+        <div class="form-card">
+          <span class="form-card-title">Basic details</span>
 
-          <label for="clientEmail">
-            Email <span class="required">*</span>
-          </label>
-          <input type="email" id="clientEmail" autocomplete="off" required />
-
-          <label for="clientPhone">Phone</label>
-          <input type="tel" id="clientPhone" autocomplete="off" />
-        </section>
-
-        <!-- ADVANCED SECTION -->
-        <section class="section advanced">
-          <button type="button" id="toggleAdvanced" class="toggle-btn">
-            + Advanced Details
-          </button>
-
-          <div id="advancedFields" class="advanced-fields">
-            <label for="clientCompany">Company Name</label>
-            <input type="text" id="clientCompany" autocomplete="off"/>
-
-            <!-- STRUCTURED CLIENT ADDRESS -->
-            <h3>Client Address</h3>
-
-            <label>Address Line 1</label>
-            <input type="text" id="address_line1" autocomplete="off"/>
-
-            <label>Address Line 2 (Optional)</label>
-            <input type="text" id="address_line2" />
-
-            <div class="address-row">
-              <div>
-                <label>City</label>
-                <input type="text" id="city" autocomplete="off"/>
-              </div>
-
-              <div>
-                <label>State / Province</label>
-                <input type="text" id="state" autocomplete="off"/>
-              </div>
-            </div>
-
-            <div class="address-row">
-              <div>
-                <label>Postal Code</label>
-                <input type="text" id="postal_code" autocomplete="off"/>
-              </div>
-
-              <div>
-                <label>Country</label>
-                <input type="text" id="country" value="India" />
-              </div>
-            </div>
-
-            <label for="clientTaxId">Tax ID (GST / VAT / etc.)</label>
-            <input type="text" id="clientTaxId" autocomplete="off" />
-
-            <label for="clientNotes">Notes</label>
-            <textarea id="clientNotes" rows="3" autocomplete="off"></textarea>
+          <div class="field">
+            <label for="clientName">Client name <span class="required">*</span></label>
+            <input type="text" id="clientName" placeholder="Full name or company" autocomplete="off" required />
           </div>
-        </section>
+
+          <div class="field">
+            <label for="clientEmail">Email <span class="required">*</span></label>
+            <input type="email" id="clientEmail" placeholder="client@example.com" autocomplete="off" required />
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="clientPhone">Phone</label>
+              <input type="tel" id="clientPhone" placeholder="+91 9876543210" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="clientCompany">Company name</label>
+              <input type="text" id="clientCompany" placeholder="Optional" autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="clientTaxId">Tax ID (GST / VAT / PAN)</label>
+            <input type="text" id="clientTaxId" placeholder="Optional" autocomplete="off" />
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="form-card">
+          <span class="form-card-title">Billing address</span>
+
+          <div class="field">
+            <label for="address_line1">Address line 1</label>
+            <input type="text" id="address_line1" placeholder="Building, street name" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="address_line2">Address line 2 <span style="color:var(--text-3);font-size:11px;">(optional)</span></label>
+            <input type="text" id="address_line2" placeholder="Area, landmark" />
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="city">City</label>
+              <input type="text" id="city" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="state">State</label>
+              <input type="text" id="state" autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="postal_code">Postal code</label>
+              <input type="text" id="postal_code" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="country">Country</label>
+              <input type="text" id="country" value="India" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="form-card">
+          <span class="form-card-title">Notes</span>
+          <div class="field">
+            <label for="clientNotes">Internal notes <span style="color:var(--text-3);font-size:11px;">(optional)</span></label>
+            <textarea id="clientNotes" placeholder="Any notes about this client…" autocomplete="off"></textarea>
+          </div>
+        </div>
 
         <button type="submit" class="primary-btn">Save Client</button>
-      </form>
-    </main>
 
-    <!-- Auth Guard -->
+      </form>
+    </div>
+
     <script type="module">
       import { requireAuth } from "/js/guard.js";
       requireAuth();
     </script>
-
-    <!-- Page Logic -->
     <script type="module" src="/js/add-client.js"></script>
   </body>
 </html>

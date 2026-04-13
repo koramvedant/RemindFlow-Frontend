@@ -2,69 +2,60 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Add Invoice | RemindFlow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="/css/add-invoice.css?v=2026-01-29" />
+    <title>Create Invoice – RemindFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/app.css" />
+    <link rel="stylesheet" href="/css/app-extras.css" />
   </head>
-  <body>
-    <div class="container">
-      <button class="back-btn" onclick="history.back()">← Back</button>
+  <body style="display:block; background:var(--bg);">
 
-      <h2>Create Invoice</h2>
+    <div class="form-page">
 
-      <!-- Invoice ID (Optional) -->
-      <label>Invoice ID (optional)</label>
-      <input type="text" id="invoiceIdInput" placeholder="INV-XXXX" autocomplete="off" />
-
-      <!-- Client Selection -->
-      <label>Client *</label>
-      <div class="client-select">
-        <input
-          type="text"
-          id="clientSearch"
-          placeholder="Search or select client"
-          autocomplete="off"
-          required
-        />
-
-        <button
-          id="changeClientBtn"
-          type="button"
-          class="change-client-btn"
-          style="display: none"
-        >
-          Change
-        </button>
-
-        <button
-          class="add-client-btn"
-          type="button"
-          onclick="location.href='/add-client.html'"
-        >
-          + Add Client
-        </button>
+      <div class="form-page-header">
+        <button class="back-btn" onclick="history.back()">← Back</button>
+        <h1 class="form-page-title">Create Invoice</h1>
       </div>
 
-      <ul id="clientDropdown" class="dropdown"></ul>
+      <!-- Client -->
+      <div class="form-card">
+        <span class="form-card-title">Client</span>
 
-      <!-- Invoice Meta -->
-      <div class="row">
-        <div>
-          <label>Invoice Date *</label>
-          <input type="date" id="invoiceDate" required />
+        <div class="field">
+          <label>Invoice ID <span style="color:var(--text-3);font-size:11px;">(optional — auto-generated if blank)</span></label>
+          <input type="text" id="invoiceIdInput" placeholder="INV-XXXX" autocomplete="off" />
         </div>
-        <div>
-          <label>Due Date *</label>
-          <input type="date" id="dueDate" required />
+
+        <div class="field" style="position:relative;">
+          <label>Client <span class="required">*</span></label>
+          <div class="client-select">
+            <input type="text" id="clientSearch" placeholder="Search or select client" autocomplete="off" required />
+            <button id="changeClientBtn" type="button" class="change-client-btn" style="display:none;">Change</button>
+            <button class="add-client-btn" type="button" onclick="location.href='/add-client.html'">+ New Client</button>
+          </div>
+          <ul id="clientDropdown" class="dropdown"></ul>
         </div>
       </div>
 
-      <!-- Invoice Type -->
-      <div class="row">
-        <div style="width:100%;">
-          <label>Invoice Type *</label>
+      <!-- Invoice details -->
+      <div class="form-card">
+        <span class="form-card-title">Invoice details</span>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="invoiceDate">Invoice date <span class="required">*</span></label>
+            <input type="date" id="invoiceDate" required />
+          </div>
+          <div class="field">
+            <label for="dueDate">Due date <span class="required">*</span></label>
+            <input type="date" id="dueDate" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="invoiceType">Invoice type <span class="required">*</span></label>
           <select id="invoiceType" required>
             <option value="one_time">One-time Project</option>
             <option value="retainer">Retainer</option>
@@ -72,121 +63,109 @@
             <option value="recurring">Recurring Operational</option>
             <option value="compliance">Compliance / Statutory</option>
           </select>
-          <p class="hint">
-            Used to automatically adjust reminder tone and escalation style.
-          </p>
+          <p class="hint">Adjusts reminder tone and escalation style automatically.</p>
         </div>
       </div>
-      <!-- Line Items -->
-      <h3>Invoice Items</h3>
 
-      <!-- ✅ SINGLE HEADER (ONCE ONLY) -->
-      <div class="items-header invoice-items-grid">
-        <span>Description</span>
-        <span>Qty</span>
-        <span>Rate</span>
-        <span></span>
+      <!-- Line items -->
+      <div class="form-card">
+        <span class="form-card-title">Items</span>
+
+        <div class="invoice-items-grid items-header">
+          <span>Description</span>
+          <span>Qty</span>
+          <span>Rate (₹)</span>
+          <span></span>
+        </div>
+
+        <div id="itemsContainer"></div>
+
+        <button type="button" id="addItemBtn" class="secondary-btn">+ Add Item</button>
       </div>
 
-      <!-- JS renders items here -->
-      <div id="itemsContainer"></div>
+      <!-- Tax & Discount -->
+      <div class="form-card">
+        <span class="form-card-title">Tax &amp; Discount</span>
 
-      <button
-        type="button"
-        id="addItemBtn"
-        class="secondary-btn add-item-btn"
-      >
-        + Add Item
-      </button>
+        <h3>Tax (optional)</h3>
+        <div class="invoice-items-grid items-header">
+          <span>Tax Name</span>
+          <span>Rate (%)</span>
+          <span></span>
+        </div>
+        <div id="taxesContainer"></div>
 
-      <!-- ✅ TAX (CANONICAL, SETTINGS-DRIVEN) -->
-      <h3>Tax (optional)</h3>
-
-      <div class="items-header invoice-items-grid">
-        <span>Tax Name</span>
-        <span>Rate (%)</span>
-        <span></span>
+        <h3>Discount (optional)</h3>
+        <div class="field-row">
+          <div class="field">
+            <label for="discountType">Discount type</label>
+            <select id="discountType">
+              <option value="flat">Flat Amount (₹)</option>
+              <option value="percentage">Percentage (%)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="discountValue">Value</label>
+            <input type="number" id="discountValue" step="0.01" placeholder="0" autocomplete="off" />
+          </div>
+        </div>
       </div>
 
-      <div id="taxesContainer"></div>
+      <!-- Payment options -->
+      <div class="form-card">
+        <span class="form-card-title">Payment options</span>
+        <p class="hint" style="margin-bottom:14px;">Shown on the invoice. Only enable methods you've configured in Settings.</p>
 
-      <!-- 🟢 DISCOUNT (FLEXIBLE) -->
-      <h3>Discount (optional)</h3>
+        <label class="checkbox-row">
+          <input type="checkbox" id="pay_upi" checked />
+          <span>UPI</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="pay_bank" checked />
+          <span>Bank Transfer</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="pay_cash" />
+          <span>Cash</span>
+        </label>
+      </div>
 
-      <div class="row">
-        <div>
-          <label>Discount Type</label>
-          <select id="discountType">
-            <option value="flat">Flat Amount (₹)</option>
-            <option value="percentage">Percentage (%)</option>
+      <!-- Template & Notes -->
+      <div class="form-card">
+        <span class="form-card-title">Presentation</span>
+
+        <div class="field">
+          <label for="layoutSelect">Invoice template <span class="required">*</span></label>
+          <select id="layoutSelect" required>
+            <option value="">Select template</option>
+            <option value="minimal">Minimal</option>
+            <option value="professional">Professional</option>
+            <option value="modern">Modern</option>
           </select>
         </div>
 
-        <div>
-          <label>Discount Value</label>
-          <input
-            type="number"
-            id="discountValue"
-            step="0.01"
-            placeholder="0"
-            autocomplete="off"
-          />
+        <div class="field">
+          <label for="notes">Notes <span style="color:var(--text-3);font-size:11px;">(optional — shown on invoice)</span></label>
+          <textarea id="notes" placeholder="Payment terms, thank you note, etc." autocomplete="off"></textarea>
         </div>
       </div>
 
-      <!-- Payment Options -->
-      <h3>Payment Options</h3>
+      <button class="primary-btn" id="continueBtn">Continue → Preview</button>
 
-      <label class="checkbox-row">
-        <input type="checkbox" id="pay_upi" checked />
-        <span>UPI</span>
-      </label>
-
-      <label class="checkbox-row">
-        <input type="checkbox" id="pay_bank" checked />
-        <span>Bank Transfer</span>
-      </label>
-
-      <label class="checkbox-row">
-        <input type="checkbox" id="pay_cash" />
-        <span>Cash</span>
-      </label>
-
-      <p class="hint">
-        Selected payment options will be shown on the invoice.
-      </p>
-
-      <!-- Template -->
-      <label>Invoice Template *</label>
-      <select id="layoutSelect" required>
-        <option value="">Select template</option>
-        <option value="minimal">Minimal</option>
-        <option value="professional">Professional</option>
-        <option value="modern">Modern</option>
-      </select>
-
-      <!-- Notes -->
-      <label>Notes (optional)</label>
-      <textarea id="notes" autocomplete="off"></textarea>
-
-      <button class="primary-btn" id="continueBtn">
-        Continue → Preview
-      </button>
     </div>
 
-    <!-- Auth Guard -->
+    <!-- Processing overlay -->
+    <div id="addInvoiceOverlay" class="page-loader hidden">
+      <div class="loader-box">
+        <div class="spinner"></div>
+        <p id="addInvoiceText">Creating draft…</p>
+      </div>
+    </div>
+
     <script type="module">
       import { requireAuth } from "/js/guard.js";
       requireAuth();
     </script>
-
-    <!-- Page Logic -->
     <script type="module" src="/js/add-invoice.js?v=2026-01-29"></script>
-    <div id="addInvoiceOverlay" class="page-loader hidden">
-      <div class="loader-box">
-        <div class="spinner"></div>
-        <p id="addInvoiceText">Creating draft...</p>
-      </div>
-    </div>
   </body>
 </html>

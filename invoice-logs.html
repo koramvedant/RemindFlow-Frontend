@@ -2,91 +2,83 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Invoice Logs | RemindFlow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- CSS -->
+    <title>Invoice Logs – RemindFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/css/sidebar.css" />
-    <link rel="stylesheet" href="/css/dashboard.css" />
-    <link rel="stylesheet" href="/css/invoice-logs.css" />
+    <link rel="stylesheet" href="/css/app.css" />
   </head>
-
   <body>
-    
     <div id="sidebarContainer"></div>
 
-    <!-- Main -->
     <main class="main">
-      <!-- Client Info Header -->
-      <section class="client-info">
-        <h2 id="clientName">Client</h2>
 
-        <div class="client-meta">
-          <div class="relationship">
-            Relationship:
-            <strong id="userTrust">—</strong>
-          </div>
-
-          <div class="network">
-            Network Signal:
-            <strong id="globalTrust">—</strong>
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 id="clientName">Client</h1>
+          <div class="client-trust-row">
+            <div class="client-trust-item">
+              <span class="client-trust-label">Trust grade</span>
+              <span id="userTrust" class="client-trust-value">—</span>
+            </div>
+            <div class="client-trust-sep"></div>
+            <div class="client-trust-item">
+              <span class="client-trust-label">Payment reliability</span>
+              <span id="globalTrust" class="client-trust-value">—</span>
+            </div>
           </div>
         </div>
-      </section>
+        <div class="page-header-actions">
+          <a href="/clients.html" class="btn-secondary">← Back to Clients</a>
+        </div>
+      </div>
 
-      <!-- Filters -->
-      <section class="filters">
+      <div class="filters-bar">
         <input
-        id="searchInput"
-        type="text"
-        placeholder="Search invoice ID..."
-        autocomplete="off"
-      />
-
-
+          type="text"
+          id="searchInput"
+          placeholder="Search by invoice ID…"
+          autocomplete="off"
+        />
         <select id="statusFilter">
-          <option value="">All Status</option>
+          <option value="">All status</option>
           <option value="draft">Draft</option>
-          <option value="sent">Sent</option>
+          <option value="sent">Issued</option>
           <option value="paid">Paid</option>
           <option value="overdue">Overdue</option>
           <option value="partially_paid">Partially Paid</option>
         </select>
-      </section>
+      </div>
 
-      <!-- Invoice Logs Table -->
-      <section class="table-wrapper">
+      <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Invoice ID</th>
+              <th>Invoice</th>
               <th>Amount</th>
               <th>Status</th>
-              <th>Date</th>
+              <th>Due Date</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody id="invoiceTable"></tbody>
         </table>
-      </section>
-
-      <!-- Pagination -->
-      <div class="pagination">
-        <button id="prevBtn">Prev</button>
-        <button id="nextBtn">Next</button>
       </div>
+
+      <div class="pagination">
+        <button id="prevBtn">← Prev</button>
+        <button id="nextBtn">Next →</button>
+      </div>
+
     </main>
 
-    <!-- Auth Guard -->
     <script type="module">
       import { requireAuth } from "/js/guard.js";
       requireAuth();
     </script>
-
     <script src="/js/loadSidebar.js"></script>
-
-    <!-- Page Logic -->
     <script type="module" src="/js/invoice-logs.js"></script>
-
   </body>
 </html>

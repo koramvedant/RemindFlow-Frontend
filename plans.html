@@ -4,118 +4,113 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Choose Plan – RemindFlow</title>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/plans.css" />
-
-  <!-- Razorpay SDK (used later in checkout, safe to keep) -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-  <!-- Auth Guard (MUST LOAD FIRST) -->
   <script type="module" src="/js/guard.js"></script>
 </head>
 
 <body>
-  <nav class="navbar">
-    <div class="logo">RemindFlow</div>
-  </nav>
 
-  <main class="plans-container">
-    <h1>Choose Your Plan</h1>
-    <p class="subtitle">🎉 All plans include a 7-day free trial</p>
+  <header class="header">
+    <a href="/" class="nav-logo">
+      <div class="nav-dot"></div>
+      <span>RemindFlow</span>
+    </a>
+  </header>
 
-    <!-- Integrated Plan -->
+  <main class="plans-page">
+
+    <div class="plans-header">
+      <div class="section-label">Pricing</div>
+      <h1>Simple plans,<br/><em>no surprises.</em></h1>
+      <p class="subtitle" id="planSubtitle">All plans include a 7-day free trial. No credit card required to start.</p>
+    </div>
+
+    <!-- Full plans -->
     <section class="plans-section">
-      <span class="section-label">
-        For users using Zoho, Tally, or other invoicing tools
-      </span>
-
-      <div class="plans-grid single">
-        <div class="plan-card">
-          <span class="badge">Integrated</span>
-          <h2>Connector</h2>
-          <div class="price">₹399 <span>/ month</span></div>
-
-          <ul>
-            <li>Connect existing invoice system (Zoho, Tally, etc.)</li>
-            <li>Behaviour-aware reminder logic</li>
-            <li>Structured escalation flow</li>
-            <li>Uses your own Email / WhatsApp setup</li>
-            <li>No invoice creation inside RemindFlow</li>
-          </ul>
-
-          <button class="choose-btn secondary" data-plan="connector" disabled>
-            Launching Soon
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Full Plans -->
-    <section class="plans-section">
-      <span class="section-label">For full RemindFlow users</span>
+      <div class="section-tag">For full RemindFlow users</div>
 
       <div class="plans-grid">
+
         <div class="plan-card">
           <h2>Starter</h2>
-          <div class="price">₹499 <span>/ month</span></div>
-
-          <ul>
-            <li>Up to 25 active invoice slots</li>
-            <li>Invoice creation</li>
-            <li>Structured 4-stage recovery flow</li>
-            <li>Behaviour-aware automated follow-ups</li>
-            <li>Basic dashboard</li>
+          <div class="plan-price">₹499<span class="plan-period"> / month</span></div>
+          <ul class="plan-features">
+            <li><span class="pf-check">✓</span>Up to 25 active invoice slots</li>
+            <li><span class="pf-check">✓</span>Invoice creation &amp; sending</li>
+            <li><span class="pf-check">✓</span>4-stage automated follow-ups</li>
+            <li><span class="pf-check">✓</span>Behaviour-aware reminders</li>
+            <li><span class="pf-check">✓</span>Basic dashboard</li>
           </ul>
-
-          <button class="choose-btn" data-plan="starter">
-            Choose Plan
-          </button>
+          <button class="choose-btn" data-plan="starter">Choose plan</button>
         </div>
 
-        <div class="plan-card featured">
-          <span class="badge">Most Popular</span>
+        <div class="plan-card plan-card--featured">
+          <div class="plan-badge">Most popular</div>
           <h2>Growth</h2>
-          <div class="price">₹999 <span>/ month</span></div>
-
-          <ul>
-            <li>Up to 60 active invoice slots</li>
-            <li>Invoice creation</li>
-            <li>Structured 4-stage recovery flow</li>
-            <li>Behaviour-aware automated follow-ups</li>
-            <li>Dashboard with insights</li>
+          <div class="plan-price">₹999<span class="plan-period"> / month</span></div>
+          <ul class="plan-features">
+            <li><span class="pf-check">✓</span>Up to 60 active invoice slots</li>
+            <li><span class="pf-check">✓</span>Invoice creation &amp; sending</li>
+            <li><span class="pf-check">✓</span>4-stage automated follow-ups</li>
+            <li><span class="pf-check">✓</span>Behaviour-aware reminders</li>
+            <li><span class="pf-check">✓</span>Dashboard with insights</li>
           </ul>
-
-          <button class="choose-btn" data-plan="growth">
-            Choose Plan
-          </button>
+          <button class="choose-btn choose-btn--featured" data-plan="growth">Choose plan</button>
         </div>
 
         <div class="plan-card">
           <h2>Pro / Business</h2>
-          <div class="price">₹1,999 <span>/ month</span></div>
-
-          <ul>
-            <li>Up to 150 active invoice slots</li>
-            <li>Invoice creation</li>
-            <li>Structured 4-stage recovery flow</li>
-            <li>Behaviour-aware automated follow-ups</li>
-            <li>Advanced dashboard (Coming Soon)</li>
-            <li>Team access (coming soon)</li>
+          <div class="plan-price">₹1,999<span class="plan-period"> / month</span></div>
+          <ul class="plan-features">
+            <li><span class="pf-check">✓</span>Up to 150 active invoice slots</li>
+            <li><span class="pf-check">✓</span>Invoice creation &amp; sending</li>
+            <li><span class="pf-check">✓</span>4-stage automated follow-ups</li>
+            <li><span class="pf-check">✓</span>Behaviour-aware reminders</li>
+            <li><span class="pf-check">✓</span>Advanced dashboard <span class="coming-soon">Soon</span></li>
+            <li><span class="pf-check">✓</span>Team access <span class="coming-soon">Soon</span></li>
           </ul>
+          <button class="choose-btn" data-plan="pro">Choose plan</button>
+        </div>
 
-          <button class="choose-btn" data-plan="pro">
-            Choose Plan
-          </button>
+      </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="plans-divider"><span>OR</span></div>
+
+    <!-- Connector plan -->
+    <section class="plans-section">
+      <div class="section-tag">For Zoho, Tally &amp; QuickBooks users</div>
+
+      <div class="connector-card">
+        <div class="connector-left">
+          <div class="plan-badge plan-badge--gray">Integrated</div>
+          <h2>Connector</h2>
+          <p>Connect your existing invoicing system. RemindFlow handles the follow-up logic — you keep your current workflow.</p>
+          <ul class="plan-features">
+            <li><span class="pf-check muted">✓</span>Works with Zoho, Tally, QuickBooks</li>
+            <li><span class="pf-check muted">✓</span>Behaviour-aware reminder logic</li>
+            <li><span class="pf-check muted">✓</span>Structured escalation flow</li>
+            <li><span class="pf-check muted">✓</span>Uses your existing email setup</li>
+          </ul>
+        </div>
+        <div class="connector-right">
+          <div class="plan-price">₹399<span class="plan-period"> / month</span></div>
+          <button class="choose-btn choose-btn--ghost" data-plan="connector" disabled>Launching soon</button>
         </div>
       </div>
     </section>
+
   </main>
 
-  <!-- Plan Selection Logic -->
   <script type="module">
-  import { requireAuth } from "/js/guard.js";
-  requireAuth();
-</script>
-<script type="module" src="/js/plans.js"></script>
+    import { requireAuth } from "/js/guard.js";
+    requireAuth();
+  </script>
+  <script type="module" src="/js/plans.js"></script>
 </body>
 </html>

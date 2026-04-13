@@ -4,110 +4,156 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Complete Your Profile – RemindFlow</title>
-
-  <!-- Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/onboarding.css" />
-
-  <!-- Auth guard (JWT only) -->
- <script type="module" src="/js/guard.js"></script>
+  <script type="module" src="/js/guard.js"></script>
 </head>
 
 <body>
-  <main class="onboarding-container">
-    <h1>Complete your profile</h1>
-    <p class="subtitle">
-      This is required only once. It helps us personalise your dashboard and invoices.
-    </p>
 
-    <form id="onboardingForm" autocomplete="off">
+  <header class="header">
+    <a href="/" class="nav-logo">
+      <div class="nav-dot"></div>
+      <span>RemindFlow</span>
+    </a>
+    <div class="header-step">Step 1 of 1 &nbsp;·&nbsp; Profile setup</div>
+  </header>
 
-      <!-- ================= IDENTITY ================= -->
-      <h3>Identity</h3>
-    
-      <label for="name">Full Name *</label>
-      <input
-        type="text"
-        id="name"
-        placeholder="Your full name"
-        required
-      />
-    
-      <label for="company_name">Business / Freelancer Name *</label>
-      <input
-        type="text"
-        id="company_name"
-        placeholder="e.g. Rahul Design Studio"
-        required
-      />
-    
-      <label for="contact_phone">Business Contact Phone *</label>
-      <input
-        type="text"
-        id="contact_phone"
-      />
-    
-      <label for="timezone">Timezone *</label>
-      <select id="timezone">
-        <option value="Asia/Kolkata">Asia/Kolkata</option>
-        <option value="UTC">UTC</option>
-        <option value="Europe/London">Europe/London</option>
-        <option value="America/New_York">America/New_York</option>
-      </select>
-    
-      <!-- ================= ADDRESS ================= -->
-      <h3>Business Address</h3>
-    
-      <label>Address Line 1 *</label>
-      <input
-        type="text"
-        id="address_line1"
-        placeholder="Building, Street name"
-      />
-    
-      <label>Address Line 2 (Optional)</label>
-      <input
-        type="text"
-        id="address_line2"
-        placeholder="Area, Landmark"
-      />
-    
-      <div class="address-row">
-        <div>
-          <label>City *</label>
-          <input type="text" id="city" />
-        </div>
-    
-        <div>
-          <label>State / Province *</label>
-          <input type="text" id="state" />
-        </div>
+  <main class="onboarding-page">
+
+    <!-- Left — progress & context -->
+    <aside class="onboarding-left">
+      <div class="onboarding-left-inner">
+        <p class="ol-label">One-time setup</p>
+        <h2>Tell us about<br/>your business.</h2>
+        <p class="ol-sub">This is the only time you'll fill this in. It powers your invoices, sets your sender name, and personalises your dashboard.</p>
+
+        <ul class="ol-checklist">
+          <li class="ol-check active" id="check-identity">
+            <div class="ol-check-dot"></div>
+            <span>Your identity</span>
+          </li>
+          <li class="ol-check" id="check-address">
+            <div class="ol-check-dot"></div>
+            <span>Business address</span>
+          </li>
+          <li class="ol-check" id="check-done">
+            <div class="ol-check-dot"></div>
+            <span>Done</span>
+          </li>
+        </ul>
       </div>
-    
-      <div class="address-row">
-        <div>
-          <label>Postal Code *</label>
-          <input type="text" id="postal_code" />
-        </div>
-    
-        <div>
-          <label>Country *</label>
-          <input
-            type="text"
-            id="country"
-          />
-        </div>
+    </aside>
+
+    <!-- Right — form -->
+    <div class="onboarding-right">
+      <div class="onboarding-card">
+
+        <form id="onboardingForm" autocomplete="off">
+
+          <!-- Identity -->
+          <div class="form-section" id="section-identity">
+            <div class="form-section-label">Identity</div>
+
+            <div class="field">
+              <label for="name">Full name <span class="req">*</span></label>
+              <input type="text" id="name" placeholder="Your full name" required />
+            </div>
+
+            <div class="field">
+              <label for="company_name">Business / freelancer name <span class="req">*</span></label>
+              <input type="text" id="company_name" placeholder="e.g. Rahul Design Studio" required />
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="contact_phone">Contact phone</label>
+                <input type="text" id="contact_phone" placeholder="+91 9876543210" />
+              </div>
+              <div class="field">
+                <label for="timezone">Timezone</label>
+                <select id="timezone">
+                  <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+                  <option value="UTC">UTC</option>
+                  <option value="Europe/London">Europe/London</option>
+                  <option value="America/New_York">America/New York</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="form-section" id="section-address">
+            <div class="form-section-label">Business address</div>
+
+            <div class="field">
+              <label for="address_line1">Address line 1 <span class="req">*</span></label>
+              <input type="text" id="address_line1" placeholder="Building, street name" />
+            </div>
+
+            <div class="field">
+              <label for="address_line2">Address line 2 <span class="optional">(optional)</span></label>
+              <input type="text" id="address_line2" placeholder="Area, landmark" />
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="city">City <span class="req">*</span></label>
+                <input type="text" id="city" />
+              </div>
+              <div class="field">
+                <label for="state">State <span class="req">*</span></label>
+                <input type="text" id="state" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="postal_code">Postal code <span class="req">*</span></label>
+                <input type="text" id="postal_code" />
+              </div>
+              <div class="field">
+                <label for="country">Country <span class="req">*</span></label>
+                <input type="text" id="country" placeholder="India" />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="submitBtn" disabled>
+            Complete setup →
+          </button>
+
+          <p class="form-note">Your details are used only for invoicing and are never shared.</p>
+
+        </form>
       </div>
-    
-      <!-- ================= SUBMIT ================= -->
-      <button type="submit" id="submitBtn" disabled>
-        Continue
-      </button>
-    
-    </form>
+    </div>
 
   </main>
 
-  <!-- Page Logic -->
   <script type="module" src="/js/onboarding.js"></script>
+
+  <script>
+    // Highlight checklist items as user fills sections
+    const nameInput = document.getElementById('name');
+    const companyInput = document.getElementById('company_name');
+    const addressInput = document.getElementById('address_line1');
+
+    function updateChecklist() {
+      const hasIdentity = nameInput.value.trim() && companyInput.value.trim();
+      const hasAddress = addressInput.value.trim();
+
+      document.getElementById('check-identity').classList.toggle('done', hasIdentity);
+      document.getElementById('check-address').classList.toggle('done', hasAddress);
+      document.getElementById('check-done').classList.toggle('active', hasIdentity && hasAddress);
+    }
+
+    [nameInput, companyInput, addressInput].forEach(el => {
+      el?.addEventListener('input', updateChecklist);
+    });
+  </script>
+
 </body>
 </html>

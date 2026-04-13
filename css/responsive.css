@@ -1,297 +1,67 @@
 /* =====================================================
-   REMINDFLOW RESPONSIVE SYSTEM (Mobile First)
-   ===================================================== */
+   RemindFlow — responsive.css
+===================================================== */
 
-/* =========================
-   GLOBAL MOBILE FIXES
-========================= */
+@media (max-width: 900px) {
+  .hero-mockup { grid-template-columns: 1fr 1fr; }
+  .mock-trust { display: none; }
 
-html, body {
-  overflow-x: hidden;
+  .problem-inner { grid-template-columns: 1fr; gap: 48px; }
+
+  .feat-card--featured { grid-column: span 1; grid-template-columns: 1fr; }
+  .feat-mini-mockup { display: none; }
+
+  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+
+  .price-connector { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .price-connector-right { flex-direction: row; align-items: center; }
 }
 
-@media (max-width: 1023px) {
-  .container {
-    width: 100%;
-    padding: 0 20px;
-  }
-}
+@media (max-width: 680px) {
+  body { padding-top: 64px; }
 
-@media (max-width: 1023px) {
-  section {
-    padding: 60px 0;
-  }
-}
-
-/* =========================
-   NAVBAR (MOBILE FIRST)
-========================= */
-
-.header {
-  height: 60px;
-}
-
-.nav-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 60px;
-  padding: 0 16px;
-  position: relative;
-}
-
-/* Hide desktop nav by default */
-.nav-links {
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 100%;
-  height: 100vh;
-  background: var(--navy-dark);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
-  transition: right 0.3s ease;
-  z-index: 1000;
-}
-
-/* Active slide-in state */
-.nav-links.active {
-  right: 0;
-}
-
-/* Links styling inside mobile menu */
-.nav-links a {
-  font-size: 20px;
-  font-weight: 500;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo img {
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-}
-
-/* Hamburger */
-.hamburger {
-  display: block;
-  font-size: 26px;
-  background: none;
-  border: none;
-  color: var(--text-light);
-  cursor: pointer;
-  z-index: 1100;
-}
-
-/* =========================
-   HERO SECTION
-========================= */
-
-@media (max-width: 1023px) {
-
-  .hero {
-    padding: 70px 20px 50px;
-    text-align: center;
-  }
-
-  .hero h1 {
-    font-size: 28px;
-    line-height: 1.3;
-  }
-
-  .hero p {
-    font-size: 16px;
-    line-height: 1.6;
-    max-width: 100%;
-    margin: 0 auto;
-  }
-
-  .hero-buttons {
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 24px;
-}
-
-.btn-primary,
-.btn-secondary {
-  width: 100%;
-  max-width: 240px;
-}
-
-.workflow {
-  padding: 70px 20px;
-}
-
-.flow-step {
-  font-size: 13px;
-  padding: 10px 16px;
-}
-
-.flow-arrow {
-  margin: 6px 0;
-}
-
-}
-
-/* =========================
-   SERVICES / CARDS
-========================= */
-
-.services-grid,
-.card-grid,
-.features-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.card,
-.service-card {
-  width: 100%;
-}
-
-/* =========================
-   TABLES
-========================= */
-
-table {
-  display: block;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-.table-container {
-  overflow-x: auto;
-}
-
-/* =========================
-   FORMS
-========================= */
-
-input,
-select,
-textarea {
-  width: 100%;
-  font-size: 16px;
-}
-
-.form-row {
-  flex-direction: column;
-  gap: 15px;
-}
-
-/* =========================
-   FOOTER
-========================= */
-
-.footer-grid {
-  flex-direction: column;
-  gap: 30px;
-  text-align: center;
-}
-
-/* =====================================================
-   TABLET (768px+)
-   ===================================================== */
-
-@media (min-width: 768px) {
-
-  .logo-text {
-    display: inline;
-  }
-
-  .hero h1 {
-    font-size: 42px;
-  }
-
-  .hero p {
-    font-size: 18px;
-    max-width: 600px;
-  }
-
-  .services-grid,
-  .card-grid,
-  .features-grid {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .card,
-  .service-card {
-    flex: 1 1 calc(50% - 20px);
-  }
-}
-
-/* =====================================================
-   DESKTOP (1024px+)
-   ===================================================== */
-
-@media (min-width: 1024px) {
-
-  body {
-    padding-top: 72px;
-  }
-
-  .header {
-    height: 72px;
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 0 40px;
-  }
-
-  .nav-container {
-    padding: 0 40px;
-    height: 72px;
-  }
-
-  /* Restore desktop nav */
   .nav-links {
-    position: static;
-    height: auto;
-    width: auto;
-    background: transparent;
-    flex-direction: row;
-    justify-content: flex-end;
-    gap: 24px;
-    right: 0;
-    transition: none;
-  }
-
-  .hamburger {
     display: none;
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    background: rgba(10,15,26,0.98);
+    flex-direction: column;
+    padding: 28px 32px;
+    gap: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
   }
 
-  .hero {
-    padding: 160px 0 120px;
-    text-align: center;
-  }
+  .nav-links.open { display: flex; }
+  .hamburger { display: flex; }
 
-  .hero h1 {
-    font-size: 56px;
-  }
+  .hero { padding: 72px 0 60px; }
+  .hero-mockup { grid-template-columns: 1fr; }
+  .mock-reminders { display: none; }
 
-  .hero p {
-  max-width: 650px;
-  margin: 0 auto;
+  .features-grid { grid-template-columns: 1fr; }
+  .feat-card--featured { grid-column: span 1; }
+
+  .ease-grid { flex-direction: column; align-items: stretch; }
+  .ease-cell { min-width: unset; }
+  .ease-arrow { transform: rotate(90deg); align-self: center; }
+
+  .workflow-steps { flex-direction: column; align-items: stretch; }
+  .wf-step { text-align: left; }
+  .wf-arrow { transform: rotate(90deg); align-self: center; }
+
+  .founder-card { flex-direction: column; text-align: center; padding: 36px 24px; gap: 24px; }
+  .founder-quote { font-size: 18px; }
+
+  .footer-inner { flex-direction: column; text-align: center; gap: 16px; }
+  .footer-links { justify-content: center; }
+
+  .price-connector-right { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .price-connector-right .price-btn { width: auto; }
 }
 
-  .hero .btn {
-    width: auto;
-  }
-
-  .card,
-  .service-card {
-    flex: 1 1 calc(33.333% - 20px);
-  }
+@media (max-width: 480px) {
+  .container { padding: 0 20px; }
+  .nav-container { padding: 0 20px; }
+  .hero-trust { font-size: 12px; }
+  .stat-num { font-size: 38px; }
 }

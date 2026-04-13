@@ -4,32 +4,83 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login – RemindFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/css/login.css" />
   </head>
 
   <body>
-    <nav class="navbar">
-      <div class="logo">RemindFlow</div>
-    </nav>
 
-    <div class="login-container">
-      <h1>Welcome Back</h1>
-      <p class="subtitle">
-        Log in to continue managing your reminders & invoices.
-      </p>
+    <header class="header">
+      <a href="/" class="nav-logo">
+        <div class="nav-dot"></div>
+        <span>RemindFlow</span>
+      </a>
+    </header>
 
-      <div class="login-box">
-        <button id="googleLoginBtn" class="google-btn">
-          <img src="https://img.icons8.com/color/48/000000/google-logo.png" />
-          Continue with Google
-        </button>
+    <main class="login-page">
 
-        <p class="signup-text">
-          New user? You’ll be asked to choose a plan after login.
-        </p>
+      <!-- Left — brand panel -->
+      <div class="login-left">
+        <div class="login-left-inner">
+          <p class="login-left-label">What you get</p>
+          <ul class="login-perks">
+            <li>
+              <div class="perk-icon">⚡</div>
+              <div>
+                <strong>30-second invoicing</strong>
+                <span>Client details pre-fill. Send in seconds.</span>
+              </div>
+            </li>
+            <li>
+              <div class="perk-icon">🤖</div>
+              <div>
+                <strong>Automated follow-ups</strong>
+                <span>Friendly → firm — without you lifting a finger.</span>
+              </div>
+            </li>
+            <li>
+              <div class="perk-icon">📈</div>
+              <div>
+                <strong>Client health insights</strong>
+                <span>Trust grades. Payment patterns. All tracked.</span>
+              </div>
+            </li>
+            <li>
+              <div class="perk-icon">🤝</div>
+              <div>
+                <strong>Auto thank-you on payment</strong>
+                <span>Close the loop without thinking about it.</span>
+              </div>
+            </li>
+          </ul>
+          <p class="login-left-footnote">14-day free trial &nbsp;·&nbsp; No credit card needed</p>
+        </div>
       </div>
-    </div>
-   
+
+      <!-- Right — login form -->
+      <div class="login-right">
+        <div class="login-card">
+          <div class="login-card-header">
+            <h1>Welcome back</h1>
+            <p>Log in to continue managing your invoices &amp; reminders.</p>
+          </div>
+
+          <button id="googleLoginBtn" class="google-btn">
+            <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google" />
+            Continue with Google
+          </button>
+
+          <p class="login-note">
+            New here? You'll be asked to choose a plan after sign-in.
+          </p>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Loading overlay -->
     <div id="loginLoader" class="login-loader hidden">
       <div class="loader-box">
         <div class="spinner"></div>
@@ -37,28 +88,12 @@
       </div>
     </div>
 
-    <!-- ========================= -->
-    <!-- Global Config -->
-    <!-- ========================= -->
     <script>
       window.BACKEND_URL = 'https://remindflow-backend.onrender.com';
     </script>
-
-    <!-- ========================= -->
-    <!-- Firebase (COMPAT SDKs) -->
-    <!-- MUST LOAD BEFORE login.js -->
-    <!-- ========================= -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
-    <!-- ========================= -->
-    <!-- Firebase App Init -->
-    <!-- ========================= -->
     <script src="/js/firebase-config.js"></script>
-
-    <!-- ========================= -->
-    <!-- Login Logic (NO MODULE) -->
-    <!-- ========================= -->
     <script type="module" src="/js/login.js"></script>
   </body>
 </html>

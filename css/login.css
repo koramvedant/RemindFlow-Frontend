@@ -1,179 +1,255 @@
-body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: #0d1b2a;
-    color: white;
-  }
-  
-  /* -------------------- Navbar -------------------- */
-  .navbar {
-    width: 100%;
-    padding: 18px 40px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    background: transparent;
-  }
-  
-  .logo {
-    font-size: 22px;
-    font-weight: 700;
-    color: #ffffff;
-  }
-  
-  /* -------------------- Login Container -------------------- */
-  .login-container {
-    max-width: 400px;
-    margin: 80px auto;
-    text-align: center;
-  }
-  
-  h1 {
-    font-size: 32px;
-    margin-bottom: 10px;
-  }
-  
-  .subtitle {
-    margin-bottom: 30px;
-    opacity: 0.8;
-  }
+/* =====================================================
+   RemindFlow — login.css
+===================================================== */
 
-  .login-loader {
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0a0f1a;
+  --bg-2:     #0d1420;
+  --bg-3:     #111827;
+  --border:   rgba(255,255,255,0.07);
+  --border-2: rgba(255,255,255,0.12);
+  --teal:     #1cc7ae;
+  --teal-dim: rgba(28,199,174,0.12);
+  --text-1:   #f0f2f5;
+  --text-2:   rgba(255,255,255,0.52);
+  --text-3:   rgba(255,255,255,0.28);
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ───────────────────────────────────────── */
+.header {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-1);
+  text-decoration: none;
+  letter-spacing: -0.2px;
+}
+
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+
+/* ── Page layout ──────────────────────────────────── */
+.login-page {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 64px);
+}
+
+/* ── Left panel ───────────────────────────────────── */
+.login-left {
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+}
+
+.login-left-inner {
+  max-width: 380px;
+  width: 100%;
+}
+
+.login-left-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 32px;
+}
+
+.login-perks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-bottom: 48px;
+}
+
+.login-perks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.perk-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--teal-dim);
+  border: 1px solid rgba(28,199,174,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.login-perks li div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.login-perks li strong {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-1);
+  display: block;
+}
+
+.login-perks li span {
+  font-size: 13px;
+  color: var(--text-2);
+  font-weight: 300;
+  line-height: 1.5;
+  display: block;
+}
+
+.login-left-footnote {
+  font-size: 13px;
+  color: var(--text-3);
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Right panel ──────────────────────────────────── */
+.login-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+}
+
+.login-card-header {
+  margin-bottom: 40px;
+}
+
+.login-card-header h1 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+  color: var(--text-1);
+}
+
+.login-card-header p {
+  font-size: 15px;
+  color: var(--text-2);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* ── Google button ────────────────────────────────── */
+.google-btn {
+  width: 100%;
+  background: #ffffff;
+  color: #1f2937;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-family: 'DM Sans', sans-serif;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-bottom: 20px;
+}
+
+.google-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.google-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+.google-btn:active { transform: scale(0.98); }
+
+.login-note {
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ── Loading overlay ──────────────────────────────── */
+.login-loader {
   position: fixed;
   inset: 0;
-  background: rgba(13, 27, 42, 0.95);
+  background: rgba(10,15,26,0.96);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
 
-.login-loader.hidden {
-  display: none;
-}
+.login-loader.hidden { display: none; }
 
 .loader-box {
   text-align: center;
-  color: white;
+  color: var(--text-1);
+}
+
+.loader-box p {
+  font-size: 15px;
+  color: var(--text-2);
+  margin-top: 16px;
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(255,255,255,0.2);
-  border-top: 4px solid #1cc7ae;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-top: 2px solid var(--teal);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin: 0 auto 15px;
+  margin: 0 auto;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 720px) {
+  .login-page { grid-template-columns: 1fr; }
+  .login-left { display: none; }
+  .login-right { padding: 48px 28px; align-items: flex-start; padding-top: 56px; }
+  .header { padding: 0 24px; }
 }
-  
-  /* -------------------- Login Box -------------------- */
-  .login-box {
-    background: #1b263b;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* -------------------- Google Button -------------------- */
-  .google-btn {
-    width: 100%;
-    background: #ffffff;
-    color: #000;
-    border: none;
-    border-radius: 5px;
-    padding: 12px;
-    font-size: 15px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    transition: background 0.2s ease, transform 0.1s ease;
-  }
-  
-  .google-btn img {
-    width: 20px;
-    height: 20px;
-  }
-  
-  .google-btn:hover {
-    background: #f1f1f1;
-    transform: scale(0.98);
-  }
-  
-  /* -------------------- Divider -------------------- */
-  .divider {
-    margin: 20px 0;
-    text-align: center;
-    position: relative;
-  }
-  
-  .divider span {
-    background: #1b263b;
-    padding: 0 10px;
-    font-size: 14px;
-    opacity: 0.7;
-  }
-  
-  .divider::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 100%;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.2);
-  }
-  
-  /* -------------------- Form Inputs -------------------- */
-  form input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 12px;
-    border: none;
-    border-radius: 5px;
-    outline: none;
-    font-size: 14px;
-  }
-  
-  /* -------------------- Login Button -------------------- */
-  .login-btn {
-    width: 100%;
-    background: #3b82f6;
-    border: none;
-    color: white;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.2s ease, transform 0.1s ease;
-  }
-  
-  .login-btn:hover {
-    background: #2563eb;
-    transform: scale(0.98);
-  }
-  
-  /* -------------------- Signup Text -------------------- */
-  .signup-text {
-    margin-top: 15px;
-    font-size: 14px;
-    opacity: 0.8;
-  }
-  
-  .signup-text a {
-    color: #4cc9f0;
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-  
-  .signup-text a:hover {
-    color: #38bdf8;
-  }
-  

@@ -3,298 +3,281 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-    <title>RemindFlow - Client-Adaptive Payment Follow-ups</title>
-  
-    <meta name="description"
-          content="RemindFlow adapts to how your clients behave — starting polite, escalating when needed. Smart invoice follow-ups that protect relationships while ensuring you get paid." />
-  
+    <title>RemindFlow — Professional Billing in 30 Seconds</title>
+    <meta name="description" content="One-time setup, forever automated. RemindFlow handles your invoices and professional follow-ups so you can stay the creative partner — not the debt collector." />
     <link rel="canonical" href="https://www.remindflow.in/" />
-  
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/responsive.css" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   </head>
-
-
   <body>
-    <!-- Navigation -->
-    <header class="header">
-      <div class="container nav-container">
-        <div class="logo">
-          <a href="#hero" class="logo-link">
-            <img src="/logo.png" alt="RemindFlow Logo" class="logo-img" />
-            <span class="logo-text">RemindFlow</span>
-          </a>
-        </div>
 
-        <!-- Hamburger (Mobile) -->
-        <button class="hamburger" id="hamburger">☰</button>
-        
-        <!-- Navigation Links -->
-        <nav class="nav-links">
-          <a href="#hero">Home</a>
-          <a href="#services">Services</a>
+    <header class="header">
+      <div class="nav-container">
+        <a href="#hero" class="nav-logo">
+          <div class="nav-dot"></div>
+          <img src="/logo.png" alt="RemindFlow" class="nav-logo-img" />
+          <span>RemindFlow</span>
+        </a>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        <nav class="nav-links" id="navLinks">
+          <a href="#features">Features</a>
           <a href="#pricing">Pricing</a>
-          <a href="#get-started">Get Started</a>
           <a href="#contact">Contact</a>
-          <a href="#" class="btn" id="loginBtn">Login</a>
+          <a href="#" class="nav-login" id="loginBtn">Login</a>
         </nav>
       </div>
     </header>
 
-    <!-- Hero Section -->
     <section id="hero" class="hero">
-      <div class="container hero-content">
-      
-        <h1>Structure your entire payment process</h1>
-      
-        <p class="hero-sub">
-          Create invoices, track payments, and run structured follow-ups from one
-          centralized system — so collections stay consistent without awkward client chasing.
-        </p>
-      
-        <div class="hero-buttons">
-          <button class="btn-primary" id="getStartedBtn">
-            Start 14-Day Free Trial
-          </button>
-          <button class="btn-secondary" id="showWorkflow">
-            See How It Works
-          </button>
+      <div class="container">
+        <div class="hero-eyebrow"><div class="eyebrow-line"></div>For freelancers &amp; indie agencies</div>
+        <h1>Professional billing<br/>that takes <em>30 seconds.</em></h1>
+        <p class="hero-sub">One-time setup, forever automated. Invoices sent, follow-ups handled, payments confirmed — without you lifting a finger.</p>
+        <div class="hero-actions">
+          <button class="btn-main" id="getStartedBtn">Start free trial</button>
+          <button class="btn-ghost" id="showWorkflow">See how it works</button>
         </div>
-      
-        <!-- NEW: Visual Preview -->
-        <div class="hero-visual">
-          <div class="mock-card">Invoice Sent</div>
-          <div class="mock-card">Reminder Triggered</div>
-          <div class="mock-card highlight">Payment Received</div>
+        <p class="hero-trust">No credit card required &nbsp;·&nbsp; 14-day free trial &nbsp;·&nbsp; Cancel anytime</p>
+
+        <div class="hero-mockup">
+          <div class="mock-invoice">
+            <div class="mock-inv-header">
+              <div class="mock-inv-id">INV-0042</div>
+              <div class="mock-status s-sent">Sent</div>
+            </div>
+            <div class="mock-client">Vaibhav Sharma</div>
+            <div class="mock-amount">₹59,000</div>
+            <div class="mock-bar"><div class="mock-bar-fill"></div></div>
+            <div class="mock-footer">
+              <div class="mock-date">Due 17 Apr 2026</div>
+              <div class="mock-action">View →</div>
+            </div>
+          </div>
+
+          <div class="mock-reminders">
+            <div class="mock-section-label">Auto follow-ups</div>
+            <div class="mock-r-item"><span class="mock-r-stage">Friendly reminder</span><span class="mock-r-badge rb-done">Sent</span></div>
+            <div class="mock-r-item"><span class="mock-r-stage">Firm nudge</span><span class="mock-r-badge rb-next">Apr 20</span></div>
+            <div class="mock-r-item"><span class="mock-r-stage">Formal notice</span><span class="mock-r-badge rb-auto">Auto</span></div>
+            <div class="mock-r-item"><span class="mock-r-stage">Final escalation</span><span class="mock-r-badge rb-auto">Auto</span></div>
+          </div>
+
+          <div class="mock-trust">
+            <div class="mock-section-label">Client health</div>
+            <div class="mock-t-row"><div class="mock-t-avatar av-a">VS</div><div class="mock-t-name">Vaibhav</div><div class="mock-t-grade grade-a">A</div></div>
+            <div class="mock-t-row"><div class="mock-t-avatar av-b">RK</div><div class="mock-t-name">Riya K.</div><div class="mock-t-grade grade-b">B</div></div>
+            <div class="mock-t-row"><div class="mock-t-avatar av-c">AM</div><div class="mock-t-name">Aditya M.</div><div class="mock-t-grade grade-c">C</div></div>
+          </div>
         </div>
-      
       </div>
     </section>
 
     <section id="workflow" class="workflow">
       <div class="container">
-        <h2>How RemindFlow Works</h2>
-    
-        <div class="workflow-flow">
-          <div class="flow-line"></div>
-        
-          <div class="flow-step">Create Invoice</div>
-          <div class="flow-step">Track Status</div>
-          <div class="flow-step">Automated Reminders</div>
-          <div class="flow-step">Structured Escalation</div>
-          <div class="flow-step">Payment Recorded</div>
+        <h2>How it works</h2>
+        <div class="workflow-steps">
+          <div class="wf-step"><div class="wf-num">01</div><div class="wf-text">Fill client details once</div></div>
+          <div class="wf-arrow">→</div>
+          <div class="wf-step"><div class="wf-num">02</div><div class="wf-text">Invoice sent instantly</div></div>
+          <div class="wf-arrow">→</div>
+          <div class="wf-step"><div class="wf-num">03</div><div class="wf-text">Reminders fire automatically</div></div>
+          <div class="wf-arrow">→</div>
+          <div class="wf-step"><div class="wf-num">04</div><div class="wf-text">Payment + thank-you sent</div></div>
         </div>
-    
-        <p class="workflow-note">
-          RemindFlow structures the entire payment lifecycle so delayed invoices never fall through the cracks.
-        </p>
+        <p class="workflow-note">RemindFlow runs the entire payment lifecycle in the background — you stay focused on the work you were hired to do.</p>
       </div>
     </section>
 
-    <!-- Services Section -->
-    <section id="services" class="services">
+    <section class="problem">
       <div class="container">
-        <h2>Core Features</h2>
-        <div class="service-grid">
-          <div class="service-item">
-            <div class="service-icon">🤖</div>
-            <h3>Intelligent Payment Management</h3>
-            <p>
-              Automatically escalates overdue payments based on client
-              behaviour.
-            </p>
+        <div class="problem-inner">
+          <div class="problem-left">
+            <div class="section-label">The real problem</div>
+            <h2>Your time is too valuable<br/>to spend as <em>an amateur accountant.</em></h2>
+            <p>10–15 minutes per invoice. Looking up billing addresses. Rechecking tax rates. Writing a follow-up that doesn't sound awkward. Every. Single. Month.</p>
+            <p>Fill the details once — RemindFlow remembers everything and handles the rest automatically, every time.</p>
           </div>
-          <div class="service-item">
-            <div class="service-icon">💰</div>
-            <h3>Invoice Creation & Management</h3>
-            <p>Create, send, and track invoices in one system.</p>
-          </div>
-          <div class="service-item">
-            <div class="service-icon">📈</div>
-            <h3>Client Payment Insights</h3>
-            <p>Understand overdue trends and payment behaviour.</p>
-          </div>
-          <div class="service-item">
-            <div class="service-icon">📧</div>
-            <h3>Professional Communication Templates</h3>
-            <p>Behaviour-aware email templates.</p>
-          </div>
-          <div class="service-item">
-            <div class="service-icon">🔒</div>
-            <h3>Secure Data Storage</h3>
-            <p>Encrypted and securely stored data.</p>
-          </div>
-          <div class="service-item">
-            <div class="service-icon">⚡</div>
-            <h3>
-              Workflow Automations
-              <span style="font-weight: normal">(Coming Soon)</span>
-            </h3>
-            <p>Future integrations with accounting tools.</p>
+          <div class="problem-stats">
+            <div class="stat-block">
+              <div class="stat-num">10<span class="stat-unit">–15 min</span></div>
+              <div class="stat-desc">wasted per invoice on manual billing admin</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-num">30<span class="stat-unit">s</span></div>
+              <div class="stat-desc">with RemindFlow, after your first setup</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-num">0</div>
+              <div class="stat-desc">awkward "just checking in" emails you'll ever write again</div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Pricing Section -->
+    <section id="features" class="features">
+      <div class="container">
+        <div class="section-label">Core features</div>
+        <h2>Everything runs<br/><em>in the background.</em></h2>
+        <p class="section-sub">Built for people who bill every month and want to think about it never.</p>
+
+        <div class="features-grid">
+          <div class="feat-card feat-card--featured">
+            <div class="feat-card-left">
+              <div class="feat-icon fi-teal">🗂</div>
+              <h3>Your client database builds itself</h3>
+              <p>Add a client once. Every invoice after is pre-filled — name, address, tax, payment terms. The more you use it, the less you think about it.</p>
+            </div>
+            <div class="feat-mini-mockup">
+              <div class="fmm-label">Client record</div>
+              <div class="fmm-name">Vaibhav Sharma</div>
+              <div class="fmm-email">vaibhav@studio.in &nbsp;·&nbsp; GST: 27ABCDE1234F1Z5</div>
+              <div class="fmm-tags">
+                <span class="fmm-tag teal">Net 30</span>
+                <span class="fmm-tag blue">UPI + Bank</span>
+                <span class="fmm-tag gray">18% GST</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feat-card"><div class="feat-icon fi-blue">🏢</div><h3>Your dedicated billing department</h3><p>RemindFlow acts as a professional buffer — polished, consistent communication so you never mix creativity with collections.</p></div>
+          <div class="feat-card"><div class="feat-icon fi-amber">🤖</div><h3>Friendly → firm escalation</h3><p>Reminders start warm and escalate automatically. You never have to calibrate the tone or remember when to follow up.</p></div>
+          <div class="feat-card"><div class="feat-icon fi-purple">📈</div><h3>Client health insights</h3><p>Automatic Trust Grades for every client based on payment patterns. Focus on your A-partners — the system handles the rest.</p></div>
+          <div class="feat-card"><div class="feat-icon fi-teal">🤝</div><h3>Close the loop automatically</h3><p>The moment a payment lands, a professional thank-you goes out. No manual emails, no loose ends. Just a finished transaction.</p></div>
+          <div class="feat-card"><div class="feat-icon fi-blue">🔒</div><h3>Secure &amp; always available</h3><p>All invoice data encrypted and stored securely. Your records are there when you need them.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ease-strip">
+      <div class="container">
+        <div class="ease-grid">
+          <div class="ease-cell"><div class="ease-label">Input</div><div class="ease-value teal">30 seconds</div></div>
+          <div class="ease-arrow">→</div>
+          <div class="ease-cell"><div class="ease-label">Follow-up</div><div class="ease-value">Automated</div></div>
+          <div class="ease-arrow">→</div>
+          <div class="ease-cell"><div class="ease-label">Confirmation</div><div class="ease-value">Instant</div></div>
+          <div class="ease-arrow">→</div>
+          <div class="ease-cell"><div class="ease-label">You stay</div><div class="ease-value">The creative</div></div>
+        </div>
+      </div>
+    </section>
+
     <section id="pricing" class="pricing">
       <div class="container">
-        <h2>Choose Your Plan</h2>
-        <p class="pricing-sub">🎉 All plans include a 7-day free trial</p>
+        <div class="section-label">Pricing</div>
+        <h2>Simple plans,<br/><em>no surprises.</em></h2>
+        <p class="section-sub">All plans include a 7-day free trial. No credit card required to start.</p>
 
-        <div class="pricing-group">
-          <p class="pricing-group-label">For Full RemindFlow Users</p>
+        <div class="pricing-grid">
+          <div class="price-card">
+            <h3>Starter</h3>
+            <div class="price-amount">₹499</div>
+            <div class="price-period">per month</div>
+            <ul class="price-features">
+              <li><span class="pf-check">✓</span>Up to 25 active clients</li>
+              <li><span class="pf-check">✓</span>Email reminders</li>
+              <li><span class="pf-check">✓</span>Invoice creation &amp; tracking</li>
+            </ul>
+            <button class="price-btn planBtn" data-plan="starter">Get started</button>
+          </div>
 
-          <div class="pricing-grid">
-            <div class="pricing-item">
-              <h3>Starter</h3>
-              <p class="price">₹499 <span>/ month</span></p>
-              <ul>
-                <li>Up to 25 active clients</li>
-                <li>Email reminders</li>
-              </ul>
-              <button class="btn-primary planBtn" data-plan="starter">
-                Choose Plan
-              </button>
-            </div>
+          <div class="price-card price-card--featured">
+            <div class="price-badge">Most popular</div>
+            <h3>Growth</h3>
+            <div class="price-amount">₹999</div>
+            <div class="price-period">per month</div>
+            <ul class="price-features">
+              <li><span class="pf-check">✓</span>Up to 60 active clients</li>
+              <li><span class="pf-check">✓</span>Dashboard with insights</li>
+              <li><span class="pf-check">✓</span>Trust Grade tracking</li>
+            </ul>
+            <button class="price-btn price-btn--featured planBtn" data-plan="growth">Get started</button>
+          </div>
 
-            <div class="pricing-item featured">
-              <span class="badge">Most Popular</span>
-              <h3>Growth</h3>
-              <p class="price">₹999 <span>/ month</span></p>
-              <ul>
-                <li>Up to 60 active clients</li>
-                <li>Dashboard with insights</li>
-              </ul>
-              <button class="btn-primary planBtn" data-plan="growth">
-                Choose Plan
-              </button>
-            </div>
-
-            <div class="pricing-item">
-              <h3>Pro / Business</h3>
-              <p class="price">₹1,999 <span>/ month</span></p>
-              <ul>
-                <li>Up to 150 active clients</li>
-                <li>Dashboard with insights</li>
-                <li>Advanced dashboard (Coming Soon)</li>
-              </ul>
-              <button class="btn-primary planBtn" data-plan="pro">
-                Choose Plan
-              </button>
-            </div>
+          <div class="price-card">
+            <h3>Pro / Business</h3>
+            <div class="price-amount">₹1,999</div>
+            <div class="price-period">per month</div>
+            <ul class="price-features">
+              <li><span class="pf-check">✓</span>Up to 150 active clients</li>
+              <li><span class="pf-check">✓</span>Advanced dashboard</li>
+              <li><span class="pf-check">✓</span>Priority support</li>
+            </ul>
+            <button class="price-btn planBtn" data-plan="pro">Get started</button>
           </div>
         </div>
 
         <div class="pricing-divider"><span>OR</span></div>
 
-        <div class="pricing-group">
-          <p class="pricing-group-label">For Integrated Users</p>
-
-          <div class="pricing-grid pricing-grid-single">
-            <div class="pricing-item">
-              <h3>Connector Plan</h3>
-              <p class="price">₹399 <span>/ month</span></p>
-              <ul>
-                <li>Works with Zoho, QuickBooks, Tally</li>
-                <li>Uses your existing email setup</li>
-              </ul>
-              <button class="choose-btn secondary" data-plan="connector" disabled>
-                Launching Soon
-              </button>
-            </div>
+        <div class="price-connector">
+          <div class="price-connector-left">
+            <h3>Connector Plan</h3>
+            <p>Works with Zoho, QuickBooks, Tally. Uses your existing email setup.</p>
+          </div>
+          <div class="price-connector-right">
+            <div class="price-amount small">₹399<span class="price-period"> / month</span></div>
+            <button class="price-btn" disabled>Launching soon</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Founder Section -->
-    <section id="founder" class="founder">
-      <div class="container founder-content">
-    
-        <img src="/founder.jpg" alt="Founder - Vedant Koram" class="founder-img" />
-    
-        <h3 class="founder-name">Vedant Koram</h3>
-        <p class="founder-role">Founder, RemindFlow</p>
-    
-        <blockquote class="founder-quote">
-        “RemindFlow isn&rsquo;t about knowing when to follow up — it&rsquo;s about never having to think about it again.”
-        </blockquote>
+    <section class="founder">
+      <div class="container">
+        <div class="founder-card">
+          <div class="founder-avatar">V</div>
+          <div class="founder-body">
+            <div class="founder-name">Vedant Koram</div>
+            <div class="founder-role">Founder, RemindFlow</div>
+            <blockquote class="founder-quote">"The moment you stop thinking about billing is the moment you start doing your best work."</blockquote>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Contact -->
-    <section id="contact" class="contact">
-      <div class="container contact-content">
-        <p>support@remindflow.in</p>
-        <p class="legal-links">
-          <a href="/legal/privacy.html">Privacy Policy</a> |
-          <a href="/legal/terms.html">Terms of Use</a> |
-          <a href="/legal/refund.html">Refund</a> |
+    <footer id="contact" class="footer">
+      <div class="container footer-inner">
+        <div class="footer-brand"><div class="nav-dot"></div>RemindFlow &nbsp;·&nbsp; support@remindflow.in</div>
+        <div class="footer-links">
+          <a href="/legal/privacy.html">Privacy</a>
+          <a href="/legal/terms.html">Terms</a>
+          <a href="/legal/refund.html">Refund</a>
           <a href="/legal/disclaimer.html">Disclaimer</a>
-        </p>
+        </div>
+        <div class="footer-copy">© 2026 RemindFlow</div>
       </div>
-    </section>
+    </footer>
 
-    <!-- FRONTEND LOGIN / PLAN REDIRECT LOGIC -->
     <script>
-      const redirectToLogin = () => {
-        window.location.href = "/login.html";
-      };
+      const redirectToLogin = () => { window.location.href = "/login.html"; };
+      const redirectToPlans = () => { window.location.href = localStorage.getItem("accessToken") ? "/plans.html" : "/login.html"; };
 
-      const redirectToPlans = () => {
-        const token = localStorage.getItem("accessToken");
-        if (token) {
-          window.location.href = "/plans.html";
-        } else {
-          redirectToLogin();
-        }
-      };
-
-      // Login button
-      document.getElementById("loginBtn").addEventListener("click", (e) => {
-        e.preventDefault();
-        redirectToLogin();
-      });
-
-      // Get Started button
+      document.getElementById("loginBtn").addEventListener("click", e => { e.preventDefault(); redirectToLogin(); });
       document.getElementById("getStartedBtn").addEventListener("click", redirectToLogin);
-
-      // Pricing buttons
-      document.querySelectorAll(".planBtn").forEach((btn) => {
-        btn.addEventListener("click", redirectToPlans);
-      });
+      document.querySelectorAll(".planBtn").forEach(b => b.addEventListener("click", redirectToPlans));
 
       const hamburger = document.getElementById("hamburger");
-      const navLinks = document.querySelector(".nav-links");
-      
-      hamburger.addEventListener("click", () => {
-        navLinks.classList.toggle("active");
+      const navLinks = document.getElementById("navLinks");
+      hamburger.addEventListener("click", () => { hamburger.classList.toggle("open"); navLinks.classList.toggle("open"); });
+      navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => { hamburger.classList.remove("open"); navLinks.classList.remove("open"); }));
+
+      const workflowSection = document.getElementById("workflow");
+      document.getElementById("showWorkflow").addEventListener("click", function() {
+        const open = workflowSection.classList.toggle("open");
+        this.textContent = open ? "Hide how it works" : "See how it works";
+        if (open) workflowSection.scrollIntoView({ behavior: "smooth", block: "start" });
       });
 
-      document.querySelectorAll(".nav-links a").forEach(link => {
-        link.addEventListener("click", () => {
-          navLinks.classList.remove("active");
-        });
-      });
-
-      const showWorkflowBtn = document.getElementById("showWorkflow");
-      const workflowSection = document.querySelector(".workflow");
-      
-      showWorkflowBtn.addEventListener("click", () => {
-
-        workflowSection.classList.toggle("active");
-      
-        if (workflowSection.classList.contains("active")) {
-          showWorkflowBtn.innerText = "Hide How It Works";
-          workflowSection.scrollIntoView({ behavior: "smooth" });
-        } else {
-          showWorkflowBtn.innerText = "See How It Works";
-        }
-      
-      });
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
+      }, { threshold: 0.08 });
+      document.querySelectorAll(".feat-card, .stat-block, .ease-cell, .price-card, .founder-card, .problem-inner").forEach(el => observer.observe(el));
     </script>
+
   </body>
 </html>

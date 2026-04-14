@@ -1,69 +1,65 @@
-@import url('clients.css');
+/* =====================================================
+   RemindFlow — reminders.css
+   Extends app.css. Only reminder-specific overrides.
+===================================================== */
 
-/* -------------------- Status Badges -------------------- */
-.badge {
-  padding: 4px 8px;
+/* Stage label in table */
+.stage {
+  font-weight: 500;
+  color: var(--text-1);
+  text-transform: capitalize;
+}
+
+/* Action buttons in table */
+.viewReminderBtn,
+.pause-invoice,
+.resume-invoice {
+  background: none;
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+  padding: 4px 12px;
   border-radius: 6px;
   font-size: 12px;
-  font-weight: 600;
-  text-transform: capitalize;
-  display: inline-block;
-  margin-right: 4px;
-  transition: background 0.2s ease, color 0.2s ease;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
-/* Sent */
-.badge.sent {
-  background: #dcfce7;
-  color: #166534;
+.viewReminderBtn:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: var(--teal-dim);
 }
 
-/* Queued */
-.badge.queued {
-  background: #e0e7ff;
-  color: #3730a3;
+.pause-invoice:hover {
+  border-color: rgba(250,204,21,0.4);
+  color: #fbbf24;
+  background: var(--amber-dim);
 }
 
-/* Failed */
-.badge.failed {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-/* Hover effect (optional, improves interactivity) */
-.badge:hover {
-  opacity: 0.85;
-}
-
-/* -------------------- Stage Labels -------------------- */
-.stage {
-  font-weight: 600;
-  text-transform: capitalize;
-  margin-right: 6px;
-  color: #111827;
-}
-
-/* Modal */
+/* ── Email preview modal ──────────────────────────── */
 .reminder-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 5000;
+  padding: 20px;
 }
 
-.reminder-modal.open {
-  display: flex;
-}
+.reminder-modal.open { display: flex; }
 
 .reminder-modal-content {
-  background: #fff;
-  width: 800px;
-  max-width: 95%;
-  max-height: 90vh;
-  border-radius: 12px;
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  width: 720px;
+  max-width: 100%;
+  max-height: 88vh;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -73,38 +69,52 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #eee;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.reminder-modal-header h3 {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-1);
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.reminder-modal-header button {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.reminder-modal-header button:hover { color: var(--text-1); }
+
+.reminder-meta {
+  padding: 10px 22px;
+  font-size: 12px;
+  color: var(--text-3);
+  border-bottom: 1px solid var(--border);
+  line-height: 1.6;
 }
 
 .reminder-email-preview {
-  padding: 20px;
+  padding: 20px 22px;
   overflow-y: auto;
   flex: 1;
-  background: #fafafa;
-}
-
-.reminder-meta {
-  padding: 10px 20px;
-  font-size: 13px;
-  color: #666;
-  border-bottom: 1px solid #eee;
+  background: #fff;
+  color: #222;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .reminder-attachment {
-  padding: 12px 20px;
-  border-top: 1px solid #eee;
+  padding: 12px 22px;
+  border-top: 1px solid var(--border);
   font-size: 13px;
-}
-
-/* Upcoming */
-.badge.active {
-  background: #e0e7ff;
-  color: #3730a3;
-}
- 
-/* Opened */
-.badge.opened {
-  background: #dcfce7;
-  color: #166534;
+  color: var(--text-2);
 }

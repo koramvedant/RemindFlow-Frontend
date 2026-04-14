@@ -1,49 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invoice – RemindFlow</title>
-
-<link rel="stylesheet" href="/css/sidebar.css">
-<link rel="stylesheet" href="/css/dashboard.css">
-<link rel="stylesheet" href="/css/invoice.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice – RemindFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/sidebar.css" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <link rel="stylesheet" href="/css/invoice.css" />
 </head>
-
 <body>
 
-<div id="sidebarContainer"></div>
+  <div id="sidebarContainer"></div>
 
-<main class="main">
+  <main class="main">
 
-<div class="invoice-layout">
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1 id="invoiceTitle">Invoice</h1>
+        <p id="invoiceStatusBadge"></p>
+      </div>
+      <div class="page-header-actions">
+        <a href="/invoices.html" class="btn-secondary">← Back</a>
+      </div>
+    </div>
 
-<div class="invoice-details">
-<h2 id="invoiceTitle">Invoice</h2>
+    <div class="invoice-layout">
 
-<div class="invoice-meta">
-<p><strong>Client:</strong> <span id="clientName"></span></p>
-<p><strong>Amount:</strong> ₹<span id="invoiceAmount"></span></p>
-<p><strong>Status:</strong> <span id="invoiceStatus"></span></p>
-<p><strong>Due Date:</strong> <span id="invoiceDue"></span></p>
-</div>
+      <!-- Left: meta -->
+      <div class="invoice-meta-card">
+        <div class="inv-meta-label">Client</div>
+        <div class="inv-meta-value" id="clientName">—</div>
 
-</div>
+        <div class="inv-meta-divider"></div>
 
-<div class="invoice-activity">
+        <div class="inv-meta-row">
+          <div>
+            <div class="inv-meta-label">Amount</div>
+            <div class="inv-meta-value">₹<span id="invoiceAmount">0</span></div>
+          </div>
+          <div>
+            <div class="inv-meta-label">Due Date</div>
+            <div class="inv-meta-value" id="invoiceDue">—</div>
+          </div>
+        </div>
 
-<h3>Activity</h3>
+        <div class="inv-meta-divider"></div>
 
-<div id="activityTimeline"></div>
+        <div>
+          <div class="inv-meta-label">Status</div>
+          <div class="inv-meta-value" id="invoiceStatus">—</div>
+        </div>
+      </div>
 
-</div>
+      <!-- Right: activity timeline -->
+      <div class="invoice-activity-card">
+        <div class="activity-header">Activity</div>
+        <div id="activityTimeline" class="activity-timeline"></div>
+      </div>
 
-</div>
+    </div>
 
-</main>
+  </main>
 
-<script src="/js/loadSidebar.js"></script>
-<script type="module" src="/js/invoice.js"></script>
-
+  <script src="/js/loadSidebar.js"></script>
+  <script type="module" src="/js/invoice.js"></script>
 </body>
 </html>

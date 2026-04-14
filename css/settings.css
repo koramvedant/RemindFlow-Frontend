@@ -1,194 +1,95 @@
-:root {
-  --bg: #f5f7fa;
-  --card: #ffffff;
-  --text: #0f172a;
-  --muted: #6b7280;
-  --accent: #4f46e5;
-  --danger: #dc2626;
-  --warn: #f59e0b;
-  --sidebar: #111827;
-}
+/* =====================================================
+   RemindFlow — settings.css
+   Extends app.css + app-extras.css
+===================================================== */
 
-/* -------------------- Base -------------------- */
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: var(--bg);
+/* ── Tab bar ──────────────────────────────────────── */
+.settings-tabs {
   display: flex;
-  color: var(--text);
-}
-
-/* -------------------- Settings Container -------------------- */
-.settings-container {
-  max-width: 900px;
-  margin: 0 auto;
-  background: #fff;
-  padding: 30px;
+  gap: 2px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 4px;
+  margin-bottom: 24px;
+  width: fit-content;
 }
 
-h1 {
-  margin-bottom: 30px;
-  font-size: 28px;
-}
-
-/* -------------------- Sections -------------------- */
-.settings-section {
-  margin-bottom: 20px;
-}
-
-.section-header {
-  background: #2563eb;
-  color: #fff;
-  padding: 14px 18px;
-  border-radius: 8px;
-  font-weight: 600;
+.settings-tab {
+  padding: 8px 20px;
+  border-radius: 9px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-2);
   cursor: pointer;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  user-select: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
 }
 
-/* Open-state polish */
-.settings-section.open .section-header {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.section-body {
-  display: none;
-  background: #f9fafb;
-  padding: 20px;
-  margin-top: 6px;
-  border-radius: 0 0 8px 8px;
-}
-
-/* State-driven visibility */
-.settings-section.open .section-body {
-  display: block;
-}
-
-/* -------------------- Form Elements -------------------- */
-.section-body label {
-  display: block;
-  margin-top: 14px;
-  font-weight: 600;
-}
-
-.section-body input,
-.section-body textarea,
-.section-body select {
-  width: 100%;
-  margin-top: 6px;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  font-size: 15px;
-}
-
-/* ✅ FIX: checkboxes must not be full-width */
-.section-body input[type="checkbox"] {
-  width: auto;
-  margin: 0;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 70px;
-}
-
-/* ✅ TIGHT & CLEAN CHECKBOX ROW */
-.checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.checkbox-row label {
-  cursor: pointer;
+.settings-tab.active {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-1);
   font-weight: 500;
 }
 
-/* -------------------- Buttons -------------------- */
-.primary-btn {
-  margin-top: 20px;
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 6px;
+.settings-tab:hover:not(.active) { color: var(--text-1); }
+
+/* ── Panels ───────────────────────────────────────── */
+.settings-panel { display: none; }
+.settings-panel.active { display: block; }
+
+/* ── Save button ──────────────────────────────────── */
+.settings-save-btn {
+  width: auto;
+  padding: 12px 28px;
+  margin-top: 4px;
+}
+
+/* ── Billing rows ─────────────────────────────────── */
+.billing-row {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.billing-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.billing-label {
+  font-size: 11px;
   font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-3);
 }
 
-.primary-btn:hover {
-  background: #1e40af;
+.billing-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-1);
 }
 
-.secondary-btn {
-  margin-top: 10px;
-  margin-right: 10px;
-  background: #e5e7eb;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.danger-btn {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-/* -------------------- Hints & States -------------------- */
-.hint {
-  font-size: 14px;
-  color: #6b7280;
-  margin-top: 10px;
-}
-
-.arrow {
-  transition: transform 0.2s;
-}
-
-.settings-section.open .arrow {
-  transform: rotate(90deg);
-}
-
-.disabled {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-/* =====================================================
-   ✅ TAXES — GRID FIX
-===================================================== */
-.items-header {
+/* ── Tax grid ─────────────────────────────────────── */
+.invoice-items-grid {
   display: grid;
-  grid-template-columns: 2.5fr 1fr 40px;
-  gap: 12px;
+  grid-template-columns: 2.5fr 1fr 36px;
+  gap: 10px;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .items-header span {
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 600;
-  color: #444;
-}
-
-.invoice-items-grid {
-  display: grid;
-  grid-template-columns: 2.5fr 1fr 40px;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-3);
 }
 
 .invoice-items-grid input {
@@ -200,17 +101,16 @@ textarea {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 16px;
-  color: #888;
+  font-size: 15px;
+  color: var(--text-3);
+  padding: 4px;
+  transition: color 0.15s;
 }
 
-.item-delete:hover {
-  color: #e11d48;
-}
+.item-delete:hover { color: #f87171; }
 
-/* -------------------- Mobile Safe -------------------- */
-@media (max-width: 600px) {
-  .invoice-items-grid {
-    grid-template-columns: 1fr;
-  }
+/* ── Mobile ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  .settings-tabs { width: 100%; overflow-x: auto; }
+  .billing-row { flex-direction: column; gap: 16px; }
 }

@@ -6,6 +6,7 @@
   const toggleBtn = document.getElementById("mobileToggle");
   const overlay = document.getElementById("sidebarOverlay");
   const closeBtn = document.getElementById("sidebarClose");
+  const logoutBtn = document.getElementById("logoutBtn");
 
   if (!sidebar) return;
 
@@ -15,30 +16,30 @@
     document.body.classList.remove("sidebar-open");
   };
 
-  // Toggle button
   toggleBtn?.addEventListener("click", () => {
     sidebar.classList.toggle("active");
     overlay?.classList.toggle("active");
     document.body.classList.toggle("sidebar-open");
   });
 
-  // Close button
   closeBtn?.addEventListener("click", closeSidebar);
-
-  // Overlay click
   overlay?.addEventListener("click", closeSidebar);
 
+  // Logout
+  logoutBtn?.addEventListener("click", () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "/login.html";
+  });
+
   // Active link highlight
-  const currentPath = window.location.pathname.split("/").pop();
+  const currentPath = window.location.pathname.split("/").pop() || "index.html";
 
-  document.querySelectorAll(".sidebar a").forEach(link => {
+  document.querySelectorAll(".sidebar-link[href]").forEach(link => {
     const linkPath = link.getAttribute("href").split("/").pop();
-
     if (linkPath === currentPath) {
       link.classList.add("active");
     }
-
-    // Close sidebar on link click (mobile)
     link.addEventListener("click", closeSidebar);
   });
 

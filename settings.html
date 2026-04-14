@@ -2,281 +2,262 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Settings | RemindFlow</title>
-  <link rel="stylesheet" href="/css/settings.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings – RemindFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/sidebar.css" />
-
-  <!-- Tiny UX polish for section spacing -->
-  <style>
-    .section-subtitle {
-      margin-top: 20px;
-    }
-  </style>
+  <link rel="stylesheet" href="/css/app.css" />
+  <link rel="stylesheet" href="/css/app-extras.css" />
+  <link rel="stylesheet" href="/css/settings.css" />
 </head>
 <body>
 
   <div id="sidebarContainer"></div>
 
-  <div class="main">
-    <div class="settings-container">
-      <h1>Settings</h1>
+  <main class="main">
 
-      <!-- ACCOUNT SETTINGS -->
-      <section class="settings-section">
-        <div class="section-header" data-toggle="account">
-          Account Settings
-          <span class="arrow">▶</span>
-        </div>
-
-        <div class="section-body" id="account">
-          <label>Name</label>
-          <input type="text" id="name" />
-
-          <label>Email (Login)</label>
-          <input type="email" id="email" readonly />
-          <p class="hint">Login email cannot be changed.</p>
-
-          <label>Company Name</label>
-          <input type="text" id="company_name" />
-
-          <label>Business Contact Phone</label>
-          <input type="text" id="contact_phone" placeholder="+91 9XXXXXXXXX" />
-
-          <label>Timezone</label>
-          <select id="timezone">
-            <option value="Asia/Kolkata">Asia/Kolkata</option>
-            <option value="UTC">UTC</option>
-            <option value="Europe/London">Europe/London</option>
-            <option value="America/New_York">America/New_York</option>
-          </select>
-
-          <label>Company Logo</label>
-          <input type="file" id="logo" accept="image/*" />
-
-          <!-- BUSINESS ADDRESS (STRUCTURED) -->
-          <h3 class="section-subtitle">Business Address</h3>
-
-          <label>Address Line 1</label>
-          <input
-            type="text"
-            id="address_line1"
-            name="address_line1"
-            placeholder="Building, Street name"
-          />
-
-          <label>Address Line 2 (Optional)</label>
-          <input
-            type="text"
-            id="address_line2"
-            name="address_line2"
-            placeholder="Area, Landmark"
-          />
-
-          <div class="address-row">
-            <div>
-              <label>City</label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-              />
-            </div>
-
-            <div>
-              <label>State / Province</label>
-              <input
-                type="text"
-                id="state"
-                name="state"
-              />
-            </div>
-          </div>
-
-          <div class="address-row">
-            <div>
-              <label>Postal Code</label>
-              <input
-                type="text"
-                id="postal_code"
-                name="postal_code"
-                inputmode="numeric"
-                placeholder="PIN / ZIP"
-              />
-            </div>
-
-            <div>
-              <label>Country</label>
-              <input
-                type="text"
-                id="country"
-                name="country"
-                value="India"
-                readonly
-              />
-            </div>
-          </div>
-          <!-- END BUSINESS ADDRESS -->
-
-          <label>Tax ID (GST / VAT)</label>
-          <input type="text" id="tax_id" />
-
-          <label>Default Payment Terms</label>
-          <textarea
-            id="default_terms"
-            placeholder="e.g. Payment due within 15 days"
-          ></textarea>
-
-          <button class="primary-btn" id="saveAccount">
-            Save Account Settings
-          </button>
-        </div>
-      </section>
-
-      <!-- TAXES -->
-      <section class="settings-section">
-        <div class="section-header" data-toggle="taxes">
-          Taxes
-          <span class="arrow">▶</span>
-        </div>
-
-        <div class="section-body" id="taxes">
-          <div class="items-header">
-            <span>Tax Name</span>
-            <span>Rate (%)</span>
-            <span></span>
-          </div>
-
-          <div id="taxesContainer"></div>
-
-          <button class="secondary-btn" id="addTaxBtn">
-            + Add Tax
-          </button>
-
-          <button class="primary-btn" id="saveTaxes">
-            Save Taxes
-          </button>
-        </div>
-      </section>
-
-      <!-- BILLING -->
-      <section class="settings-section">
-        <div class="section-header" data-toggle="billing">
-          Billing
-          <span class="arrow">▶</span>
-        </div>
-      
-        <div class="section-body" id="billing">
-          <p>
-            <strong>Current Plan:</strong>
-            <span id="currentPlan">—</span>
-          </p>
-      
-          <p>
-            <strong>Plan Expires On:</strong>
-            <span id="planExpiry">—</span>
-          </p>
-      
-          <p>
-            <strong>Status:</strong>
-            <span id="planStatus">—</span>
-          </p>
-      
-          <!-- QUEUED PLAN SECTION (Hidden by default) -->
-          <div id="queuedPlanSection" style="display:none; margin-top:14px;">
-            <p>
-              <strong>Next Plan:</strong>
-              <span id="nextPlanName">—</span>
-            </p>
-      
-            <p class="hint">
-              This plan will automatically activate on 
-              <span id="nextActivationDate">—</span>.
-            </p>
-      
-            <button class="secondary-btn" id="activateNowBtn">
-              Activate Now
-            </button>
-          </div>
-      
-          <div style="margin-top:16px;">
-            <button class="primary-btn" id="renewPlan">
-              Renew Plan
-            </button>
-          </div>
-      
-          <p class="hint" style="margin-top:12px;">
-            Plans do not auto-renew. If renewed before expiry, the new plan is stacked and will activate automatically when the current plan ends.
-          </p>
-        </div>
-      </section>
-
-
-      <!-- PAYMENT SETTINGS -->
-      <section class="settings-section">
-        <div class="section-header" data-toggle="payments">
-          Payment Settings
-          <span class="arrow">▶</span>
-        </div>
-
-        <div class="section-body" id="payments">
-          <label>UPI ID</label>
-          <input type="text" id="upi_id" placeholder="example@upi" />
-
-          <label>Bank Name</label>
-          <input type="text" id="bank_name" placeholder="HDFC Bank" />
-
-          <label>Account Number</label>
-          <input type="text" id="account_number" placeholder="XXXXXXXXXX" />
-
-          <label>IFSC Code</label>
-          <input type="text" id="ifsc_code" placeholder="HDFC0001234" />
-
-          <h3>Default Payment Methods</h3>
-
-          <label class="checkbox-row">
-            <input type="checkbox" id="default_pay_upi" checked />
-            <span>UPI</span>
-          </label>
-
-          <label class="checkbox-row">
-            <input type="checkbox" id="default_pay_bank" checked />
-            <span>Bank Transfer</span>
-          </label>
-
-          <label class="checkbox-row">
-            <input type="checkbox" id="default_pay_cash" />
-            <span>Cash</span>
-          </label>
-
-          <p class="hint">
-            These will be pre-selected when creating a new invoice.
-          </p>
-
-          <button class="primary-btn" id="savePayments">
-            Save Payment Settings
-          </button>
-        </div>
-      </section>
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1>Settings</h1>
+        <p>Manage your account, billing, and preferences</p>
+      </div>
     </div>
-  </div>
 
-  <!-- Sidebar JS -->
-  <script type="module">
-    const sidebar = document.getElementById('sidebar');
-    const main = document.querySelector('.main');
-    const hamburger = document.getElementById('hamburger');
+    <!-- Tab bar -->
+    <div class="settings-tabs">
+      <button class="settings-tab active" data-tab="account">Account</button>
+      <button class="settings-tab" data-tab="taxes">Taxes</button>
+      <button class="settings-tab" data-tab="payments">Payments</button>
+      <button class="settings-tab" data-tab="billing">Billing</button>
+    </div>
 
-    hamburger.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      main.classList.toggle('collapsed');
-      hamburger.classList.toggle('active');
-    });
-  </script>
+    <!-- ── ACCOUNT ─────────────────────────────────── -->
+    <div class="settings-panel active" id="tab-account">
+
+      <div class="form-card">
+        <span class="form-card-title">Identity</span>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="name">Full name</label>
+            <input type="text" id="name" />
+          </div>
+          <div class="field">
+            <label for="company_name">Business name</label>
+            <input type="text" id="company_name" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="email">Login email</label>
+            <input type="email" id="email" readonly />
+            <p class="hint">Login email cannot be changed.</p>
+          </div>
+          <div class="field">
+            <label for="contact_phone">Contact phone</label>
+            <input type="text" id="contact_phone" placeholder="+91 9XXXXXXXXX" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="timezone">Timezone</label>
+            <select id="timezone">
+              <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+              <option value="UTC">UTC</option>
+              <option value="Europe/London">Europe/London</option>
+              <option value="America/New_York">America/New York</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tax_id">Tax ID (GST / VAT)</label>
+            <input type="text" id="tax_id" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="default_terms">Default payment terms</label>
+          <textarea id="default_terms" placeholder="e.g. Payment due within 15 days"></textarea>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <span class="form-card-title">Business address</span>
+
+        <div class="field">
+          <label for="address_line1">Address line 1</label>
+          <input type="text" id="address_line1" placeholder="Building, street name" />
+        </div>
+
+        <div class="field">
+          <label for="address_line2">Address line 2 <span style="color:var(--text-3);font-size:11px;">(optional)</span></label>
+          <input type="text" id="address_line2" placeholder="Area, landmark" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="city">City</label>
+            <input type="text" id="city" />
+          </div>
+          <div class="field">
+            <label for="state">State</label>
+            <input type="text" id="state" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="postal_code">Postal code</label>
+            <input type="text" id="postal_code" />
+          </div>
+          <div class="field">
+            <label for="country">Country</label>
+            <input type="text" id="country" value="India" readonly />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <span class="form-card-title">Company logo</span>
+        <div class="field">
+          <label for="logo">Upload logo</label>
+          <input type="file" id="logo" accept="image/*" />
+          <p class="hint">Shown on your invoices. PNG or JPG, max 1MB.</p>
+        </div>
+      </div>
+
+      <button class="primary-btn settings-save-btn" id="saveAccount">Save account settings</button>
+    </div>
+
+    <!-- ── TAXES ──────────────────────────────────── -->
+    <div class="settings-panel" id="tab-taxes">
+      <div class="form-card">
+        <span class="form-card-title">Tax rates</span>
+        <p class="hint" style="margin-bottom:20px;">These will auto-populate when creating a new invoice.</p>
+
+        <div class="invoice-items-grid items-header">
+          <span>Tax name</span>
+          <span>Rate (%)</span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div id="taxesContainer"></div>
+
+        <button class="secondary-btn" id="addTaxBtn" style="margin-top:12px;">+ Add Tax</button>
+      </div>
+
+      <button class="primary-btn settings-save-btn" id="saveTaxes">Save taxes</button>
+    </div>
+
+    <!-- ── PAYMENTS ───────────────────────────────── -->
+    <div class="settings-panel" id="tab-payments">
+      <div class="form-card">
+        <span class="form-card-title">UPI</span>
+        <div class="field">
+          <label for="upi_id">UPI ID</label>
+          <input type="text" id="upi_id" placeholder="yourname@upi" />
+        </div>
+      </div>
+
+      <div class="form-card">
+        <span class="form-card-title">Bank transfer</span>
+        <div class="field-row">
+          <div class="field">
+            <label for="bank_name">Bank name</label>
+            <input type="text" id="bank_name" placeholder="HDFC Bank" />
+          </div>
+          <div class="field">
+            <label for="ifsc_code">IFSC code</label>
+            <input type="text" id="ifsc_code" placeholder="HDFC0001234" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="account_number">Account number</label>
+          <input type="text" id="account_number" placeholder="XXXXXXXXXX" />
+        </div>
+      </div>
+
+      <div class="form-card">
+        <span class="form-card-title">Default payment methods</span>
+        <p class="hint" style="margin-bottom:16px;">Pre-selected when creating a new invoice.</p>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="default_pay_upi" />
+          <span>UPI</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="default_pay_bank" />
+          <span>Bank Transfer</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="default_pay_cash" />
+          <span>Cash</span>
+        </label>
+      </div>
+
+      <button class="primary-btn settings-save-btn" id="savePayments">Save payment settings</button>
+    </div>
+
+    <!-- ── BILLING ────────────────────────────────── -->
+    <div class="settings-panel" id="tab-billing">
+      <div class="form-card">
+        <span class="form-card-title">Current plan</span>
+
+        <div class="billing-row">
+          <div class="billing-item">
+            <div class="billing-label">Plan</div>
+            <div class="billing-value" id="currentPlan">—</div>
+          </div>
+          <div class="billing-item">
+            <div class="billing-label">Expires on</div>
+            <div class="billing-value" id="planExpiry">—</div>
+          </div>
+          <div class="billing-item">
+            <div class="billing-label">Status</div>
+            <div class="billing-value" id="planStatus">—</div>
+          </div>
+        </div>
+
+        <p class="hint" style="margin-top:16px;">Plans do not auto-renew. If renewed before expiry, the new plan stacks and activates automatically when the current plan ends.</p>
+      </div>
+
+      <div class="form-card" id="queuedPlanSection" style="display:none;">
+        <span class="form-card-title">Next plan</span>
+        <div class="billing-row">
+          <div class="billing-item">
+            <div class="billing-label">Plan</div>
+            <div class="billing-value" id="nextPlanName">—</div>
+          </div>
+          <div class="billing-item">
+            <div class="billing-label">Activates on</div>
+            <div class="billing-value" id="nextActivationDate">—</div>
+          </div>
+        </div>
+        <button class="btn-secondary" id="activateNowBtn" style="margin-top:16px;">Activate now</button>
+      </div>
+
+      <button class="primary-btn settings-save-btn" id="renewPlan">Renew plan</button>
+    </div>
+
+  </main>
 
   <script src="/js/loadSidebar.js"></script>
-
-  <!-- Page JS -->
   <script type="module" src="/js/settings.js"></script>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>

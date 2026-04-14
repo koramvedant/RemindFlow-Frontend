@@ -1,211 +1,233 @@
-/* ================================
-   GLOBAL SIDEBAR (SINGLE SOURCE)
-================================ */
+/* =====================================================
+   RemindFlow — sidebar.css
+   Dark sidebar matching the new app design system.
+===================================================== */
 
-/* Sidebar */
+:root {
+  --sb-bg:       #090e18;
+  --sb-border:   rgba(255,255,255,0.06);
+  --sb-text:     rgba(255,255,255,0.5);
+  --sb-text-act: #f0f2f5;
+  --sb-teal:     #1cc7ae;
+  --sb-width:    200px;
+}
+
+/* ── Sidebar ──────────────────────────────────────── */
 .sidebar {
-  font-family: 'Poppins', sans-serif;
-  width: 180px;
-  min-width: 180px;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  width: var(--sb-width);
+  min-width: var(--sb-width);
   height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
-  background: #111827;
-  color: #ffffff;
-  padding: 24px 0px;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  transition: width 0.3s ease, padding 0.3s ease;
   z-index: 2000;
+  transition: transform 0.3s ease;
 }
 
-/* ================================
-   MAIN LAYOUT (DESKTOP DEFAULT)
-================================ */
-
+/* ── Main content offset ──────────────────────────── */
 .main {
-  margin-left: 180px;
-  width: calc(100% - 180px);
+  margin-left: var(--sb-width);
+  width: calc(100% - var(--sb-width));
   transition: margin-left 0.3s ease, width 0.3s ease;
+  min-height: 100vh;
 }
 
-/* ================================
-   MOBILE SIDEBAR (FULL SCREEN)
-================================ */
+/* ── Header ───────────────────────────────────────── */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--sb-border);
+  margin-bottom: 8px;
+}
 
-@media (max-width: 1023px) {
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--sb-text-act);
+  text-decoration: none;
+  letter-spacing: -0.2px;
+}
 
-  .sidebar {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100vh;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 3000;
-    padding-top: 24px;
-  }
-
-  .sidebar.active {
-    transform: translateX(0);
-  }
-
-  /* Remove desktop layout shift on mobile */
-  .main {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(2px);
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.3s ease;
-    z-index: 2500;
-  }
-
-  .sidebar-overlay.active {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  body.sidebar-open {
-    overflow: hidden;
-  }
+.sidebar-brand-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sb-teal);
+  flex-shrink: 0;
 }
 
 .sidebar-close {
   display: none;
   background: none;
   border: none;
-  font-size: 22px;
-  color: #ffffff;
+  color: var(--sb-text);
+  font-size: 18px;
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  padding: 2px;
+  line-height: 1;
+  transition: color 0.15s;
 }
 
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
+.sidebar-close:hover { color: var(--sb-text-act); }
 
-.sidebar-header,
-.sidebar-nav,
-.sidebar-footer {
-  padding: 0 16px;
-}
-
-.sidebar-close:hover {
-  transform: scale(1.1);
-  opacity: 0.8;
-}
-
-@media (max-width: 1023px) {
-  .sidebar-close {
-    display: block;
-  }
-}
-
-
-/* ================================
-   DESKTOP RESTORE (SAFETY)
-================================ */
-
-@media (min-width: 1024px) {
-
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    transform: none !important;
-    width: 180px;
-  }
-
-  .main {
-    margin-left: 180px;
-    width: calc(100% - 180px);
-  }
-
-}
-
-/* ================================
-   NAV WRAPPER
-================================ */
-
+/* ── Nav ──────────────────────────────────────────── */
 .sidebar-nav {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  flex-grow: 1;
+  gap: 2px;
+  padding: 0 8px;
+  overflow-y: auto;
 }
 
-/* Brand */
-.sidebar h2 {
-  margin: 0 0 10px;
-  white-space: nowrap;
-  font-size: 22px;
-  font-weight: 800;
-  color: #ffffff;
-  transition: opacity 0.2s ease;
-}
-
-/* Links */
-.sidebar a {
+.sidebar-link {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #ffffff;
+  padding: 9px 10px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--sb-text);
   text-decoration: none;
-  font-weight: 600;
+  transition: background 0.15s, color 0.15s;
   white-space: nowrap;
-  padding: 8px 10px;
-  border-radius: 10px;
-  transition: background 0.15s ease, opacity 0.2s ease;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  width: 100%;
+  text-align: left;
 }
 
-/* Hover */
-.sidebar a:hover {
-  background: rgba(255, 255, 255, 0.08);
+.sidebar-link:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--sb-text-act);
 }
 
-/* Active */
-.sidebar a.active {
-  background: rgba(249, 251, 251, 0.18);;
-  color: #ffffff;
+.sidebar-link.active {
+  background: rgba(28,199,174,0.12);
+  color: var(--sb-teal);
+  font-weight: 500;
 }
 
-/* ================================
-   MOBILE TOGGLE BUTTON
-================================ */
+.sidebar-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
 
+.sidebar-link.active .sidebar-icon,
+.sidebar-link:hover .sidebar-icon {
+  opacity: 1;
+}
+
+/* ── Footer ───────────────────────────────────────── */
+.sidebar-footer {
+  padding: 8px;
+  border-top: 1px solid var(--sb-border);
+}
+
+.sidebar-logout {
+  color: var(--sb-text) !important;
+}
+
+.sidebar-logout:hover {
+  background: rgba(239,68,68,0.08) !important;
+  color: #f87171 !important;
+}
+
+/* ── Mobile toggle button ─────────────────────────── */
 .mobile-toggle {
   display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 3500;
+  background: rgba(10,15,26,0.9);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
 }
 
-@media (max-width: 1023px) {
+.mobile-toggle span {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
 
-  .mobile-toggle {
-    display: block;
-    position: fixed;
-    top: 18px;
-    left: 18px;
-    z-index: 3500;
-    background: none;
-    border: none;
-    font-size: 26px;
-    color: #111827;
-    cursor: pointer;
+/* ── Overlay ──────────────────────────────────────── */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.25s ease;
+  z-index: 2500;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── Mobile ───────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 220px;
+    min-width: 220px;
   }
 
-  /* Hide hamburger when sidebar open */
-  body.sidebar-open .mobile-toggle {
-    display: none;
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .sidebar-close { display: block; }
+
+  .mobile-toggle { display: flex; }
+
+  body.sidebar-open .mobile-toggle { display: none; }
+  body.sidebar-open { overflow: hidden; }
+
+  .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* ── Desktop ──────────────────────────────────────── */
+@media (min-width: 1024px) {
+  .sidebar {
+    transform: none !important;
+    width: var(--sb-width);
+  }
+
+  .main {
+    margin-left: var(--sb-width);
+    width: calc(100% - var(--sb-width));
   }
 }

@@ -148,9 +148,14 @@ function renderDropdown(list) {
 function selectClient(client) {
   selectedClient = client;
   searchInput.value = client.name;
-  searchInput.setAttribute('readonly', true);
-  dropdown.style.display = 'none';
-  changeBtn.style.display = 'inline-block';
+  dropdown.classList.add('hidden');
+  changeBtn.classList.remove('hidden');
+  searchInput.disabled = true;
+
+  // AUTO-FILL PREFERENCES
+  // If you add a currency/tax dropdown to the UI later, set their values here:
+  // document.getElementById('currencySelect').value = client.currency || 'INR';
+  console.log(`✅ Client selected: ${client.name}. Preferred Currency: ${client.currency || 'INR'}`);
 }
 
 changeBtn.onclick = () => {
@@ -363,6 +368,9 @@ continueBtn.onclick = async () => {
       due_date: dueDate.value,
       invoice_type: invoiceTypeSelect?.value || 'one_time',
       client_id: selectedClient.client_id,
+      currency: selectedClient.currency || 'INR',     // ✅ Pull from client
+      tax_label: selectedClient.tax_label || 'GST',   // ✅ Pull from client
+      timezone: selectedClient.timezone || 'UTC',
       items,
       taxes: taxes.map((t) => ({ ...t })),
       discount,

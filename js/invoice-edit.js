@@ -133,6 +133,8 @@ function selectClient(client) {
   searchInput.value = client.company || client.name || '';
   searchInput.readOnly = true;
   changeBtn.style.display = 'inline-block';
+  window.__currentCurrency = client.currency || 'INR';
+  window.__currentTaxLabel = client.tax_label || 'GST';
   closeDropdown();
 }
 
@@ -306,7 +308,9 @@ saveBtn.addEventListener('click', async () => {
 
   const finalDraft = {
     invoice_id: enteredInvoiceId || null,
-    client_id: clientId,
+    client_id: selectedClient.client_id,
+    currency: selectedClient.currency || window.__currentCurrency || 'INR',
+    tax_label: selectedClient.tax_label || window.__currentTaxLabel || 'GST',
     invoice_date: invoiceDate.value,
     due_date: dueDate.value,
     items,

@@ -1,71 +1,62 @@
-console.log('✅ plans.js loaded');
+// js/plans.js
+// CHANGES: Reads countryCode from localStorage (set during onboarding/settings).
+//          Displays correct currency pricing per region.
+//          Stores plan + countryCode to localStorage for payment.js to use.
+
+import { getLocale } from './localeConfig.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const buttons = document.querySelectorAll('.choose-btn');
+  if (!buttons.length) { console.warn('No plan buttons found'); return; }
 
-  if (!buttons.length) {
-    console.warn('No plan buttons found');
-    return;
+  /* ── Read active locale ─────────────────────────── */
+  const countryCode = localStorage.getItem('countryCode') || 'IN';
+  const lc          = getLocale(countryCode);
+
+  /* ── Render prices ───────────────────────────────── */
+  const starterEl = document.getElementById('starterPrice');
+  const growthEl  = document.getElementById('growthPrice');
+  const proEl     = document.getElementById('proPrice');
+
+  if (starterEl) starterEl.textContent = lc.plans.starter.display;
+  if (growthEl)  growthEl.textContent  = lc.plans.growth.display;
+  if (proEl)     proEl.textContent     = lc.plans.pro.display;
+
+  /* ── Subtitle messaging ─────────────────────────── */
+  const expired     = window.__PLAN_EXPIRED__;
+  const planEnd     = window.__USER_PLAN__?.plan_end;
+  const subtitle    = document.querySelector('#planSubtitle');
+
+  if (expired && subtitle) {
+    subtitle.textContent    = 'Your plan has expired. Renew now to restore access.';
+    subtitle.style.color    = '#f87171';
+    subtitle.style.fontWeight = '600';
+  } else if (subtitle && planEnd) {
+    const date = new Date(planEnd).toLocaleDateString();
+    subtitle.textContent = `Your current plan expires on ${date}. Renewing now will stack and activate after expiry.`;
   }
 
-  const expired = window.__PLAN_EXPIRED__;
-  const currentPlan = window.__USER_PLAN__?.plan_code;
-  const planEnd = window.__USER_PLAN__?.plan_end;
+  /* ── Plan selection ──────────────────────────────── */
+  buttons.forEach(btn => {
+    const plan = btn.dataset.plan;
 
-  const subtitle = document.querySelector('.subtitle');
-
-  /* -------------------------
-     Update Subtitle Messaging
-  ------------------------- */
-
-  if (expired) {
-    if (subtitle) {
-      subtitle.textContent =
-        'Your plan has expired. Renew now to restore access.';
-      subtitle.style.color = '#b00020';
-      subtitle.style.fontWeight = '600';
+    if (plan === 'connector') {
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      btn.style.cursor  = 'not-allowed';
+      return;
     }
-  } else {
-    if (subtitle && planEnd) {
-      const date = new Date(planEnd).toLocaleDateString();
-      subtitle.textContent =
-        `Your current plan expires on ${date}. Renewing now will stack and activate after expiry.`;
-    }
-  }
 
-  /* -------------------------
-     Plan Selection
-  ------------------------- */
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      if (!plan) { console.error('Plan type missing on button'); return; }
 
-  /* -------------------------
-   Plan Selection
-------------------------- */
+      // Store plan + currency for payment.js
+      localStorage.setItem('selectedPlan',     plan);
+      localStorage.setItem('selectedCurrency', lc.currency);
+      localStorage.setItem('planAmount',       lc.plans[plan]?.amount || 0);
 
-buttons.forEach((btn) => {
-   const plan = btn.dataset.plan;
- 
-   /* 🔒 Disable Integrated Plan (Not Ready Yet) */
-   if (plan === 'integrated') {
-     btn.disabled = true;
-     btn.style.opacity = '0.6';
-     btn.style.cursor = 'not-allowed';
-     btn.textContent = 'Launching Soon';
-     return; // 🚫 Prevent click binding
-   }
- 
-   btn.addEventListener('click', (e) => {
-     e.preventDefault();
- 
-     if (!plan) {
-       console.error('Plan type missing on button');
-       return;
-     }
- 
-     // Store renewal plan
-     localStorage.setItem('selectedPlan', plan);
- 
-     // Redirect to payment
-     window.location.href = '/payment.html';
-   });
- });
+      window.location.href = '/payment.html';
+    });
+  });
 });

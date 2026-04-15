@@ -1,82 +1,65 @@
-// /public/js/payment.js
+// js/payment.js
+// CHANGES: Reads currency from localStorage (set by plans.js).
+//          Passes correct currency to backend order creation.
 
 import { API_BASE } from './api.js';
+import { getLocale } from './localeConfig.js';
 
-/* -------------------------
-   DOM Elements
-------------------------- */
-const payBtn = document.getElementById('payBtn');
+/* ── DOM ─────────────────────────────────────────────── */
+const payBtn        = document.getElementById('payBtn');
 const amountDisplay = document.getElementById('amountDisplay');
-const planDisplay = document.getElementById('planDisplay');
+const planDisplay   = document.getElementById('planDisplay');
+const currencyDisplay = document.getElementById('currencyDisplay');
 
-/* -------------------------
-   Plan Configuration (UI only)
-------------------------- */
-const PLAN_CONFIG = {
-  starter:   { name: 'Starter',   amount: 499,  type: 'full' },
-  growth:    { name: 'Growth',    amount: 999,  type: 'full' },
-  pro:       { name: 'Pro',       amount: 1999, type: 'full' },
-  connector: { name: 'Connector', amount: 399,  type: 'integrated' },
+/* ── Read locale ─────────────────────────────────────── */
+const countryCode = localStorage.getItem('countryCode') || 'IN';
+const lc          = getLocale(countryCode);
+
+/* ── Plan config ─────────────────────────────────────── */
+const PLAN_NAMES = {
+  starter:   'Starter',
+  growth:    'Growth',
+  pro:       'Pro',
+  connector: 'Connector',
 };
 
-/* -------------------------
-   JWT Helper (ROBUST)
-------------------------- */
-function getToken() {
-  // 1️⃣ Primary — localStorage
-  const lsToken = localStorage.getItem('accessToken');
-  if (lsToken) return lsToken;
-
-  // 2️⃣ Fallback — cookie (legacy safety)
-  const match = document.cookie.match(/(^|;)\s*accessToken=([^;]+)/);
-  if (match) return match[2];
-
-  return null;
-}
-
-/* -------------------------
-   Resolve Selected Plan
-------------------------- */
 const planCode = localStorage.getItem('selectedPlan');
+const currency = localStorage.getItem('selectedCurrency') || lc.currency;
 
-if (!planCode || !PLAN_CONFIG[planCode]) {
+if (!planCode || !lc.plans[planCode]) {
   alert('Please select a plan first.');
   window.location.replace('/plans.html');
   throw new Error('Invalid or missing plan selection');
 }
 
-const plan = PLAN_CONFIG[planCode];
+const plan    = lc.plans[planCode];
+const planName = PLAN_NAMES[planCode] || planCode;
 
-/* -------------------------
-   Render Plan Info
-------------------------- */
-if (amountDisplay) amountDisplay.textContent = plan.amount;
-if (planDisplay) planDisplay.textContent = plan.name;
+/* ── Render plan info ────────────────────────────────── */
+if (amountDisplay) amountDisplay.textContent  = plan.display;
+if (planDisplay)   planDisplay.textContent    = planName;
+if (currencyDisplay) currencyDisplay.textContent = currency;
 
-/* -------------------------
-   Toast Utility
-------------------------- */
+/* ── Auth helper ─────────────────────────────────────── */
+function getToken() {
+  return localStorage.getItem('accessToken') ||
+    document.cookie.match(/(^|;)\s*accessToken=([^;]+)/)?.[2] || null;
+}
+
+/* ── Toast ───────────────────────────────────────────── */
 function showToast(message, duration = 2200) {
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.textContent = message;
   document.body.appendChild(toast);
-
   setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }, duration);
+  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, duration);
 }
 
-/* -------------------------
-   Pay Button Handler
-------------------------- */
+/* ── Pay handler ─────────────────────────────────────── */
 payBtn?.addEventListener('click', async () => {
   try {
     const token = getToken();
-
-    // 🔴 HARD FAIL — no token
     if (!token) {
       showToast('Session expired. Please login again.');
       localStorage.clear();
@@ -84,51 +67,42 @@ payBtn?.addEventListener('click', async () => {
       return;
     }
 
-    console.log('🟢 Using access token:', token.slice(0, 20) + '…');
-
-    /* -------------------------
-       Create Razorpay Order
-    ------------------------- */
+    /* Create order — pass currency so backend charges correctly */
     const res = await fetch(`${API_BASE}/api/payments/create-order`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ plan_code: planCode }),
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body:    JSON.stringify({
+        plan_code: planCode,
+        currency,                    // ← send user's currency to backend
+        country_code: countryCode,
+      }),
     });
 
     const order = await res.json();
+    if (!res.ok) throw new Error(order.message || 'Order creation failed');
 
-    if (!res.ok) {
-      throw new Error(order.message || 'Order creation failed');
-    }
-
-    /* -------------------------
-       Razorpay Checkout
-    ------------------------- */
+    /* Razorpay checkout */
     const options = {
-      key: window.RAZORPAY_KEY_ID,
-      amount: order.amount,
-      currency: order.currency || 'INR',
-      name: 'RemindFlow',
-      description: `${plan.name} Subscription`,
-      order_id: order.order_id || order.id,
+      key:         window.RAZORPAY_KEY_ID,
+      amount:      order.amount,
+      currency:    order.currency || currency,
+      name:        'RemindFlow',
+      description: `${planName} Subscription`,
+      order_id:    order.order_id || order.id,
 
       handler: () => {
         showToast('Payment successful! Redirecting...');
         localStorage.removeItem('selectedPlan');
-
-        setTimeout(() => {
-          window.location.replace(
-            plan.type === 'integrated'
-              ? '/integration-dashboard.html'
-              : '/dashboard.html'
-          );
-        }, 1200);
+        localStorage.removeItem('selectedCurrency');
+        localStorage.removeItem('planAmount');
+        setTimeout(() => window.location.replace('/dashboard.html'), 1200);
       },
 
-      theme: { color: '#4a63e7' },
+      prefill: {
+        // Razorpay supports prefill for smoother checkout
+      },
+
+      theme: { color: '#1cc7ae' },
     };
 
     const rzp = new Razorpay(options);

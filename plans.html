@@ -11,14 +11,10 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script type="module" src="/js/guard.js"></script>
 </head>
-
 <body>
 
   <header class="header">
-    <a href="/" class="nav-logo">
-      <div class="nav-dot"></div>
-      <span>RemindFlow</span>
-    </a>
+    <a href="/" class="nav-logo"><div class="nav-dot"></div><span>RemindFlow</span></a>
   </header>
 
   <main class="plans-page">
@@ -37,7 +33,7 @@
 
         <div class="plan-card">
           <h2>Starter</h2>
-          <div class="plan-price">₹499<span class="plan-period"> / month</span></div>
+          <div class="plan-price"><span id="starterPrice">—</span><span class="plan-period"> / month</span></div>
           <ul class="plan-features">
             <li><span class="pf-check">✓</span>Up to 25 active invoice slots</li>
             <li><span class="pf-check">✓</span>Invoice creation &amp; sending</li>
@@ -51,7 +47,7 @@
         <div class="plan-card plan-card--featured">
           <div class="plan-badge">Most popular</div>
           <h2>Growth</h2>
-          <div class="plan-price">₹999<span class="plan-period"> / month</span></div>
+          <div class="plan-price"><span id="growthPrice">—</span><span class="plan-period"> / month</span></div>
           <ul class="plan-features">
             <li><span class="pf-check">✓</span>Up to 60 active invoice slots</li>
             <li><span class="pf-check">✓</span>Invoice creation &amp; sending</li>
@@ -64,7 +60,7 @@
 
         <div class="plan-card">
           <h2>Pro / Business</h2>
-          <div class="plan-price">₹1,999<span class="plan-period"> / month</span></div>
+          <div class="plan-price"><span id="proPrice">—</span><span class="plan-period"> / month</span></div>
           <ul class="plan-features">
             <li><span class="pf-check">✓</span>Up to 150 active invoice slots</li>
             <li><span class="pf-check">✓</span>Invoice creation &amp; sending</li>
@@ -79,10 +75,8 @@
       </div>
     </section>
 
-    <!-- Divider -->
     <div class="plans-divider"><span>OR</span></div>
 
-    <!-- Connector plan -->
     <section class="plans-section">
       <div class="section-tag">For Zoho, Tally &amp; QuickBooks users</div>
 
@@ -99,7 +93,7 @@
           </ul>
         </div>
         <div class="connector-right">
-          <div class="plan-price">₹399<span class="plan-period"> / month</span></div>
+          <div class="plan-price">Launching soon</div>
           <button class="choose-btn choose-btn--ghost" data-plan="connector" disabled>Launching soon</button>
         </div>
       </div>

@@ -10,47 +10,32 @@
   <link rel="stylesheet" href="/css/onboarding.css" />
   <script type="module" src="/js/guard.js"></script>
 </head>
-
 <body>
 
   <header class="header">
-    <a href="/" class="nav-logo">
-      <div class="nav-dot"></div>
-      <span>RemindFlow</span>
-    </a>
+    <a href="/" class="nav-logo"><div class="nav-dot"></div><span>RemindFlow</span></a>
     <div class="header-step">Step 1 of 1 &nbsp;·&nbsp; Profile setup</div>
   </header>
 
   <main class="onboarding-page">
 
-    <!-- Left — progress & context -->
     <aside class="onboarding-left">
       <div class="onboarding-left-inner">
         <p class="ol-label">One-time setup</p>
         <h2>Tell us about<br/>your business.</h2>
-        <p class="ol-sub">This is the only time you'll fill this in. It powers your invoices, sets your sender name, and personalises your dashboard.</p>
+        <p class="ol-sub">This is the only time you'll fill this in. It powers your invoices, sets your currency, and personalises your reminders.</p>
 
         <ul class="ol-checklist">
-          <li class="ol-check active" id="check-identity">
-            <div class="ol-check-dot"></div>
-            <span>Your identity</span>
-          </li>
-          <li class="ol-check" id="check-address">
-            <div class="ol-check-dot"></div>
-            <span>Business address</span>
-          </li>
-          <li class="ol-check" id="check-done">
-            <div class="ol-check-dot"></div>
-            <span>Done</span>
-          </li>
+          <li class="ol-check active" id="check-identity"><div class="ol-check-dot"></div><span>Your identity</span></li>
+          <li class="ol-check" id="check-location"><div class="ol-check-dot"></div><span>Country &amp; timezone</span></li>
+          <li class="ol-check" id="check-address"><div class="ol-check-dot"></div><span>Business address</span></li>
+          <li class="ol-check" id="check-done"><div class="ol-check-dot"></div><span>Done</span></li>
         </ul>
       </div>
     </aside>
 
-    <!-- Right — form -->
     <div class="onboarding-right">
       <div class="onboarding-card">
-
         <form id="onboardingForm" autocomplete="off">
 
           <!-- Identity -->
@@ -67,20 +52,37 @@
               <input type="text" id="company_name" placeholder="e.g. Rahul Design Studio" required />
             </div>
 
-            <div class="field-row">
-              <div class="field">
-                <label for="contact_phone">Contact phone</label>
-                <input type="text" id="contact_phone" placeholder="+91 9876543210" />
-              </div>
-              <div class="field">
-                <label for="timezone">Timezone</label>
-                <select id="timezone">
-                  <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
-                  <option value="UTC">UTC</option>
-                  <option value="Europe/London">Europe/London</option>
-                  <option value="America/New_York">America/New York</option>
-                </select>
-              </div>
+            <div class="field">
+              <label for="contact_phone">Contact phone</label>
+              <input type="text" id="contact_phone" placeholder="+1 555 000 0000" />
+            </div>
+          </div>
+
+          <!-- Country & timezone -->
+          <div class="form-section" id="section-location">
+            <div class="form-section-label">Country &amp; timezone</div>
+
+            <div class="field">
+              <label for="country">Country <span class="req">*</span></label>
+              <!-- Populated by JS -->
+              <select id="country" required></select>
+              <p class="hint" id="localeHint">Your currency, tax label, and reminder schedule will be set automatically.</p>
+            </div>
+
+            <div class="field">
+              <label for="timezone">Timezone <span class="req">*</span></label>
+              <select id="timezone">
+                <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+                <option value="America/New_York">America/New York (ET)</option>
+                <option value="America/Chicago">America/Chicago (CT)</option>
+                <option value="America/Los_Angeles">America/Los Angeles (PT)</option>
+                <option value="America/Toronto">America/Toronto (ET)</option>
+                <option value="America/Vancouver">America/Vancouver (PT)</option>
+                <option value="Europe/London">Europe/London (GMT/BST)</option>
+                <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
+                <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
+                <option value="UTC">UTC</option>
+              </select>
             </div>
           </div>
 
@@ -89,7 +91,7 @@
             <div class="form-section-label">Business address</div>
 
             <div class="field">
-              <label for="address_line1">Address line 1 <span class="req">*</span></label>
+              <label for="address_line1">Address line 1</label>
               <input type="text" id="address_line1" placeholder="Building, street name" />
             </div>
 
@@ -100,31 +102,26 @@
 
             <div class="field-row">
               <div class="field">
-                <label for="city">City <span class="req">*</span></label>
+                <label for="city">City</label>
                 <input type="text" id="city" />
               </div>
-              <div class="field">
-                <label for="state">State <span class="req">*</span></label>
+              <!-- Label updated by JS per country -->
+              <div class="field" id="stateFieldWrap">
+                <label for="state" id="stateLabel">State</label>
                 <input type="text" id="state" />
               </div>
             </div>
 
             <div class="field-row">
+              <!-- Label updated by JS per country -->
               <div class="field">
-                <label for="postal_code">Postal code <span class="req">*</span></label>
+                <label for="postal_code" id="postalLabel">Postal code</label>
                 <input type="text" id="postal_code" />
-              </div>
-              <div class="field">
-                <label for="country">Country <span class="req">*</span></label>
-                <input type="text" id="country" placeholder="India" />
               </div>
             </div>
           </div>
 
-          <button type="submit" id="submitBtn" disabled>
-            Complete setup →
-          </button>
-
+          <button type="submit" id="submitBtn" disabled>Complete setup →</button>
           <p class="form-note">Your details are used only for invoicing and are never shared.</p>
 
         </form>
@@ -135,23 +132,27 @@
 
   <script type="module" src="/js/onboarding.js"></script>
 
-  <script>
-    // Highlight checklist items as user fills sections
-    const nameInput = document.getElementById('name');
+  <script type="module">
+    // Checklist update
+    const nameInput    = document.getElementById('name');
     const companyInput = document.getElementById('company_name');
+    const countryInput = document.getElementById('country');
     const addressInput = document.getElementById('address_line1');
 
     function updateChecklist() {
       const hasIdentity = nameInput.value.trim() && companyInput.value.trim();
-      const hasAddress = addressInput.value.trim();
+      const hasLocation = countryInput.value;
+      const hasAddress  = addressInput.value.trim();
 
-      document.getElementById('check-identity').classList.toggle('done', hasIdentity);
-      document.getElementById('check-address').classList.toggle('done', hasAddress);
-      document.getElementById('check-done').classList.toggle('active', hasIdentity && hasAddress);
+      document.getElementById('check-identity').classList.toggle('done', !!hasIdentity);
+      document.getElementById('check-location').classList.toggle('done', !!hasLocation);
+      document.getElementById('check-address').classList.toggle('done', !!hasAddress);
+      document.getElementById('check-done').classList.toggle('active', !!(hasIdentity && hasLocation));
     }
 
-    [nameInput, companyInput, addressInput].forEach(el => {
+    [nameInput, companyInput, countryInput, addressInput].forEach(el => {
       el?.addEventListener('input', updateChecklist);
+      el?.addEventListener('change', updateChecklist);
     });
   </script>
 

@@ -32,9 +32,10 @@
       </div>
     </header>
 
+    <!-- ═══ HERO ═══════════════════════════════════════ -->
     <section id="hero" class="hero">
       <div class="container">
-        <div class="hero-eyebrow"><div class="eyebrow-line"></div>For freelancers &amp; agencies</div>
+        <div class="hero-eyebrow"><div class="eyebrow-line"></div>For freelancers &amp; indie agencies</div>
         <h1>Professional billing<br/>that takes <em>30 seconds.</em></h1>
         <p class="hero-sub">One-time setup, forever automated. Invoices sent, follow-ups handled, payments confirmed — without you lifting a finger.</p>
         <div class="hero-actions">
@@ -45,19 +46,12 @@
 
         <div class="hero-mockup">
           <div class="mock-invoice">
-            <div class="mock-inv-header">
-              <div class="mock-inv-id">INV-0042</div>
-              <div class="mock-status s-sent">Sent</div>
-            </div>
+            <div class="mock-inv-header"><div class="mock-inv-id">INV-0042</div><div class="mock-status s-sent">Sent</div></div>
             <div class="mock-client">Vaibhav Sharma</div>
-            <div class="mock-amount">₹59,000</div>
+            <div class="mock-amount" id="heroAmount">₹59,000</div>
             <div class="mock-bar"><div class="mock-bar-fill"></div></div>
-            <div class="mock-footer">
-              <div class="mock-date">Due 17 Apr 2026</div>
-              <div class="mock-action">View →</div>
-            </div>
+            <div class="mock-footer"><div class="mock-date">Due 17 Apr 2026</div><div class="mock-action">View →</div></div>
           </div>
-
           <div class="mock-reminders">
             <div class="mock-section-label">Auto follow-ups</div>
             <div class="mock-r-item"><span class="mock-r-stage">Friendly reminder</span><span class="mock-r-badge rb-done">Sent</span></div>
@@ -65,7 +59,6 @@
             <div class="mock-r-item"><span class="mock-r-stage">Formal notice</span><span class="mock-r-badge rb-auto">Auto</span></div>
             <div class="mock-r-item"><span class="mock-r-stage">Final escalation</span><span class="mock-r-badge rb-auto">Auto</span></div>
           </div>
-
           <div class="mock-trust">
             <div class="mock-section-label">Client health</div>
             <div class="mock-t-row"><div class="mock-t-avatar av-a">VS</div><div class="mock-t-name">Vaibhav</div><div class="mock-t-grade grade-a">A</div></div>
@@ -76,6 +69,7 @@
       </div>
     </section>
 
+    <!-- ═══ WORKFLOW ════════════════════════════════════ -->
     <section id="workflow" class="workflow">
       <div class="container">
         <h2>How it works</h2>
@@ -92,6 +86,7 @@
       </div>
     </section>
 
+    <!-- ═══ PROBLEM ══════════════════════════════════════ -->
     <section class="problem">
       <div class="container">
         <div class="problem-inner">
@@ -102,23 +97,15 @@
             <p>Fill the details once — RemindFlow remembers everything and handles the rest automatically, every time.</p>
           </div>
           <div class="problem-stats">
-            <div class="stat-block">
-              <div class="stat-num">10<span class="stat-unit">–15 min</span></div>
-              <div class="stat-desc">wasted per invoice on manual billing admin</div>
-            </div>
-            <div class="stat-block">
-              <div class="stat-num">30<span class="stat-unit">s</span></div>
-              <div class="stat-desc">with RemindFlow, after your first setup</div>
-            </div>
-            <div class="stat-block">
-              <div class="stat-num">0</div>
-              <div class="stat-desc">awkward "just checking in" emails you'll ever write again</div>
-            </div>
+            <div class="stat-block"><div class="stat-num">10<span class="stat-unit">–15 min</span></div><div class="stat-desc">wasted per invoice on manual billing admin</div></div>
+            <div class="stat-block"><div class="stat-num">30<span class="stat-unit">s</span></div><div class="stat-desc">with RemindFlow, after your first setup</div></div>
+            <div class="stat-block"><div class="stat-num">0</div><div class="stat-desc">awkward "just checking in" emails you'll ever write again</div></div>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- ═══ FEATURES ═════════════════════════════════════ -->
     <section id="features" class="features">
       <div class="container">
         <div class="section-label">Core features</div>
@@ -134,16 +121,15 @@
             </div>
             <div class="feat-mini-mockup">
               <div class="fmm-label">Client record</div>
-              <div class="fmm-name">Vaibhav Sharma</div>
-              <div class="fmm-email">vaibhav@studio.in &nbsp;·&nbsp; GST: 27ABCDE1234F1Z5</div>
+              <div class="fmm-name" id="mockClientName">Vaibhav Sharma</div>
+              <div class="fmm-email" id="mockClientEmail">vaibhav@studio.in &nbsp;·&nbsp; GST: 27ABCDE1234F1Z5</div>
               <div class="fmm-tags">
-                <span class="fmm-tag teal">Net 30</span>
+                <span class="fmm-tag teal" id="mockPaymentTerms">Net 30</span>
                 <span class="fmm-tag blue">UPI + Bank</span>
-                <span class="fmm-tag gray">18% GST</span>
+                <span class="fmm-tag gray" id="mockTaxLabel">18% GST</span>
               </div>
             </div>
           </div>
-
           <div class="feat-card"><div class="feat-icon fi-blue">🏢</div><h3>Your dedicated billing department</h3><p>RemindFlow acts as a professional buffer — polished, consistent communication so you never mix creativity with collections.</p></div>
           <div class="feat-card"><div class="feat-icon fi-amber">🤖</div><h3>Friendly → firm escalation</h3><p>Reminders start warm and escalate automatically. You never have to calibrate the tone or remember when to follow up.</p></div>
           <div class="feat-card"><div class="feat-icon fi-purple">📈</div><h3>Client health insights</h3><p>Automatic Trust Grades for every client based on payment patterns. Focus on your A-partners — the system handles the rest.</p></div>
@@ -153,6 +139,7 @@
       </div>
     </section>
 
+    <!-- ═══ EASE STRIP ═══════════════════════════════════ -->
     <section class="ease-strip">
       <div class="container">
         <div class="ease-grid">
@@ -167,16 +154,27 @@
       </div>
     </section>
 
+    <!-- ═══ PRICING ══════════════════════════════════════ -->
     <section id="pricing" class="pricing">
       <div class="container">
         <div class="section-label">Pricing</div>
         <h2>Simple plans,<br/><em>no surprises.</em></h2>
         <p class="section-sub">All plans include a 7-day free trial. No credit card required to start.</p>
 
+        <!-- Region toggle -->
+        <div class="pricing-region-bar">
+          <button class="region-btn active" data-region="IN">🇮🇳 India (₹)</button>
+          <button class="region-btn" data-region="US">🇺🇸 US ($)</button>
+          <button class="region-btn" data-region="GB">🇬🇧 UK (£)</button>
+          <button class="region-btn" data-region="SG">🇸🇬 Singapore (S$)</button>
+          <button class="region-btn" data-region="AU">🇦🇺 Australia (A$)</button>
+          <button class="region-btn" data-region="CA">🇨🇦 Canada (CA$)</button>
+        </div>
+
         <div class="pricing-grid">
           <div class="price-card">
             <h3>Starter</h3>
-            <div class="price-amount">₹499</div>
+            <div class="price-amount" id="lpStarterPrice">₹499</div>
             <div class="price-period">per month</div>
             <ul class="price-features">
               <li><span class="pf-check">✓</span>Up to 25 active clients</li>
@@ -189,7 +187,7 @@
           <div class="price-card price-card--featured">
             <div class="price-badge">Most popular</div>
             <h3>Growth</h3>
-            <div class="price-amount">₹999</div>
+            <div class="price-amount" id="lpGrowthPrice">₹999</div>
             <div class="price-period">per month</div>
             <ul class="price-features">
               <li><span class="pf-check">✓</span>Up to 60 active clients</li>
@@ -201,7 +199,7 @@
 
           <div class="price-card">
             <h3>Pro / Business</h3>
-            <div class="price-amount">₹1,999</div>
+            <div class="price-amount" id="lpProPrice">₹1,999</div>
             <div class="price-period">per month</div>
             <ul class="price-features">
               <li><span class="pf-check">✓</span>Up to 150 active clients</li>
@@ -220,13 +218,14 @@
             <p>Works with Zoho, QuickBooks, Tally. Uses your existing email setup.</p>
           </div>
           <div class="price-connector-right">
-            <div class="price-amount small">₹399<span class="price-period"> / month</span></div>
+            <div class="price-amount small">Launching soon</div>
             <button class="price-btn" disabled>Launching soon</button>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- ═══ FOUNDER ══════════════════════════════════════ -->
     <section class="founder">
       <div class="container">
         <div class="founder-card">
@@ -253,30 +252,132 @@
       </div>
     </footer>
 
-    <script>
-      const redirectToLogin = () => { window.location.href = "/login.html"; };
-      const redirectToPlans = () => { window.location.href = localStorage.getItem("accessToken") ? "/plans.html" : "/login.html"; };
+    <!-- Pricing region toggle styles -->
+    <style>
+      .pricing-region-bar {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 36px;
+      }
+      .region-btn {
+        background: none;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.5);
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.18s;
+      }
+      .region-btn.active {
+        background: rgba(28,199,174,0.12);
+        border-color: rgba(28,199,174,0.35);
+        color: #1cc7ae;
+      }
+      .region-btn:hover:not(.active) {
+        border-color: rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.8);
+      }
+    </style>
 
-      document.getElementById("loginBtn").addEventListener("click", e => { e.preventDefault(); redirectToLogin(); });
-      document.getElementById("getStartedBtn").addEventListener("click", redirectToLogin);
-      document.querySelectorAll(".planBtn").forEach(b => b.addEventListener("click", redirectToPlans));
+    <script type="module">
+      import { LOCALE_MAP, getLocale } from '/js/localeConfig.js';
 
-      const hamburger = document.getElementById("hamburger");
-      const navLinks = document.getElementById("navLinks");
-      hamburger.addEventListener("click", () => { hamburger.classList.toggle("open"); navLinks.classList.toggle("open"); });
-      navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => { hamburger.classList.remove("open"); navLinks.classList.remove("open"); }));
+      /* ── Locale map for landing page ───────────────── */
+      const PLAN_PRICES = {};
+      Object.values(LOCALE_MAP).forEach(lc => {
+        PLAN_PRICES[lc.countryCode] = lc.plans;
+      });
 
-      const workflowSection = document.getElementById("workflow");
-      document.getElementById("showWorkflow").addEventListener("click", function() {
-        const open = workflowSection.classList.toggle("open");
-        this.textContent = open ? "Hide how it works" : "See how it works";
-        if (open) workflowSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      /* ── Render prices ──────────────────────────────── */
+      function renderPrices(countryCode) {
+        const lc = getLocale(countryCode);
+        document.getElementById('lpStarterPrice').textContent = lc.plans.starter.display;
+        document.getElementById('lpGrowthPrice').textContent  = lc.plans.growth.display;
+        document.getElementById('lpProPrice').textContent     = lc.plans.pro.display;
+
+        // Update hero mockup amount to match currency
+        const heroAmt = document.getElementById('heroAmount');
+        if (heroAmt) {
+          const amounts = { IN:'₹59,000', US:'$720', GB:'£580', SG:'S$960', AU:'A$1,100', CA:'CA$960' };
+          heroAmt.textContent = amounts[countryCode] || '₹59,000';
+        }
+
+        // Update feature mockup tax label
+        const taxEl = document.getElementById('mockTaxLabel');
+        if (taxEl) taxEl.textContent = `18% ${lc.taxLabel}`;
+      }
+
+      /* ── Region toggle ──────────────────────────────── */
+      document.querySelectorAll('.region-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderPrices(btn.dataset.region);
+        });
+      });
+
+      /* ── Geo-detect on load ──────────────────────────── */
+      async function detectRegion() {
+        // Check localStorage first (returning user)
+        const stored = localStorage.getItem('countryCode');
+        if (stored && LOCALE_MAP[stored]) {
+          setActiveRegion(stored);
+          renderPrices(stored);
+          return;
+        }
+
+        // Try Geo-IP (ipapi.co — free tier, no key needed)
+        try {
+          const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3000) });
+          if (!res.ok) throw new Error();
+          const geo = await res.json();
+          const code = geo.country_code || 'IN';
+          const supported = ['IN','US','GB','SG','AU','CA'];
+          const region = supported.includes(code) ? code : 'IN';
+          setActiveRegion(region);
+          renderPrices(region);
+        } catch {
+          // Fallback: India
+          renderPrices('IN');
+        }
+      }
+
+      function setActiveRegion(code) {
+        document.querySelectorAll('.region-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.region === code);
+        });
+      }
+
+      detectRegion();
+
+      /* ── Nav/CTA handlers ────────────────────────────── */
+      const redirectToLogin = () => { window.location.href = '/login.html'; };
+      const redirectToPlans = () => { window.location.href = localStorage.getItem('accessToken') ? '/plans.html' : '/login.html'; };
+
+      document.getElementById('loginBtn').addEventListener('click', e => { e.preventDefault(); redirectToLogin(); });
+      document.getElementById('getStartedBtn').addEventListener('click', redirectToLogin);
+      document.querySelectorAll('.planBtn').forEach(b => b.addEventListener('click', redirectToPlans));
+
+      const hamburger    = document.getElementById('hamburger');
+      const navLinks     = document.getElementById('navLinks');
+      hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); navLinks.classList.toggle('open'); });
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { hamburger.classList.remove('open'); navLinks.classList.remove('open'); }));
+
+      const workflowSection = document.getElementById('workflow');
+      document.getElementById('showWorkflow').addEventListener('click', function () {
+        const open = workflowSection.classList.toggle('open');
+        this.textContent = open ? 'Hide how it works' : 'See how it works';
+        if (open) workflowSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
 
       const observer = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
       }, { threshold: 0.08 });
-      document.querySelectorAll(".feat-card, .stat-block, .ease-cell, .price-card, .founder-card, .problem-inner").forEach(el => observer.observe(el));
+      document.querySelectorAll('.feat-card, .stat-block, .ease-cell, .price-card, .founder-card, .problem-inner').forEach(el => observer.observe(el));
     </script>
 
   </body>

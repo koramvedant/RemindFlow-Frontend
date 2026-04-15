@@ -25,7 +25,6 @@
       </div>
     </div>
 
-    <!-- Tab bar -->
     <div class="settings-tabs">
       <button class="settings-tab active" data-tab="account">Account</button>
       <button class="settings-tab" data-tab="taxes">Taxes</button>
@@ -58,7 +57,7 @@
           </div>
           <div class="field">
             <label for="contact_phone">Contact phone</label>
-            <input type="text" id="contact_phone" placeholder="+91 9XXXXXXXXX" />
+            <input type="text" id="contact_phone" placeholder="+1 555 000 0000" />
           </div>
         </div>
 
@@ -67,20 +66,44 @@
             <label for="timezone">Timezone</label>
             <select id="timezone">
               <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+              <option value="America/New_York">America/New York (ET)</option>
+              <option value="America/Chicago">America/Chicago (CT)</option>
+              <option value="America/Los_Angeles">America/Los Angeles (PT)</option>
+              <option value="America/Toronto">America/Toronto (ET)</option>
+              <option value="America/Vancouver">America/Vancouver (PT)</option>
+              <option value="Europe/London">Europe/London (GMT/BST)</option>
+              <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
+              <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
+              <option value="Australia/Melbourne">Australia/Melbourne (AEST)</option>
               <option value="UTC">UTC</option>
-              <option value="Europe/London">Europe/London</option>
-              <option value="America/New_York">America/New York</option>
             </select>
           </div>
           <div class="field">
-            <label for="tax_id">Tax ID (GST / VAT)</label>
-            <input type="text" id="tax_id" />
+            <!-- label updated dynamically by JS per country -->
+            <label for="tax_id">Tax ID</label>
+            <input type="text" id="tax_id" placeholder="Tax registration number" />
           </div>
         </div>
 
         <div class="field">
           <label for="default_terms">Default payment terms</label>
-          <textarea id="default_terms" placeholder="e.g. Payment due within 15 days"></textarea>
+          <textarea id="default_terms" placeholder="e.g. Payment due within 30 days of invoice date."></textarea>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <span class="form-card-title">Region &amp; currency</span>
+
+        <div class="field-row">
+          <div class="field">
+            <!-- Populated as <select> by settings.js -->
+            <label for="country">Country</label>
+            <select id="country"></select>
+            <p class="hint">This drives your currency, tax label, and reminder timing.</p>
+          </div>
+          <div class="field" style="justify-content:flex-end; padding-top:28px;">
+            <div id="currencyNote" class="currency-note"></div>
+          </div>
         </div>
       </div>
 
@@ -102,6 +125,7 @@
             <label for="city">City</label>
             <input type="text" id="city" />
           </div>
+          <!-- label updated by JS: State / County / Province -->
           <div class="field">
             <label for="state">State</label>
             <input type="text" id="state" />
@@ -109,13 +133,10 @@
         </div>
 
         <div class="field-row">
+          <!-- label updated by JS: PIN Code / Zip Code / Postcode etc. -->
           <div class="field">
             <label for="postal_code">Postal code</label>
             <input type="text" id="postal_code" />
-          </div>
-          <div class="field">
-            <label for="country">Country</label>
-            <input type="text" id="country" value="India" readonly />
           </div>
         </div>
       </div>
@@ -125,7 +146,7 @@
         <div class="field">
           <label for="logo">Upload logo</label>
           <input type="file" id="logo" accept="image/*" />
-          <p class="hint">Shown on your invoices. PNG or JPG, max 1MB.</p>
+          <p class="hint">Shown on your invoices. PNG or JPG, max 2MB.</p>
         </div>
       </div>
 
@@ -136,7 +157,7 @@
     <div class="settings-panel" id="tab-taxes">
       <div class="form-card">
         <span class="form-card-title">Tax rates</span>
-        <p class="hint" style="margin-bottom:20px;">These will auto-populate when creating a new invoice.</p>
+        <p class="hint" style="margin-bottom:20px;">These auto-populate when creating a new invoice. Use the label relevant to your country (GST, VAT, HST, etc.).</p>
 
         <div class="invoice-items-grid items-header">
           <span>Tax name</span>
@@ -146,17 +167,15 @@
         </div>
 
         <div id="taxesContainer"></div>
-
         <button class="secondary-btn" id="addTaxBtn" style="margin-top:12px;">+ Add Tax</button>
       </div>
-
       <button class="primary-btn settings-save-btn" id="saveTaxes">Save taxes</button>
     </div>
 
     <!-- ── PAYMENTS ───────────────────────────────── -->
     <div class="settings-panel" id="tab-payments">
       <div class="form-card">
-        <span class="form-card-title">UPI</span>
+        <span class="form-card-title">UPI <span style="font-size:11px;color:var(--text-3);font-weight:400;">(India only)</span></span>
         <div class="field">
           <label for="upi_id">UPI ID</label>
           <input type="text" id="upi_id" placeholder="yourname@upi" />
@@ -168,35 +187,25 @@
         <div class="field-row">
           <div class="field">
             <label for="bank_name">Bank name</label>
-            <input type="text" id="bank_name" placeholder="HDFC Bank" />
+            <input type="text" id="bank_name" placeholder="e.g. HDFC Bank / Chase / Barclays" />
           </div>
           <div class="field">
-            <label for="ifsc_code">IFSC code</label>
-            <input type="text" id="ifsc_code" placeholder="HDFC0001234" />
+            <label for="ifsc_code">IFSC / Sort Code / Routing No.</label>
+            <input type="text" id="ifsc_code" placeholder="Bank routing identifier" />
           </div>
         </div>
         <div class="field">
-          <label for="account_number">Account number</label>
-          <input type="text" id="account_number" placeholder="XXXXXXXXXX" />
+          <label for="account_number">Account number / IBAN</label>
+          <input type="text" id="account_number" placeholder="Account number or IBAN" />
         </div>
       </div>
 
       <div class="form-card">
         <span class="form-card-title">Default payment methods</span>
         <p class="hint" style="margin-bottom:16px;">Pre-selected when creating a new invoice.</p>
-
-        <label class="checkbox-row">
-          <input type="checkbox" id="default_pay_upi" />
-          <span>UPI</span>
-        </label>
-        <label class="checkbox-row">
-          <input type="checkbox" id="default_pay_bank" />
-          <span>Bank Transfer</span>
-        </label>
-        <label class="checkbox-row">
-          <input type="checkbox" id="default_pay_cash" />
-          <span>Cash</span>
-        </label>
+        <label class="checkbox-row"><input type="checkbox" id="default_pay_upi" /><span>UPI (India)</span></label>
+        <label class="checkbox-row"><input type="checkbox" id="default_pay_bank" /><span>Bank Transfer</span></label>
+        <label class="checkbox-row"><input type="checkbox" id="default_pay_cash" /><span>Cash</span></label>
       </div>
 
       <button class="primary-btn settings-save-btn" id="savePayments">Save payment settings</button>
@@ -206,36 +215,19 @@
     <div class="settings-panel" id="tab-billing">
       <div class="form-card">
         <span class="form-card-title">Current plan</span>
-
         <div class="billing-row">
-          <div class="billing-item">
-            <div class="billing-label">Plan</div>
-            <div class="billing-value" id="currentPlan">—</div>
-          </div>
-          <div class="billing-item">
-            <div class="billing-label">Expires on</div>
-            <div class="billing-value" id="planExpiry">—</div>
-          </div>
-          <div class="billing-item">
-            <div class="billing-label">Status</div>
-            <div class="billing-value" id="planStatus">—</div>
-          </div>
+          <div class="billing-item"><div class="billing-label">Plan</div><div class="billing-value" id="currentPlan">—</div></div>
+          <div class="billing-item"><div class="billing-label">Expires on</div><div class="billing-value" id="planExpiry">—</div></div>
+          <div class="billing-item"><div class="billing-label">Status</div><div class="billing-value" id="planStatus">—</div></div>
         </div>
-
         <p class="hint" style="margin-top:16px;">Plans do not auto-renew. If renewed before expiry, the new plan stacks and activates automatically when the current plan ends.</p>
       </div>
 
       <div class="form-card" id="queuedPlanSection" style="display:none;">
         <span class="form-card-title">Next plan</span>
         <div class="billing-row">
-          <div class="billing-item">
-            <div class="billing-label">Plan</div>
-            <div class="billing-value" id="nextPlanName">—</div>
-          </div>
-          <div class="billing-item">
-            <div class="billing-label">Activates on</div>
-            <div class="billing-value" id="nextActivationDate">—</div>
-          </div>
+          <div class="billing-item"><div class="billing-label">Plan</div><div class="billing-value" id="nextPlanName">—</div></div>
+          <div class="billing-item"><div class="billing-label">Activates on</div><div class="billing-value" id="nextActivationDate">—</div></div>
         </div>
         <button class="btn-secondary" id="activateNowBtn" style="margin-top:16px;">Activate now</button>
       </div>
@@ -245,11 +237,24 @@
 
   </main>
 
+  <!-- Currency note style -->
+  <style>
+    .currency-note {
+      font-size: 13px;
+      color: var(--teal);
+      font-weight: 500;
+      background: var(--teal-dim);
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(28,199,174,0.2);
+      white-space: nowrap;
+    }
+  </style>
+
   <script src="/js/loadSidebar.js"></script>
   <script type="module" src="/js/settings.js"></script>
 
   <script>
-    // Tab switching
     document.querySelectorAll('.settings-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));

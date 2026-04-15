@@ -4,40 +4,65 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Payment – RemindFlow</title>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/payment.css" />
-
-  <!-- Auth Guard -->
   <script type="module" src="/js/guard.js"></script>
 </head>
-
 <body>
-  <main class="container">
-    <h1>Upgrade Your Plan</h1>
+  <header class="header">
+    <a href="/" class="nav-logo"><div class="nav-dot"></div><span>RemindFlow</span></a>
+  </header>
 
-    <p>
-      Plan: <strong id="planDisplay">Loading...</strong><br />
-      Amount to pay: <strong>₹<span id="amountDisplay">0</span></strong>
-    </p>
+  <main class="payment-page">
+    <div class="payment-card">
+      <div class="payment-icon">💳</div>
+      <h1>Upgrade Your Plan</h1>
 
-    <button id="payBtn" class="primary-btn">Pay Now</button>
+      <div class="payment-summary">
+        <div class="payment-row">
+          <span>Plan</span>
+          <strong id="planDisplay">—</strong>
+        </div>
+        <div class="payment-row">
+          <span>Amount</span>
+          <strong id="amountDisplay">—</strong>
+        </div>
+        <div class="payment-row">
+          <span>Currency</span>
+          <strong id="currencyDisplay">—</strong>
+        </div>
+      </div>
+
+      <button id="payBtn" class="pay-btn">Pay Now</button>
+      <p class="payment-note">Secure checkout via Razorpay. Your card details are never stored.</p>
+    </div>
   </main>
 
-  <!-- Razorpay Checkout SDK -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', system-ui, sans-serif; background: #0a0f1a; color: #f0f2f5; min-height: 100vh; display: flex; flex-direction: column; }
+    .header { height: 64px; display: flex; align-items: center; padding: 0 32px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: #f0f2f5; text-decoration: none; }
+    .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: #1cc7ae; }
+    .payment-page { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+    .payment-card { background: #111827; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 48px 40px; max-width: 420px; width: 100%; text-align: center; }
+    .payment-icon { font-size: 40px; margin-bottom: 16px; }
+    h1 { font-family: 'DM Serif Display', serif; font-size: 28px; font-weight: 400; letter-spacing: -0.4px; margin-bottom: 32px; }
+    .payment-summary { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 20px; margin-bottom: 28px; text-align: left; }
+    .payment-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px; color: rgba(255,255,255,0.6); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .payment-row:last-child { border-bottom: none; }
+    .payment-row strong { color: #f0f2f5; font-weight: 600; }
+    .pay-btn { width: 100%; background: #1cc7ae; color: #0a0f1a; border: none; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.2s; }
+    .pay-btn:hover { opacity: 0.88; }
+    .payment-note { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 14px; line-height: 1.5; }
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #111827; border: 1px solid rgba(255,255,255,0.12); color: #f0f2f5; padding: 12px 20px; border-radius: 10px; font-size: 14px; opacity: 0; transition: opacity 0.25s; z-index: 9999; }
+    .toast.show { opacity: 1; }
+  </style>
+
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-  <!-- 🔑 Razorpay Public Key (STATIC FRONTEND) -->
-  <script>
-    /**
-     * ⚠️ IMPORTANT
-     * This must be your *PUBLIC* Razorpay key only.
-     * Example:
-     * rzp_test_xxxxxxxxxx  (test)
-     * rzp_live_xxxxxxxxxx  (live)
-     */
-    window.RAZORPAY_KEY_ID = "rzp_live_RzLV2UDgZ3vKjA";
-  </script>
-
-  <!-- Payment Logic -->
+  <script>window.RAZORPAY_KEY_ID = "rzp_live_RzLV2UDgZ3vKjA";</script>
   <script type="module" src="/js/payment.js"></script>
+</body>
 </html>

@@ -16,10 +16,10 @@
 
       <div class="form-page-header">
         <button class="back-btn" onclick="history.back()">← Back</button>
-        <h1 class="form-page-title">Add New Client</h1>
+        <h1 class="form-page-title">Add Client</h1>
       </div>
 
-      <form id="addClientForm">
+      <form id="addClientForm" autocomplete="off">
 
         <!-- Basic details -->
         <div class="form-card">
@@ -27,64 +27,68 @@
 
           <div class="field">
             <label for="clientName">Client name <span class="required">*</span></label>
-            <input type="text" id="clientName" placeholder="Full name or company" autocomplete="off" required />
+            <input type="text" id="clientName" required />
           </div>
 
           <div class="field">
-            <label for="clientEmail">Email <span class="required">*</span></label>
-            <input type="email" id="clientEmail" placeholder="client@example.com" autocomplete="off" required />
+            <label for="email">Email <span class="required">*</span></label>
+            <input type="email" id="email" required />
+            <p class="hint">Primary communication channel for invoices and reminders.</p>
           </div>
 
           <div class="field-row">
             <div class="field">
-              <label for="clientPhone">Phone</label>
-              <input type="tel" id="clientPhone" placeholder="+91 9876543210" autocomplete="off" />
+              <label for="phone">Phone</label>
+              <input type="text" id="phone" />
             </div>
             <div class="field">
-              <label for="clientCompany">Company name</label>
-              <input type="text" id="clientCompany" placeholder="Optional" autocomplete="off" />
+              <label for="companyName">Company name</label>
+              <input type="text" id="companyName" />
             </div>
           </div>
 
+          <!-- Tax ID label updated by JS per locale -->
           <div class="field">
-            <label for="clientTaxId">Tax ID (GST / VAT / PAN)</label>
-            <input type="text" id="clientTaxId" placeholder="Optional" autocomplete="off" />
+            <label for="taxId" id="taxIdLabel">Tax ID (GST / VAT)</label>
+            <input type="text" id="taxId" id="taxIdInput" placeholder="Tax registration number" />
           </div>
         </div>
 
-        <!-- Address -->
+        <!-- Billing address -->
         <div class="form-card">
           <span class="form-card-title">Billing address</span>
 
           <div class="field">
             <label for="address_line1">Address line 1</label>
-            <input type="text" id="address_line1" placeholder="Building, street name" autocomplete="off" />
+            <input type="text" id="address_line1" />
           </div>
 
           <div class="field">
             <label for="address_line2">Address line 2 <span style="color:var(--text-3);font-size:11px;">(optional)</span></label>
-            <input type="text" id="address_line2" placeholder="Area, landmark" />
+            <input type="text" id="address_line2" />
           </div>
 
           <div class="field-row">
             <div class="field">
               <label for="city">City</label>
-              <input type="text" id="city" autocomplete="off" />
+              <input type="text" id="city" />
             </div>
-            <div class="field">
-              <label for="state">State</label>
-              <input type="text" id="state" autocomplete="off" />
+            <!-- State label updated by JS per locale -->
+            <div class="field" id="stateFieldWrap">
+              <label for="state" id="stateLabel">State</label>
+              <input type="text" id="state" />
             </div>
           </div>
 
           <div class="field-row">
+            <!-- Postal label updated by JS per locale -->
             <div class="field">
-              <label for="postal_code">Postal code</label>
-              <input type="text" id="postal_code" autocomplete="off" />
+              <label for="postal_code" id="postalLabel">Postal code</label>
+              <input type="text" id="postal_code" />
             </div>
             <div class="field">
               <label for="country">Country</label>
-              <input type="text" id="country" value="India" />
+              <input type="text" id="country" />
             </div>
           </div>
         </div>
@@ -93,12 +97,14 @@
         <div class="form-card">
           <span class="form-card-title">Notes</span>
           <div class="field">
-            <label for="clientNotes">Internal notes <span style="color:var(--text-3);font-size:11px;">(optional)</span></label>
-            <textarea id="clientNotes" placeholder="Any notes about this client…" autocomplete="off"></textarea>
+            <textarea id="notes" placeholder="Internal notes about this client…"></textarea>
           </div>
         </div>
 
-        <button type="submit" class="primary-btn">Save Client</button>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+          <button type="button" class="btn-secondary" onclick="history.back()">Cancel</button>
+          <button type="submit" class="primary-btn" id="saveBtn" style="width:auto;padding:12px 28px;">Add Client</button>
+        </div>
 
       </form>
     </div>

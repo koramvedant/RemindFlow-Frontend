@@ -1,38 +1,41 @@
-import { API_BASE } from "./api.js";
+// js/invoice.js
+// CHANGES: Uses getActiveLocale() for currency and date formatting.
 
-/* ------------------ Elements ------------------ */
-const title = document.getElementById("invoiceTitle");
-const clientName = document.getElementById("clientName");
-const amount = document.getElementById("invoiceAmount");
-const status = document.getElementById("invoiceStatus");
-const due = document.getElementById("invoiceDue");
+import { API_BASE } from "./api.js";
+import { getActiveLocale, formatCurrency, formatDate as lcFormatDate } from "./localeConfig.js";
+
+const title    = document.getElementById("invoiceTitle");
+const clientEl = document.getElementById("clientName");
+const amountEl = document.getElementById("invoiceAmount");
+const statusEl = document.getElementById("invoiceStatus");
+const dueEl    = document.getElementById("invoiceDue");
 const timeline = document.getElementById("activityTimeline");
 
-/* ------------------ Helpers ------------------ */
+/* ── Helpers ────────────────────────────────────────────── */
 function getInvoiceId() {
   return new URLSearchParams(window.location.search).get("id");
 }
 
-function formatCurrency(value) {
-  return Number(value || 0).toLocaleString("en-IN");
+// Use locale from localStorage
+const lc = getActiveLocale();
+
+function fmtCurrency(value) {
+  return formatCurrency(value, lc.countryCode);
 }
 
-function formatDate(date) {
-  if (!date) return "—";
-  return new Date(date).toLocaleDateString("en-IN", {
-    day: "2-digit", month: "short", year: "numeric"
-  });
+function fmtDate(date) {
+  return lcFormatDate(date, lc.countryCode);
 }
 
-function formatDateTime(date) {
+function fmtDateTime(date) {
   if (!date) return "—";
-  return new Date(date).toLocaleString("en-IN", {
+  return new Date(date).toLocaleString(lc.locale, {
     day: "2-digit", month: "short", year: "numeric",
-    hour: "2-digit", minute: "2-digit"
+    hour: "2-digit", minute: "2-digit",
   });
 }
 
-/* ------------------ Auth Fetch ------------------ */
+/* ── Auth ───────────────────────────────────────────────── */
 function authFetch(url, options = {}) {
   const token = localStorage.getItem("accessToken");
   return fetch(url, {
@@ -40,77 +43,60 @@ function authFetch(url, options = {}) {
     headers: {
       "Content-Type": "application/json",
       ...(options.headers || {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    }
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   });
 }
 
-/* ------------------ Render Invoice ------------------ */
+/* ── Render invoice meta ────────────────────────────────── */
 function renderInvoice(inv) {
-  title.textContent = inv.invoice_id || "Invoice";
-  clientName.textContent = inv.client_company || inv.client_name || "—";
-  amount.textContent = formatCurrency(inv.grand_total);
-  status.textContent = inv.invoice_status;
-  due.textContent = formatDate(inv.due_date);
+  title.textContent    = inv.invoice_id || "Invoice";
+  clientEl.textContent = inv.client_company || inv.client_name || "—";
+  amountEl.textContent = fmtCurrency(inv.grand_total);
+  statusEl.textContent = inv.invoice_status;
+  dueEl.textContent    = fmtDate(inv.due_date);
 }
 
-/* ------------------ Render Timeline ------------------ */
+/* ── Render timeline ────────────────────────────────────── */
 function renderTimeline(events) {
   timeline.innerHTML = "";
 
   if (!events.length) {
-    timeline.innerHTML = "<p>No activity yet</p>";
+    timeline.innerHTML = "<p style='color:var(--text-3);font-size:14px;'>No activity yet</p>";
     return;
   }
 
   events.forEach((e) => {
-    let icon = "🔔";
-    let text = "";
-    let subtext = "";
+    let icon = "🔔", text = "", subtext = "";
 
     if (e.type === "invoice_created") {
-      icon = "📄";
-      text = "Invoice created";
+      icon = "📄"; text = "Invoice created";
     }
 
     if (e.type === "invoice_sent") {
       icon = "📧";
       text = `Invoice emailed to ${e.recipient_email || "client"}`;
-
-      if (e.email_opened) {
-        subtext = `
-          <span class="activity-opened-badge">
-            ✓ Opened ${e.email_opened_at ? formatDateTime(e.email_opened_at) : ""}
-          </span>`;
-      } else {
-        subtext = `<span class="activity-not-opened">Not opened yet</span>`;
-      }
+      subtext = e.email_opened
+        ? `<span class="activity-opened-badge">✓ Opened ${e.email_opened_at ? fmtDateTime(e.email_opened_at) : ""}</span>`
+        : `<span class="activity-not-opened">Not opened yet</span>`;
     }
 
     if (e.type === "invoice_scheduled") {
       icon = "📅";
-      text = `Invoice send scheduled for ${formatDateTime(e.scheduled_at)}`;
+      text = `Invoice send scheduled for ${fmtDateTime(e.scheduled_at)}`;
     }
 
     if (e.type === "reminder_sent") {
-      const stageNames = {
-        friendly: "Friendly", firm: "Firm",
-        formal: "Formal", final: "Final"
-      };
+      const stageNames = { friendly: "Friendly", firm: "Firm", formal: "Formal", final: "Final" };
       icon = "🔔";
       text = `${stageNames[e.stage] || e.stage || ""} reminder sent`;
-
       if (e.email_opened) {
-        subtext = `
-          <span class="activity-opened-badge">
-            ✓ Opened ${e.email_opened_at ? formatDateTime(e.email_opened_at) : ""}
-          </span>`;
+        subtext = `<span class="activity-opened-badge">✓ Opened ${e.email_opened_at ? fmtDateTime(e.email_opened_at) : ""}</span>`;
       }
     }
 
     if (e.type === "payment_recorded") {
-      icon = "💰";
-      text = "Payment recorded";
+      icon = "💰"; text = "Payment recorded";
     }
 
     timeline.innerHTML += `
@@ -118,15 +104,14 @@ function renderTimeline(events) {
         <div class="activity-icon">${icon}</div>
         <div class="activity-content">
           <strong>${text}</strong>
-          <span>${formatDate(e.event_time)}</span>
+          <span>${fmtDate(e.event_time)}</span>
           ${subtext}
         </div>
-      </div>
-    `;
+      </div>`;
   });
 }
 
-/* ------------------ Load Page ------------------ */
+/* ── Load ───────────────────────────────────────────────── */
 async function loadInvoice() {
   const id = getInvoiceId();
   if (!id) { alert("Invoice not found"); return; }
@@ -134,18 +119,17 @@ async function loadInvoice() {
   try {
     const [invoiceRes, activityRes] = await Promise.all([
       authFetch(`${API_BASE}/api/invoices/id/${id}`),
-      authFetch(`${API_BASE}/api/invoices/${id}/activity`)
+      authFetch(`${API_BASE}/api/invoices/${id}/activity`),
     ]);
 
     if (!invoiceRes.ok) throw new Error("Invoice fetch failed");
     if (!activityRes.ok) throw new Error("Activity fetch failed");
 
-    const { invoice } = await invoiceRes.json();
+    const { invoice }  = await invoiceRes.json();
     const { activity } = await activityRes.json();
 
     renderInvoice(invoice);
     renderTimeline(activity || []);
-
   } catch (err) {
     console.error(err);
     timeline.innerHTML = "<p>Failed to load invoice</p>";

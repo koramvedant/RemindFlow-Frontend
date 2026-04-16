@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <title>Add Invoice | RemindFlow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create Invoice – RemindFlow</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
@@ -24,7 +24,7 @@
         <span class="form-card-title">Client</span>
 
         <div class="field">
-          <label>Invoice ID <span style="color:var(--text-3);font-size:11px;">(optional — auto-generated if blank)</span></label>
+          <label>Invoice ID <span style="color:var(--text-3);font-size:11px;">(optional — must be unique)</span></label>
           <input type="text" id="invoiceIdInput" placeholder="INV-XXXX" autocomplete="off" />
         </div>
 
@@ -33,13 +33,13 @@
           <div class="client-select">
             <input type="text" id="clientSearch" placeholder="Search or select client" autocomplete="off" required />
             <button id="changeClientBtn" type="button" class="change-client-btn" style="display:none;">Change</button>
-            <button class="add-client-btn" type="button" onclick="location.href='/add-client.html'">+ New Client</button>
+            <button class="add-client-btn" type="button" onclick="location.href='/add-client.html'">+ Add Client</button>
           </div>
           <ul id="clientDropdown" class="dropdown"></ul>
         </div>
       </div>
 
-      <!-- Invoice details -->
+      <!-- Details -->
       <div class="form-card">
         <span class="form-card-title">Invoice details</span>
 
@@ -74,22 +74,21 @@
         <div class="invoice-items-grid items-header">
           <span>Description</span>
           <span>Qty</span>
-          <span>Rate (₹)</span>
+          <span>Rate (<span id="currencySymbolLabel">₹</span>)</span>
           <span></span>
         </div>
 
         <div id="itemsContainer"></div>
-
-        <button type="button" id="addItemBtn" class="secondary-btn">+ Add Item</button>
+        <button type="button" id="addItemBtn" class="secondary-btn" style="margin-top:10px;">+ Add Item</button>
       </div>
 
       <!-- Tax & Discount -->
       <div class="form-card">
-        <span class="form-card-title">Tax &amp; Discount</span>
+        <span class="form-card-title" id="taxSectionTitle">Tax &amp; Discount</span>
 
-        <h3>Tax (optional)</h3>
+        <h3 id="taxSectionLabel">Tax (optional)</h3>
         <div class="invoice-items-grid items-header">
-          <span>Tax Name</span>
+          <span id="taxNameColLabel">Tax Name</span>
           <span>Rate (%)</span>
           <span></span>
         </div>
@@ -100,7 +99,7 @@
           <div class="field">
             <label for="discountType">Discount type</label>
             <select id="discountType">
-              <option value="flat">Flat Amount (₹)</option>
+              <option value="flat">Flat Amount (<span id="discountCurrencyLabel">₹</span>)</option>
               <option value="percentage">Percentage (%)</option>
             </select>
           </div>
@@ -114,14 +113,15 @@
       <!-- Payment options -->
       <div class="form-card">
         <span class="form-card-title">Payment options</span>
-        <p class="hint" style="margin-bottom:14px;">Shown on the invoice. Only enable methods you've configured in Settings.</p>
+        <p class="hint" style="margin-bottom:14px;">These will appear on your invoice.</p>
 
-        <label class="checkbox-row">
-          <input type="checkbox" id="pay_upi" checked />
-          <span>UPI</span>
+        <!-- UPI: hidden for non-India via JS -->
+        <label class="checkbox-row" id="upiRow">
+          <input type="checkbox" id="pay_upi" />
+          <span>UPI <span style="font-size:11px;color:var(--text-3);">(India only)</span></span>
         </label>
         <label class="checkbox-row">
-          <input type="checkbox" id="pay_bank" checked />
+          <input type="checkbox" id="pay_bank" />
           <span>Bank Transfer</span>
         </label>
         <label class="checkbox-row">
@@ -130,7 +130,7 @@
         </label>
       </div>
 
-      <!-- Template & Notes -->
+      <!-- Template & notes -->
       <div class="form-card">
         <span class="form-card-title">Presentation</span>
 
@@ -145,8 +145,8 @@
         </div>
 
         <div class="field">
-          <label for="notes">Notes <span style="color:var(--text-3);font-size:11px;">(optional — shown on invoice)</span></label>
-          <textarea id="notes" placeholder="Payment terms, thank you note, etc." autocomplete="off"></textarea>
+          <label for="notes">Notes <span style="color:var(--text-3);font-size:11px;">(optional)</span></label>
+          <textarea id="notes" autocomplete="off" placeholder="Payment terms, thank you note, etc."></textarea>
         </div>
       </div>
 
@@ -154,7 +154,6 @@
 
     </div>
 
-    <!-- Processing overlay -->
     <div id="addInvoiceOverlay" class="page-loader hidden">
       <div class="loader-box">
         <div class="spinner"></div>
